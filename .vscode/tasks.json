@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "linux": {
+                "options": {
+                    "cwd": "${workspaceFolder}/.vscode"
+                },
+                "command": "./build.sh"
+            },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}\\.vscode"
+                },
+                "command": "build.bat"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

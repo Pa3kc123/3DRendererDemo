@@ -1,0 +1,4 @@
+https://en.wikipedia.org/wiki/Euler%E2%80%93Rodrigues_formula#Definition
+https://math.stackexchange.com/questions/2088515/rotation-matrix-about-arbitrary-direction
+arbitary rotation
+https://www.ntu.edu.sg/home/ehchua/programming/opengl/cg_basicstheory.html

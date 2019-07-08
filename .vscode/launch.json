@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) with Arguments Prompt",
+            "request": "launch",
+            "projectName": "3DRedererDemo",
+            "mainClass": "sk.pa3kc.Program",
+            "windows": {
+                "classPaths": [
+                    "${workspaceFolder}\\lib\\MyLibrary.jar",
+                    "${workspaceFolder}\\bin"
+                ]
+            },
+            "linux": {
+                "classPaths": [
+                    "${workspaceFolder}/lib/MyLibrary.jar",
+                    "${workspaceFolder}/bin"
+                ]
+            },
+            "args": "2"
+        }
+    ]
+}
