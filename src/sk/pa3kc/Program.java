@@ -73,7 +73,7 @@ public class Program
 
     public static void main(String... args)
     {
-        System.setProperty("sun.java2d.opengl", "true");
+        System.setProperty("sun.java2d.opengl", "false");
         instance = new Program(args.length != 0 ? Integer.parseInt(args[0]) - 1 : 0);
 
         SwingUtilities.invokeLater(new Runnable()
@@ -97,9 +97,9 @@ public class Program
             instance.uiThread.start();
         }
     }
-    public static void ERROR(Class<?> tag, String message) { System.out.printf("ERROR: %s: %s%n", tag.getSimpleName(), message); }
-    public static void DEBUG(Class<?> tag, String message) { System.out.printf("DEBUG: %s: %s%n", tag.getSimpleName(), message); }
-    public static void INFO(Class<?> tag, String message) { System.out.printf("INFO: %s: %s%n", tag.getSimpleName(), message); }
+    public static void ERROR(Class<?> tag, String message) { System.out.println("ERROR: ".concat(tag.getSimpleName()).concat(": ").concat(message)); }
+    public static void DEBUG(Class<?> tag, String message) { System.out.println("DEBUG: ".concat(tag.getSimpleName()).concat(": ").concat(message)); }
+    public static void INFO(Class<?> tag, String message) { System.out.println("INFO: ".concat(tag.getSimpleName()).concat(": ").concat(message)); }
     public static int min(int... values)
     {
         int result = Integer.MAX_VALUE;
