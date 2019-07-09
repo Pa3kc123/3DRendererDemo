@@ -1,13 +1,10 @@
 package sk.pa3kc.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
 import sk.pa3kc.Program;
@@ -17,7 +14,7 @@ import sk.pa3kc.util.Matrix.Editor;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.inter.Updatable;
 
-public class MyFrame extends JFrame implements Updatable, ActionListener
+public class MyFrame extends JFrame implements Updatable
 {
     private static final long serialVersionUID = 1L;
 
@@ -25,18 +22,9 @@ public class MyFrame extends JFrame implements Updatable, ActionListener
     public final double distanceMin = 1d;
     public double distance = 1d;
 
-    private final Timer timer = new Timer(20, this);
-
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        int value = 1;
-        int countedValue = this.ySlider.getValue() + value;
-        this.xSlider.setValue(countedValue > this.sliderMax ? this.sliderMin : countedValue);
-        this.ySlider.setValue(countedValue > this.sliderMax ? this.sliderMin : countedValue);
-        this.zSlider.setValue(countedValue > this.sliderMax ? this.sliderMin : countedValue);
-        this.update(UpdateMode.ALL);
-    }
+    public int updateCount = 0;
+    public Thread updateThread;
+    public boolean updateThreadRunning = false;
 
     //region Components
     public final MyPanel myPanel = new MyPanel();
@@ -59,11 +47,6 @@ public class MyFrame extends JFrame implements Updatable, ActionListener
     private final Matrix projectionMatrix = new Matrix(4, 4);
     //endregion
 
-    private final MyDebugPanel xRotationDebugPanel;
-    private final MyDebugPanel yRotationDebugPanel;
-    private final MyDebugPanel zRotationDebugPanel;
-    private final MyDebugPanel rotationDebugPanel;
-
     public MyFrame(String name)
     {
         super(name);
@@ -80,30 +63,45 @@ public class MyFrame extends JFrame implements Updatable, ActionListener
         super.setUndecorated(true);
         super.setVisible(true);
 
-        // this.xRotationDebugPanel = new MyDebugPanel(this.xMatrix.getRowCount(), this.xMatrix.getColCount(), "X");
-        // this.yRotationDebugPanel = new MyDebugPanel(this.yMatrix.getRowCount(), this.yMatrix.getColCount(), "Y");
-        // this.zRotationDebugPanel = new MyDebugPanel(this.zMatrix.getRowCount(), this.zMatrix.getColCount(), "Z");
-        // this.rotationDebugPanel = new MyDebugPanel(this.rotationMatrix.getRowCount(), this.rotationMatrix.getColCount(), "Rotation");
-
-        this.xRotationDebugPanel = null;
-        this.yRotationDebugPanel = null;
-        this.zRotationDebugPanel = null;
-        this.rotationDebugPanel = null;
-
-        /*MyDebugPanel.show(new MyDebugPanel[][]
-        {
-            { this.xRotationDebugPanel, this.yRotationDebugPanel },
-            { this.zRotationDebugPanel, this.rotationDebugPanel }
-        });*/
-
         this.update(UpdateMode.ALL);
 
         synchronized (Program.globalLock) {
             Program.globalLock.notify();
         }
-    }
 
-    boolean toggleOn = false;
+        this.updateThread = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                updateThreadRunning = true;
+
+                while (updateThreadRunning)
+                {
+                    if (Program.toggled)
+                    {
+                        int value = 1;
+                        int countedValue = ySlider.getValue() + value;
+                        xSlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
+                        ySlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
+                        zSlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
+                        update(UpdateMode.ALL);
+                    }
+                    else
+                    {
+                        synchronized (Program.globalLock) {
+                            try {
+                                Program.globalLock.wait();
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        this.updateThread.start();
+    }
 
     @Override
     protected void processKeyEvent(KeyEvent e)
@@ -113,18 +111,14 @@ public class MyFrame extends JFrame implements Updatable, ActionListener
         switch (e.getID())
         {
             case KeyEvent.KEY_PRESSED:
-                this.toggleOn = !this.toggleOn;
-                keyUpdate();
+                Program.toggled = !Program.toggled;
+
+                if (Program.toggled)
+                synchronized (Program.globalLock) {
+                    Program.globalLock.notify();
+                }
             break;
         }
-    }
-
-    private void keyUpdate()
-    {
-        if (this.toggleOn == true)
-            this.timer.start();
-        else
-            this.timer.stop();
     }
 
     @Override
@@ -140,14 +134,7 @@ public class MyFrame extends JFrame implements Updatable, ActionListener
         editor.multiply(this.yMatrix);
         editor.multiply(this.zMatrix);
 
-        if (this.xRotationDebugPanel != null)
-            this.xRotationDebugPanel.updateValues(this.xMatrix);
-        if (this.yRotationDebugPanel != null)
-            this.yRotationDebugPanel.updateValues(this.yMatrix);
-        if (this.zRotationDebugPanel != null)
-            this.zRotationDebugPanel.updateValues(this.zMatrix);
-        if (this.rotationDebugPanel != null)
-            this.rotationDebugPanel.updateValues(this.rotationMatrix);
+        this.updateCount++;
     }
 
     @Override
@@ -155,5 +142,9 @@ public class MyFrame extends JFrame implements Updatable, ActionListener
         super.dispose();
         Program.getInst().uiThreadRunning = false;
         this.myPanel.fpsThreadRunning = false;
+        this.updateThreadRunning = false;
+        synchronized (Program.globalLock) {
+            Program.globalLock.notifyAll();
+        }
     }
 }

@@ -5,7 +5,7 @@ import sk.pa3kc.util.Vertex;
 
 public abstract class Shape3D
 {
-    private static final boolean APPLY_DISTANCE = false;
+    private static final boolean APPLY_DISTANCE = true;
     private static final boolean APPLY_MULIPLICATION = false;
 
     public Shape3D() {}
@@ -21,7 +21,7 @@ public abstract class Shape3D
         if (APPLY_DISTANCE == true)
         for (int i = 0; i < vertexes.length; i++)
         {
-            double myZ = 1 / (distance - vertexes[i].getZ());
+            double myZ = 1d / (distance - vertexes[i].getZ());
             vertexes[i] = Vertex.multiply(vertexes[i], new Matrix(new double[][]
             {
                 { myZ, 0d, 0d, 0d },

@@ -1,6 +1,7 @@
 package sk.pa3kc.util;
 
 import sk.pa3kc.Program;
+import sk.pa3kc.mylibrary.Universal;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
 
 public class Matrix implements Cloneable
@@ -180,7 +181,7 @@ public class Matrix implements Cloneable
         int m2RowCount = m2.length;
         int m2ColCount = m2[0].length;
 
-        double[][] result = new double[Program.min(m1RowCount, m2RowCount)][Program.min(m1ColCount, m2ColCount)];
+        double[][] result = new double[Universal.min(m1RowCount, m2RowCount)][Universal.min(m1ColCount, m2ColCount)];
 
         for (int row = 0; row < m1RowCount; row++)
         for (int col = 0; col < m2ColCount; col++)

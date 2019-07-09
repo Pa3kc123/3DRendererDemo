@@ -133,10 +133,10 @@ public class MyPanel extends JPanel implements Runnable
         g.drawString("FPS: ".concat(String.valueOf(this.framesPerSecond)), stringX, stringY);
 
         stringY += g.getFont().getSize();
-        g.drawString("isMoving: " + String.valueOf(Player.getInstance().getIsMoving()), stringX, stringY);
+        g.drawString("Updates: ".concat(String.valueOf(this.updatesPerSecond)), stringX, stringY);
 
         stringY += g.getFont().getSize();
-        g.drawString("direction: " + Player.getInstance().getMoveDirection().name(), stringX, stringY);
+        g.drawString("toggled: ".concat(String.valueOf(Program.toggled)), stringX, stringY);
 
         if (Program.OS_NAME.contains("linux") == true)
             Toolkit.getDefaultToolkit().sync();
@@ -144,8 +144,9 @@ public class MyPanel extends JPanel implements Runnable
         this.frameCount++;
     }
 
-    private int frameCount = 0;
     private int framesPerSecond = 0;
+    private int updatesPerSecond = 0;
+    private int frameCount = 0;
 
     @Override
     public void run()
@@ -163,7 +164,10 @@ public class MyPanel extends JPanel implements Runnable
             }
 
             this.framesPerSecond = this.frameCount;
+            this.updatesPerSecond = this.parent.updateCount;
+
             this.frameCount = 0;
+            this.parent.updateCount = 0;
         }
     }
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 workspaceDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"/..
-tempFile=/temp/javaFiles.txt
+tmpFile=/tmp/javaFiles.txt
 
 srcDir=$workspaceDir/src
 binDir=$workspaceDir/bin
@@ -15,7 +15,7 @@ if ! [ -d $binDir ]; then
 fi
 
 echo "Locating java files"
-find $srcDir -name *.java > $tempFile
+find $srcDir -name *.java > $tmpFile
 
 echo "Compiling java files"
-$javac -cp $workspaceDir/lib/MyLibrary.jar:$binDir -d $binDir @$srcDir
+$javac -cp $workspaceDir/lib/MyLibrary.jar:$binDir -d $binDir @$tmpFile
