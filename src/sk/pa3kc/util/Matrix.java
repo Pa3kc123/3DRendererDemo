@@ -4,28 +4,24 @@ import sk.pa3kc.Program;
 import sk.pa3kc.mylibrary.Universal;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
 
-public class Matrix implements Cloneable
-{
+public class Matrix implements Cloneable {
     boolean valid = false;
     double[][] values = null;
     int rowCount = -1;
     int colCount = -1;
 
     //region Constructors
-    public Matrix(int rowCount, int colCount)
-    {
+    public Matrix(int rowCount, int colCount) {
         this(new double[rowCount][colCount]);
     }
-    public Matrix(double[][] values)
-    {
+    public Matrix(double[][] values) {
         if (values == null) return;
 
         this.rowCount = values.length;
         this.colCount = values.length != 0 ? values[0].length : -1;
         this.valid = this.rowCount != 0 && this.colCount != 0;
 
-        if (this.valid == true)
-        {
+        if (this.valid == true) {
             this.values = new double[this.rowCount][this.colCount];
 
             for (int row = 0; row < this.rowCount; row++)
@@ -43,8 +39,7 @@ public class Matrix implements Cloneable
     //endregion
 
     //region Public methods
-    public boolean compareAll(double value)
-    {
+    public boolean compareAll(double value) {
         for (int row = 0; row < this.rowCount; row++)
         for (int col = 0; col < this.colCount; col++)
         if (this.values[row][col] != value)
@@ -54,8 +49,7 @@ public class Matrix implements Cloneable
     //endregion
 
     //region Public static functions
-    public static void printMatrixes(Matrix... matrixes)
-    {
+    public static void printMatrixes(Matrix... matrixes) {
         ValidationResult validation = validate(matrixes);
         if (validation.valid == false)
             throw new RuntimeException("Matrix " + (validation.index + 1) + " is not valid");
@@ -65,18 +59,13 @@ public class Matrix implements Cloneable
             maxRowCount = matrix.rowCount > maxRowCount ? matrix.rowCount : maxRowCount;
 
         StringBuilder builder = new StringBuilder();
-        for (int row = 0; row < maxRowCount; row++)
-        {
+        for (int row = 0; row < maxRowCount; row++) {
             builder.append("| ");
-            for (Matrix matrix : matrixes)
-            {
-                if (row < matrix.rowCount)
-                {
+            for (Matrix matrix : matrixes) {
+                if (row < matrix.rowCount) {
                     for (int col = 0; col < matrix.colCount; col++)
                         builder.append(String.format("%+.2f ", matrix.values[row][col]));
-                }
-                else
-                {
+                } else {
                     for (int col = 0; col < matrix.colCount; col++)
                         builder.append(String.format("% .2f ", -1f));
                 }
@@ -103,10 +92,8 @@ public class Matrix implements Cloneable
     //endregion
 
     //region Package private static methods
-    static Matrix calculate(Matrix mat, double number, ArithmeticOperation operation)
-    {
-        switch (operation)
-        {
+    static Matrix calculate(Matrix mat, double number, ArithmeticOperation operation) {
+        switch (operation) {
             case ADD:
             case SUBTRACT:
                 if (number == 0d) return mat.clone();
@@ -127,8 +114,7 @@ public class Matrix implements Cloneable
 
         for (int row = 0; row < mat.rowCount; row++)
         for (int col = 0; col < mat.colCount; col++)
-        switch (operation)
-        {
+        switch (operation) {
             case ADD: result.values[row][col] += number; break;
             case SUBTRACT: result.values[row][col] -= number; break;
             case MULTIPLY: result.values[row][col] *= number; break;
@@ -137,8 +123,7 @@ public class Matrix implements Cloneable
 
         return result;
     }
-    static Matrix calculate(Matrix mat1, Matrix mat2, ArithmeticOperation operation)
-    {
+    static Matrix calculate(Matrix mat1, Matrix mat2, ArithmeticOperation operation) {
         ValidationResult validation = validate(mat1, mat2);
         if (validation.valid == false)
             throw new RuntimeException("Matrix" + (validation.index + 1) + " is not valid");
@@ -146,22 +131,17 @@ public class Matrix implements Cloneable
         double[][] m1 = null;
         double[][] m2 = null;
 
-        if (mat1.colCount == mat2.rowCount)
-        {
+        if (mat1.colCount == mat2.rowCount) {
             m1 = mat1.values;
             m2 = mat2.values;
-        }
-        else if (mat1.rowCount == mat2.colCount)
-        {
+        } else if (mat1.rowCount == mat2.colCount) {
             m1 = mat2.values;
             m2 = mat1.values;
-        }
-        else throw new IllegalArgumentException("Invalid matrix sizes (" + mat1.rowCount + "x" + mat1.colCount + " <-> " + mat2.rowCount + "x" + mat2.colCount + ")");
+        } else throw new IllegalArgumentException("Invalid matrix sizes (" + mat1.rowCount + "x" + mat1.colCount + " <-> " + mat2.rowCount + "x" + mat2.colCount + ")");
 
         boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
         boolean oneOnly = ArrayUtils.compareAll(m2, 1);
-        switch (operation)
-        {
+        switch (operation) {
             case ADD:
             case SUBTRACT:
                 if (zeroOnly == true) return new Matrix(ArrayUtils.deepArrCopy(m1));
@@ -186,8 +166,7 @@ public class Matrix implements Cloneable
         for (int row = 0; row < m1RowCount; row++)
         for (int col = 0; col < m2ColCount; col++)
         for (int i = 0; i < m1ColCount; i++)
-        switch (operation)
-        {
+        switch (operation) {
             case ADD:
                 result[row][col] += m1[row][i] + m2[i][col];
             break;
@@ -205,8 +184,7 @@ public class Matrix implements Cloneable
 
         return new Matrix(result);
     }
-    static ValidationResult validate(Matrix... matrixes)
-    {
+    static ValidationResult validate(Matrix... matrixes) {
         for (int i = 0; i < matrixes.length; i++)
             if (matrixes[i].valid == false) return new ValidationResult(false, i);
         return new ValidationResult(true, -1);
@@ -215,8 +193,7 @@ public class Matrix implements Cloneable
 
     //region Overrides
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.rowCount);
         builder.append("x");
@@ -225,11 +202,9 @@ public class Matrix implements Cloneable
         builder.append(this.valid == true ? "VALID" : "NOT VALID");
         builder.append(Program.NEWLINE);
 
-        for (int row = 0; row < this.rowCount; row++)
-        {
+        for (int row = 0; row < this.rowCount; row++) {
             builder.append("{");
-            for (int col = 0; col < this.colCount; col++)
-            {
+            for (int col = 0; col < this.colCount; col++) {
                 builder.append(" ");
                 builder.append(this.values[row][col]);
                 builder.append(",");
@@ -243,33 +218,28 @@ public class Matrix implements Cloneable
     }
 
     @Override
-    public Matrix clone()
-    {
+    public Matrix clone() {
         return new Matrix(this.values);
     }
     //endregion
 
     //region Extras
-    static class ValidationResult
-    {
+    static class ValidationResult {
         public final int index;
         public final boolean valid;
 
-        ValidationResult(boolean valid, int index)
-        {
+        ValidationResult(boolean valid, int index) {
             this.valid = valid;
             this.index = index;
         }
     }
-    enum ArithmeticOperation
-    {
+    enum ArithmeticOperation {
         ADD,
         SUBTRACT,
         MULTIPLY,
         DIVIDE
     }
-    public static class Editor
-    {
+    public static class Editor {
         private Matrix reference;
 
         private Editor(Matrix reference) { this.reference = reference; }
@@ -277,8 +247,7 @@ public class Matrix implements Cloneable
         public static Editor edit(Matrix ref) { return new Editor(ref); }
 
         public Editor clear() { return this.setToAll(0d); }
-        public Editor indentify()
-        {
+        public Editor indentify() {
             if (this.reference.valid == false) throw new RuntimeException("Matrix is not valid");
 
             for (int row = 0; row < this.reference.rowCount; row++)
@@ -287,8 +256,7 @@ public class Matrix implements Cloneable
 
             return this;
         }
-        public Editor setToAll(double number)
-        {
+        public Editor setToAll(double number) {
             if (this.reference.valid == false) throw new RuntimeException("Matrix is not valid");
 
             for (int row = 0; row < this.reference.rowCount; row++)
@@ -307,10 +275,8 @@ public class Matrix implements Cloneable
         public Editor divide(double number) { return calculate(number, ArithmeticOperation.DIVIDE); }
         public Editor divide(Matrix mat2) { return calculate(mat2, ArithmeticOperation.DIVIDE); }
 
-        private Editor calculate(double number, ArithmeticOperation operation)
-        {
-            switch (operation)
-            {
+        private Editor calculate(double number, ArithmeticOperation operation) {
+            switch (operation) {
                 case ADD:
                 case SUBTRACT:
                     if (number == 0d) return this;
@@ -329,8 +295,7 @@ public class Matrix implements Cloneable
 
             for (int row = 0; row < this.reference.rowCount; row++)
             for (int col = 0; col < this.reference.colCount; col++)
-            switch (operation)
-            {
+            switch (operation) {
                 case ADD: this.reference.values[row][col] += number; break;
                 case SUBTRACT: this.reference.values[row][col] -= number; break;
                 case MULTIPLY: this.reference.values[row][col] *= number; break;
@@ -339,29 +304,23 @@ public class Matrix implements Cloneable
 
             return this;
         }
-        private Editor calculate(Matrix mat, ArithmeticOperation operation)
-        {
+        private Editor calculate(Matrix mat, ArithmeticOperation operation) {
             if (mat.valid == false) throw new RuntimeException("Matrix 2 is not valid");
 
             double[][] m1 = null;
             double[][] m2 = null;
 
-            if (this.reference.colCount == mat.rowCount)
-            {
+            if (this.reference.colCount == mat.rowCount) {
                 m1 = ArrayUtils.deepArrCopy(this.reference.values);
                 m2 = ArrayUtils.deepArrCopy(mat.values);
-            }
-            else if (this.reference.rowCount == mat.colCount)
-            {
+            } else if (this.reference.rowCount == mat.colCount) {
                 m2 = ArrayUtils.deepArrCopy(this.reference.values);
                 m1 = ArrayUtils.deepArrCopy(mat.values);
-            }
-            else throw new IllegalArgumentException("Invalid matrix sizes (" + this.reference.rowCount + "x" + this.reference.colCount + " <-> " + mat.rowCount + "x" + mat.colCount + ")");
+            } else throw new IllegalArgumentException("Invalid matrix sizes (" + this.reference.rowCount + "x" + this.reference.colCount + " <-> " + mat.rowCount + "x" + mat.colCount + ")");
 
             boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
             boolean oneOnly = ArrayUtils.compareAll(m2, 1);
-            switch (operation)
-            {
+            switch (operation) {
                 case ADD:
                 case SUBTRACT:
                     if (zeroOnly == true) return this;
@@ -380,8 +339,7 @@ public class Matrix implements Cloneable
             for (int row = 0; row < this.reference.rowCount; row++)
             for (int col = 0; col < this.reference.colCount; col++)
             for (int i = 0; i < this.reference.colCount; i++)
-            switch (operation)
-            {
+            switch (operation) {
                 case ADD:
                     this.reference.values[row][col] += m1[row][i] + m2[i][col];
                 break;

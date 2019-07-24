@@ -10,15 +10,13 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import sk.pa3kc.Player;
 import sk.pa3kc.Program;
 import sk.pa3kc.geom.Box;
 import sk.pa3kc.geom.Path3D;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
 
-public class MyPanel extends JPanel implements Runnable
-{
+public class MyPanel extends JPanel implements Runnable {
     private static final long serialVersionUID = 1L;
 
     private MyFrame parent = null;
@@ -37,12 +35,10 @@ public class MyPanel extends JPanel implements Runnable
     public boolean fpsThreadRunning = false;
     public Thread fpsThread = new Thread(this);
 
-    public MyPanel()
-    {
+    public MyPanel() {
         super();
 
-        final List<Drawable> boxList = new ArrayList<Drawable>();
-        {
+        final List<Drawable> boxList = new ArrayList<Drawable>(); {
             // boxList.add(new Box(new Vertex(-100, -100, -100), 200));
 
             //Level 1
@@ -71,8 +67,7 @@ public class MyPanel extends JPanel implements Runnable
             this.boxCount = boxList.size();
         }
 
-        final List<Drawable> path3dList = new ArrayList<Drawable>();
-        {
+        final List<Drawable> path3dList = new ArrayList<Drawable>(); {
             Vertex vx1 = new Vertex(-200, 0, 0);
             Vertex vx2 = new Vertex(200, 0, 0);
             Color cx = Color.GREEN;
@@ -92,8 +87,7 @@ public class MyPanel extends JPanel implements Runnable
             this.path3dCount = path3dList.size();
         }
 
-        this.shapes = new ArrayList<Drawable[]>()
-        {
+        this.shapes = new ArrayList<Drawable[]>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -109,8 +103,7 @@ public class MyPanel extends JPanel implements Runnable
     }
 
     @Override
-    public void paintComponent(Graphics g)
-    {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         if (this.parent == null)
@@ -149,17 +142,12 @@ public class MyPanel extends JPanel implements Runnable
     private int frameCount = 0;
 
     @Override
-    public void run()
-    {
+    public void run() {
         this.fpsThreadRunning = true;
-        while (this.fpsThreadRunning == true)
-        {
-            try
-            {
+        while (this.fpsThreadRunning == true) {
+            try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ex)
-            {
+            } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
 

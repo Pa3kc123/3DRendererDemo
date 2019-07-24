@@ -3,8 +3,7 @@ package sk.pa3kc;
 import sk.pa3kc.enums.MovementDirection;
 import sk.pa3kc.util.Vertex;
 
-public class Player
-{
+public class Player {
     private static final Player INSTANCE = new Player();
 
     private Player() { }
@@ -20,13 +19,11 @@ public class Player
     public boolean getIsMoving() { return this.isMoving; }
     public final Vertex getLocation() { return this.location; }
 
-    public void setDirection(MovementDirection direction)
-    {
+    public void setDirection(MovementDirection direction) {
         this.moveDirection = direction;
         this.isMoving = this.moveDirection != MovementDirection.NONE;
     }
-    public void setLocation(Vertex location)
-    {
+    public void setLocation(Vertex location) {
         if (location.isValid() == false || location.getRowCount() < this.location.getRowCount() || location.getColCount() < this.location.getColCount())
             throw new IllegalArgumentException("location argument is not valid");
 

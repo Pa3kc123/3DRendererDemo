@@ -3,26 +3,21 @@ package sk.pa3kc.util;
 import sk.pa3kc.Program;
 import sk.pa3kc.util.Matrix;
 
-public class Vertex extends Matrix
-{
+public class Vertex extends Matrix {
     private double X;
     private double Y;
     private double Z;
     private double W;
 
-    public Vertex()
-    {
+    public Vertex() {
         super(4, 1);
         updateXYZ();
     }
-    public Vertex(double x, double y, double z)
-    {
+    public Vertex(double x, double y, double z) {
         this(x, y, z, 1d);
     }
-    public Vertex(double x, double y, double z, double w)
-    {
-        super(new double[][]
-        {
+    public Vertex(double x, double y, double z, double w) {
+        super(new double[][] {
             { x },
             { y },
             { z },
@@ -30,8 +25,7 @@ public class Vertex extends Matrix
         });
         updateXYZ();
     }
-    public Vertex(Matrix mat)
-    {
+    public Vertex(Matrix mat) {
         super(mat.values);
         updateXYZ();
     }
@@ -44,13 +38,11 @@ public class Vertex extends Matrix
     //endregion
 
     //region Public methods
-    public double getLength()
-    { return this.valid == true ? StrictMath.sqrt(createDotProduct(this, this)) : -1d; }
+    public double getLength() { return this.valid == true ? StrictMath.sqrt(createDotProduct(this, this)) : -1d; }
     //endregion
 
     //region Private functions
-    public void updateXYZ()
-    {
+    public void updateXYZ() {
         this.X = super.rowCount > 0 ? super.values[0][0] : -1;
         this.Y = super.rowCount > 1 ? super.values[1][0] : -1;
         this.Z = super.rowCount > 2 ? super.values[2][0] : -1;
@@ -59,8 +51,7 @@ public class Vertex extends Matrix
     //endregion
 
     //region Public static functions
-    public static void printVertexes(Vertex... vertexes)
-    {
+    public static void printVertexes(Vertex... vertexes) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < vertexes.length; i++)
@@ -72,16 +63,14 @@ public class Vertex extends Matrix
     //endregion
 
     //region Public static methods
-    public static double createDotProduct(Vertex ver1, Vertex ver2)
-    {
+    public static double createDotProduct(Vertex ver1, Vertex ver2) {
         ValidationResult validation = Matrix.validate(ver1, ver2);
         if (validation.valid == false)
             throw new RuntimeException("Matrix" + (validation.index + 1) + " is not valid");
 
         return (ver1.X * ver2.X) + (ver1.Y * ver2.Y) + (ver1.Z * ver2.Z);
     }
-    public static Vertex createCrossProduct(Vertex ver1, Vertex ver2)
-    {
+    public static Vertex createCrossProduct(Vertex ver1, Vertex ver2) {
         ValidationResult validation = Matrix.validate(ver1, ver2);
         if (validation.valid == false)
             throw new RuntimeException("Matrix" + (validation.index + 1) + " is not valid");

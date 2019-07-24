@@ -1,7 +1,6 @@
 package sk.pa3kc.enums;
 
-public enum MovementDirection
-{
+public enum MovementDirection {
     FORWARD,
     LEFT,
     BACKWARD,

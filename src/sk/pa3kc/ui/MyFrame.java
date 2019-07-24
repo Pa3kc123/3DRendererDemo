@@ -13,9 +13,10 @@ import sk.pa3kc.util.Schemas;
 import sk.pa3kc.util.Matrix.Editor;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.inter.Updatable;
+import sk.pa3kc.singletons.Keyboard;
+import sk.pa3kc.singletons.Locks;
 
-public class MyFrame extends JFrame implements Updatable
-{
+public class MyFrame extends JFrame implements Updatable {
     private static final long serialVersionUID = 1L;
 
     public final double distanceMax = 10d;
@@ -47,8 +48,7 @@ public class MyFrame extends JFrame implements Updatable
     private final Matrix projectionMatrix = new Matrix(4, 4);
     //endregion
 
-    public MyFrame(String name)
-    {
+    public MyFrame(String name) {
         super(name);
         JPanel pane = (JPanel)super.getContentPane();
         super.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
@@ -65,33 +65,23 @@ public class MyFrame extends JFrame implements Updatable
 
         this.update(UpdateMode.ALL);
 
-        synchronized (Program.globalLock) {
-            Program.globalLock.notify();
-        }
-
-        this.updateThread = new Thread(new Runnable()
-        {
+        this.updateThread = new Thread(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run(){
                 updateThreadRunning = true;
 
-                while (updateThreadRunning)
-                {
-                    if (Program.toggled)
-                    {
+                while (updateThreadRunning) {
+                    if (Program.toggled) {
                         int value = 1;
                         int countedValue = ySlider.getValue() + value;
                         xSlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
                         ySlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
                         zSlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
                         update(UpdateMode.ALL);
-                    }
-                    else
-                    {
-                        synchronized (Program.globalLock) {
+                    } else {
+                        synchronized (Locks.KEYBOARD_LOCK) {
                             try {
-                                Program.globalLock.wait();
+                                Locks.KEYBOARD_LOCK.wait();
                             } catch (InterruptedException ex) {
                                 ex.printStackTrace();
                             }
@@ -100,30 +90,21 @@ public class MyFrame extends JFrame implements Updatable
                 }
             }
         });
+
+        synchronized (Locks.MY_FRAME_LOCK) {
+            Locks.MY_FRAME_LOCK.notify();
+        }
         this.updateThread.start();
     }
 
     @Override
-    protected void processKeyEvent(KeyEvent e)
-    {
+    protected void processKeyEvent(KeyEvent e) {
         super.processKeyEvent(e);
-        if (e.getKeyCode() == KeyEvent.VK_G)
-        switch (e.getID())
-        {
-            case KeyEvent.KEY_PRESSED:
-                Program.toggled = !Program.toggled;
-
-                if (Program.toggled)
-                synchronized (Program.globalLock) {
-                    Program.globalLock.notify();
-                }
-            break;
-        }
+        Keyboard.getInst().processKeyEvent(e);
     }
 
     @Override
-    public void update(UpdateMode plane)
-    {
+    public void update(UpdateMode plane) {
         if (plane.x == true) Schemas.applyRotationX(this.xMatrix, StrictMath.toRadians(this.xSlider.getValue()));
         if (plane.y == true) Schemas.applyRotationY(this.yMatrix, StrictMath.toRadians(this.ySlider.getValue()));
         if (plane.z == true) Schemas.applyRotationZ(this.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
@@ -143,8 +124,8 @@ public class MyFrame extends JFrame implements Updatable
         Program.getInst().uiThreadRunning = false;
         this.myPanel.fpsThreadRunning = false;
         this.updateThreadRunning = false;
-        synchronized (Program.globalLock) {
-            Program.globalLock.notifyAll();
+        synchronized (Locks.MY_FRAME_LOCK) {
+            Locks.MY_FRAME_LOCK.notifyAll();
         }
     }
 }

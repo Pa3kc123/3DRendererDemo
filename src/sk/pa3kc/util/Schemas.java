@@ -3,12 +3,10 @@ package sk.pa3kc.util;
 import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.sin;
 
-public class Schemas
-{
+public class Schemas {
     private Schemas() {}
 
-    public static boolean applyRotationX(Matrix mat, double angrad)
-    {
+    public static boolean applyRotationX(Matrix mat, double angrad) {
         if (mat.valid == false || mat.rowCount < 4 || mat.colCount < 4) return false;
         mat.values[0][0] =  1d;
         mat.values[1][1] =  cos(angrad);
@@ -19,8 +17,7 @@ public class Schemas
         return true;
     }
 
-    public static boolean applyRotationY(Matrix mat, double angrad)
-    {
+    public static boolean applyRotationY(Matrix mat, double angrad) {
         if (mat.valid == false || mat.rowCount < 4 || mat.colCount < 4) return false;
         mat.values[0][0] =  cos(angrad);
         mat.values[0][2] =  sin(angrad);
@@ -31,8 +28,7 @@ public class Schemas
         return true;
     }
 
-    public static boolean applyRotationZ(Matrix mat, double angrad)
-    {
+    public static boolean applyRotationZ(Matrix mat, double angrad) {
         if (mat.valid == false || mat.rowCount < 4 || mat.colCount < 4) return false;
         mat.values[0][0] =  cos(angrad);
         mat.values[0][1] = -sin(angrad);
@@ -43,8 +39,7 @@ public class Schemas
         return true;
     }
 
-    public static Matrix createProjectionMatrix(double fovDeg, double aspectRatio, double near, double far)
-    {
+    public static Matrix createProjectionMatrix(double fovDeg, double aspectRatio, double near, double far) {
         double fovRad = 1.0d / StrictMath.tan(StrictMath.toRadians(fovDeg * 0.5d));
 		Matrix matrix = new Matrix(4, 4);
         matrix.values[0][0] = aspectRatio * fovRad;

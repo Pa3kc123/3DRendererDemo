@@ -1,7 +1,6 @@
 package sk.pa3kc.enums;
 
-public enum UpdateMode
-{
+public enum UpdateMode {
     ALL(0xF),
     X(0x1),
     Y(0x2),
@@ -12,8 +11,7 @@ public enum UpdateMode
     public final boolean y;
     public final boolean z;
     public final boolean w;
-    UpdateMode(int code)
-    {
+    UpdateMode(int code) {
         this.x = ((code & 0x1) >> 0) == 1;
         this.y = ((code & 0x2) >> 1) == 1;
         this.z = ((code & 0x4) >> 2) == 1;
