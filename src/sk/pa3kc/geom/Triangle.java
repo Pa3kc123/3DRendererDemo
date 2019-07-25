@@ -18,19 +18,17 @@ public class Triangle extends Shape3D implements Drawable {
         this.vertexes[2] = ver3;
         this.color = color;
     }
-
-    /* public Triangle(Vertex ver, int length, int deg, Color color) {
-        Vertex ver1;
-        Vertex ver2;
-        Vertex ver3;
-
-        ver1 = ver;
+    public Triangle(Vertex ver1, Vertex ver2, Color color) {
+        double length = Vertex.getLength(ver1, ver2);
+        double o = (double)length * 3d;
+        double s = o / 2d;
+        double S = StrictMath.sqrt(s * StrictMath.pow((s - length), 3d));
 
         this.vertexes[0] = ver1;
-        this.vertexes[1] = ver2;
-        this.vertexes[2] = ver3;
+        this.vertexes[1] = new Vertex(ver1.getX() + ((double)length / 2d), ver1.getY() - (2d * (S / length)), ver1.getZ());
+        this.vertexes[2] = ver2;
         this.color = color;
-    } */
+    }
 
     public Vertex[] getAll() { return this.vertexes.clone(); }
 

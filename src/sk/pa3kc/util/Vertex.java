@@ -70,6 +70,10 @@ public class Vertex extends Matrix {
     //endregion
 
     //region Public static methods
+    public static double getLength(Vertex ver1, Vertex ver2) {
+        Vertex tmp = new Vertex(ver1.getX() - ver2.getX(), ver1.getY() - ver2.getY(), ver1.getZ() - ver2.getZ());
+        return Math.sqrt(StrictMath.pow(tmp.getX(), 2) + StrictMath.pow(tmp.getY(), 2));
+    }
     public static double createDotProduct(Vertex ver1, Vertex ver2) {
         ValidationResult validation = Matrix.validate(ver1, ver2);
         if (validation.valid == false)

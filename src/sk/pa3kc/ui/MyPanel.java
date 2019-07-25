@@ -72,8 +72,7 @@ public class MyPanel extends JPanel implements Runnable {
 
         final List<Drawable> triangleList = new ArrayList<Drawable>(); {
             Vertex v11 = new Vertex(-200, 200, 0);
-            Vertex v12 = new Vertex(0, -100, 0);
-            Vertex v13 = new Vertex(200, 200, 0);
+            Vertex v12 = new Vertex(200, 100, 0);
 
             // Vertex v21 = new Vertex(-200, 200, -200);
             // Vertex v22 = new Vertex(0, 0, 0);
@@ -83,7 +82,7 @@ public class MyPanel extends JPanel implements Runnable {
             // Vertex v32 = new Vertex(0, 0, 0);
             // Vertex v33 = new Vertex(-200, 200, -200);
 
-            triangleList.add(new Triangle(v11, v12, v13, Color.WHITE));
+            triangleList.add(new Triangle(v11, v12, Color.WHITE));
             // triangleList.add(new Triangle(v21, v22, v23, Color.WHITE));
             // triangleList.add(new Triangle(v31, v32, v33, Color.WHITE));
 
