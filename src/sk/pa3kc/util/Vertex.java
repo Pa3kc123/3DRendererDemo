@@ -1,6 +1,8 @@
 package sk.pa3kc.util;
 
 import sk.pa3kc.Program;
+import sk.pa3kc.mylibrary.util.NumberUtils;
+import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.util.Matrix;
 
 public class Vertex extends Matrix {
@@ -54,8 +56,13 @@ public class Vertex extends Matrix {
     public static void printVertexes(Vertex... vertexes) {
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < vertexes.length; i++)
-            builder.append(String.format("%d. Vertex = [ X = %+.2f | Y = %+.2f | Z = %+.2f | W = %.2f ]%n", i, vertexes[i].X, vertexes[i].Y, vertexes[i].Z, vertexes[i].W));
+        for (int i = 0; i < vertexes.length; i++) {
+            String x = StringUtils.build("X = ", NumberUtils.round(vertexes[i].X, 2));
+            String y = StringUtils.build("Y = ", NumberUtils.round(vertexes[i].Y, 2));
+            String z = StringUtils.build("Z = ", NumberUtils.round(vertexes[i].Z, 2));
+            String w = StringUtils.build("W = ", NumberUtils.round(vertexes[i].W, 2));
+            builder.append(StringUtils.build(i, ". Vertex = [ ", x, " | ", y, " | ", z, " | ", w, " ]", Program.NEWLINE));
+        }
         builder.append(Program.NEWLINE);
 
         System.out.print(builder.toString());

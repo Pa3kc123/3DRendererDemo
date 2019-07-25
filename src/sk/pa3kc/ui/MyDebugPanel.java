@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.util.Matrix;
 
 public class MyDebugPanel extends JComponent {
@@ -55,7 +56,7 @@ public class MyDebugPanel extends JComponent {
         for (int col = 0; col < this.colCount; col++) {
             JLabel label = this.labels[row * this.colCount + col];
             label.setBackground(updatedMatrix.getValues()[row][col] > 0 ? Color.GREEN : updatedMatrix.getValues()[row][col] < 0 ? Color.RED : Color.YELLOW);
-            label.setText(String.format("%+.2f", updatedMatrix.getValues()[row][col]));
+            label.setText(String.valueOf(NumberUtils.round(updatedMatrix.getValues()[row][col], 2)));
             label.paintImmediately(super.getBounds());
         }
     }

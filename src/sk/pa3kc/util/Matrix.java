@@ -3,6 +3,7 @@ package sk.pa3kc.util;
 import sk.pa3kc.Program;
 import sk.pa3kc.mylibrary.Universal;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
+import sk.pa3kc.mylibrary.util.NumberUtils;
 
 public class Matrix implements Cloneable {
     boolean valid = false;
@@ -63,11 +64,13 @@ public class Matrix implements Cloneable {
             builder.append("| ");
             for (Matrix matrix : matrixes) {
                 if (row < matrix.rowCount) {
-                    for (int col = 0; col < matrix.colCount; col++)
-                        builder.append(String.format("%+.2f ", matrix.values[row][col]));
+                    for (int col = 0; col < matrix.colCount; col++)  {
+                        double val = NumberUtils.round(matrix.values[row][col], 2);
+                        builder.append((val >= 0 ? "+" : "").concat(String.valueOf(val)));
+                    }
                 } else {
                     for (int col = 0; col < matrix.colCount; col++)
-                        builder.append(String.format("% .2f ", -1f));
+                        builder.append("-1.00");
                 }
                 builder.append("| ");
             }

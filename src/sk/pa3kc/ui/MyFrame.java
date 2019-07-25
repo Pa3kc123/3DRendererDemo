@@ -36,7 +36,7 @@ public class MyFrame extends JFrame implements Updatable {
 
     //region Slider values
     private final int sliderMin = -90;
-    private final int sliderCur = -90;
+    private final int sliderCur = 0;
     private final int sliderMax = 269;
     //endregion
 
@@ -124,8 +124,6 @@ public class MyFrame extends JFrame implements Updatable {
         Program.getInst().uiThreadRunning = false;
         this.myPanel.fpsThreadRunning = false;
         this.updateThreadRunning = false;
-        synchronized (Locks.MY_FRAME_LOCK) {
-            Locks.MY_FRAME_LOCK.notifyAll();
-        }
+        Locks.notifyAllLocks();
     }
 }

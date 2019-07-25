@@ -2,6 +2,7 @@ package sk.pa3kc.geom;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import sk.pa3kc.inter.Drawable;
 import sk.pa3kc.util.Matrix;
@@ -17,6 +18,19 @@ public class Triangle extends Shape3D implements Drawable {
         this.vertexes[2] = ver3;
         this.color = color;
     }
+
+    /* public Triangle(Vertex ver, int length, int deg, Color color) {
+        Vertex ver1;
+        Vertex ver2;
+        Vertex ver3;
+
+        ver1 = ver;
+
+        this.vertexes[0] = ver1;
+        this.vertexes[1] = ver2;
+        this.vertexes[2] = ver3;
+        this.color = color;
+    } */
 
     public Vertex[] getAll() { return this.vertexes.clone(); }
 
