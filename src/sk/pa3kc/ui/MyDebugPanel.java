@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import sk.pa3kc.mylibrary.util.NumberUtils;
-import sk.pa3kc.util.Matrix;
+import sk.pa3kc.pojo.Matrix;
 
 public class MyDebugPanel extends JComponent {
     private static final long serialVersionUID = 1L;
@@ -55,8 +55,8 @@ public class MyDebugPanel extends JComponent {
         for (int row = 0; row < this.rowCount; row++)
         for (int col = 0; col < this.colCount; col++) {
             JLabel label = this.labels[row * this.colCount + col];
-            label.setBackground(updatedMatrix.getValues()[row][col] > 0 ? Color.GREEN : updatedMatrix.getValues()[row][col] < 0 ? Color.RED : Color.YELLOW);
-            label.setText(String.valueOf(NumberUtils.round(updatedMatrix.getValues()[row][col], 2)));
+            label.setBackground(updatedMatrix.getValue(row, col) > 0 ? Color.GREEN : updatedMatrix.getValue(row, col) < 0 ? Color.RED : Color.YELLOW);
+            label.setText(String.valueOf(NumberUtils.round(updatedMatrix.getValue(row, col), 2)));
             label.paintImmediately(super.getBounds());
         }
     }

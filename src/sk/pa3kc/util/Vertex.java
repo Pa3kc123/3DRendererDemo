@@ -3,7 +3,7 @@ package sk.pa3kc.util;
 import sk.pa3kc.Program;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
-import sk.pa3kc.util.Matrix;
+import sk.pa3kc.pojo.Matrix;
 
 public class Vertex extends Matrix {
     private double X;
@@ -28,7 +28,7 @@ public class Vertex extends Matrix {
         updateXYZ();
     }
     public Vertex(Matrix mat) {
-        super(mat.values);
+        super(mat.getAllValues());
         updateXYZ();
     }
 
@@ -40,15 +40,15 @@ public class Vertex extends Matrix {
     //endregion
 
     //region Public methods
-    public double getLength() { return this.valid == true ? StrictMath.sqrt(createDotProduct(this, this)) : -1d; }
+    public double getLength() { return this.isValid() ? StrictMath.sqrt(createDotProduct(this, this)) : -1d; }
     //endregion
 
     //region Private functions
     public void updateXYZ() {
-        this.X = super.rowCount > 0 ? super.values[0][0] : -1;
-        this.Y = super.rowCount > 1 ? super.values[1][0] : -1;
-        this.Z = super.rowCount > 2 ? super.values[2][0] : -1;
-        this.W = super.rowCount > 3 ? super.values[3][0] : -1;
+        this.X = super.getRowCount() > 0 ? super.getValue(0, 0) : -1;
+        this.Y = super.getRowCount() > 1 ? super.getValue(1, 0) : -1;
+        this.Z = super.getRowCount() > 2 ? super.getValue(2, 0) : -1;
+        this.W = super.getRowCount() > 3 ? super.getValue(3, 0) : -1;
     }
     //endregion
 
@@ -71,20 +71,21 @@ public class Vertex extends Matrix {
 
     //region Public static methods
     public static double getLength(Vertex ver1, Vertex ver2) {
+        if (ver1.isNotValid()) throw new RuntimeException("Vertex1 is not is not valid");
+        if (ver2.isNotValid()) throw new RuntimeException("Vertex2 is not is not valid");
+
         Vertex tmp = new Vertex(ver1.getX() - ver2.getX(), ver1.getY() - ver2.getY(), ver1.getZ() - ver2.getZ());
         return Math.sqrt(StrictMath.pow(tmp.getX(), 2) + StrictMath.pow(tmp.getY(), 2));
     }
     public static double createDotProduct(Vertex ver1, Vertex ver2) {
-        ValidationResult validation = Matrix.validate(ver1, ver2);
-        if (validation.valid == false)
-            throw new RuntimeException("Matrix" + (validation.index + 1) + " is not valid");
+        if (ver1.isNotValid()) throw new RuntimeException("Vertex1 is not is not valid");
+        if (ver2.isNotValid()) throw new RuntimeException("Vertex2 is not is not valid");
 
         return (ver1.X * ver2.X) + (ver1.Y * ver2.Y) + (ver1.Z * ver2.Z);
     }
     public static Vertex createCrossProduct(Vertex ver1, Vertex ver2) {
-        ValidationResult validation = Matrix.validate(ver1, ver2);
-        if (validation.valid == false)
-            throw new RuntimeException("Matrix" + (validation.index + 1) + " is not valid");
+        if (ver1.isNotValid()) throw new RuntimeException("Vertex1 is not is not valid");
+        if (ver2.isNotValid()) throw new RuntimeException("Vertex2 is not is not valid");
 
         double x = ver1.Y * ver2.Z - ver1.Z * ver2.Y;
 		double y = ver1.Z * ver2.X - ver1.X * ver2.Z;
@@ -92,13 +93,13 @@ public class Vertex extends Matrix {
 
         return new Vertex(x, y, z);
     }
-    public static Vertex add(Matrix mat, double number) { return new Vertex(calculate(mat, number, ArithmeticOperation.ADD)); }
-    public static Vertex add(Matrix mat1, Matrix mat2) { return new Vertex(calculate(mat1, mat2, ArithmeticOperation.ADD)); }
-    public static Vertex subtract(Matrix mat, double number) { return new Vertex(calculate(mat, number, ArithmeticOperation.SUBTRACT)); }
-    public static Vertex subtract(Matrix mat1, Matrix mat2) { return new Vertex(calculate(mat1, mat2, ArithmeticOperation.SUBTRACT)); }
-    public static Vertex multiply(Matrix mat, double number) { return new Vertex(calculate(mat, number, ArithmeticOperation.MULTIPLY)); }
-    public static Vertex multiply(Matrix mat1, Matrix mat2) { return new Vertex(calculate(mat1, mat2, ArithmeticOperation.MULTIPLY)); }
-    public static Vertex divide(Matrix mat, double number) { return new Vertex(calculate(mat, number, ArithmeticOperation.DIVIDE)); }
-    public static Vertex divide(Matrix mat1, Matrix mat2) { return new Vertex(calculate(mat1, mat2, ArithmeticOperation.DIVIDE)); }
+    public static Vertex add(Matrix mat, double number) { return new Vertex(MatrixEditor.add(mat, number)); }
+    public static Vertex add(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.add(mat1, mat2)); }
+    public static Vertex subtract(Matrix mat, double number) { return new Vertex(MatrixEditor.subtract(mat, number)); }
+    public static Vertex subtract(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.subtract(mat1, mat2)); }
+    public static Vertex multiply(Matrix mat, double number) { return new Vertex(MatrixEditor.multiply(mat, number)); }
+    public static Vertex multiply(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.multiply(mat1, mat2)); }
+    public static Vertex divide(Matrix mat, double number) { return new Vertex(MatrixEditor.divide(mat, number)); }
+    public static Vertex divide(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.divide(mat1, mat2)); }
     //endregion
 }

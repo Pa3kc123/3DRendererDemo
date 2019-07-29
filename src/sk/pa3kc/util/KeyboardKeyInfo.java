@@ -1,4 +1,4 @@
-package sk.pa3kc.pojo;
+package sk.pa3kc.util;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;

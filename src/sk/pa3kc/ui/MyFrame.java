@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import sk.pa3kc.Program;
+import sk.pa3kc.util.MatrixEditor;
 import sk.pa3kc.util.Schemas;
-import sk.pa3kc.util.Matrix.Editor;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.inter.Updatable;
 import sk.pa3kc.singletons.Keyboard;
@@ -59,7 +59,7 @@ public class MyFrame extends JFrame implements Updatable {
 
         this.updateThread = new Thread(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
                 updateThreadRunning = true;
 
                 while (updateThreadRunning) {
@@ -102,10 +102,10 @@ public class MyFrame extends JFrame implements Updatable {
         if (plane.z == true) Schemas.applyRotationZ(Matrixes.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
         if (plane.w == true) this.distance = this.distance > this.distanceMax ? this.distanceMax : this.distance < this.distanceMin ? this.distanceMin : this.distance;
 
-        Editor editor = Editor.edit(Matrixes.rotationMatrix).indentify();
-        editor.multiply(Matrixes.xMatrix);
-        editor.multiply(Matrixes.yMatrix);
-        editor.multiply(Matrixes.zMatrix);
+        MatrixEditor.identify(Matrixes.rotationMatrix);
+        MatrixEditor.multiply(Matrixes.rotationMatrix, Matrixes.xMatrix);
+        MatrixEditor.multiply(Matrixes.rotationMatrix, Matrixes.yMatrix);
+        MatrixEditor.multiply(Matrixes.rotationMatrix, Matrixes.zMatrix);
 
         this.updateCount++;
     }

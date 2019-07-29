@@ -1,12 +1,14 @@
 package sk.pa3kc.geom;
 
+import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.singletons.Matrixes;
-import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
 public class Shape3D {
     private static final boolean APPLY_DISTANCE = false;
     private static final boolean APPLY_MULIPLICATION = false;
+
+    private static final double distance = 1;
 
     private Shape3D() {}
 

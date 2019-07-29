@@ -3,7 +3,7 @@ package sk.pa3kc.singletons;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import sk.pa3kc.pojo.KeyboardKeyInfo;
+import sk.pa3kc.util.KeyboardKeyInfo;
 
 public class Keyboard {
     private static Keyboard instance = new Keyboard();

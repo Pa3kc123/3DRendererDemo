@@ -27,8 +27,9 @@ public class Player {
         if (location.isValid() == false || location.getRowCount() < this.location.getRowCount() || location.getColCount() < this.location.getColCount())
             throw new IllegalArgumentException("location argument is not valid");
 
+        double[][] values = this.location.getAllValues();
         for (int row = 0; row < this.location.getRowCount(); row++)
         for (int col = 0; col < this.location.getColCount(); col++)
-            this.location.getValues()[row][col] = location.getValues()[row][col];
+            values[row][col] = location.getValue(row, col);
     }
 }

@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import sk.pa3kc.inter.Drawable;
-import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
 public class Triangle implements Drawable {

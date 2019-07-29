@@ -3,7 +3,6 @@ package sk.pa3kc.geom;
 import java.awt.Graphics;
 
 import sk.pa3kc.inter.Drawable;
-import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
 public class Box implements Drawable {

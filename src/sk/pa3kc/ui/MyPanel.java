@@ -16,7 +16,6 @@ import sk.pa3kc.geom.Path3D;
 import sk.pa3kc.geom.Triangle;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
-import sk.pa3kc.singletons.Matrixes;
 
 public class MyPanel extends JPanel implements Runnable {
     private static final long serialVersionUID = 1L;
