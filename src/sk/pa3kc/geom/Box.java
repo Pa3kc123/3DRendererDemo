@@ -6,7 +6,7 @@ import sk.pa3kc.inter.Drawable;
 import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
-public class Box extends Shape3D implements Drawable {
+public class Box implements Drawable {
     public final Vertex[] vertexes = new Vertex[8];
 
     public Box(Vertex ver, int length) {
@@ -27,13 +27,13 @@ public class Box extends Shape3D implements Drawable {
     public Vertex[] getAll() { return this.vertexes.clone(); }
 
     @Override
-    public void draw(Graphics g, Matrix rotationMatrix, double distance) {
+    public void draw(Graphics g) {
         if (g == null) return;
 
         Vertex[] vertexCopy = new Vertex[this.vertexes.length];
         System.arraycopy(this.vertexes, 0, vertexCopy, 0, this.vertexes.length);
 
-        super.transform(vertexCopy, rotationMatrix, distance);
+        Shape3D.transform(vertexCopy);
 
         for (int i = 0; i < 4; i++) {
             int x1 = (int)vertexCopy[i].getX();

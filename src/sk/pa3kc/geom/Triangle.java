@@ -2,13 +2,12 @@ package sk.pa3kc.geom;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import sk.pa3kc.inter.Drawable;
 import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
-public class Triangle extends Shape3D implements Drawable {
+public class Triangle implements Drawable {
     public final Vertex[] vertexes = new Vertex[3];
     public final Color color;
 
@@ -33,12 +32,12 @@ public class Triangle extends Shape3D implements Drawable {
     public Vertex[] getAll() { return this.vertexes.clone(); }
 
     @Override
-    public void draw(Graphics g, Matrix rotationMatrix, double distance) {
+    public void draw(Graphics g) {
         if (g == null) return;
 
         Vertex[] vertexCopy = this.vertexes.clone();
 
-        super.transform(vertexCopy, rotationMatrix, distance);
+        Shape3D.transform(vertexCopy);
 
         for (int i = 0; i < vertexCopy.length; i++) {
             int x1 = (int) vertexCopy[i].getX();

@@ -16,6 +16,7 @@ import sk.pa3kc.geom.Path3D;
 import sk.pa3kc.geom.Triangle;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
+import sk.pa3kc.singletons.Matrixes;
 
 public class MyPanel extends JPanel implements Runnable {
     private static final long serialVersionUID = 1L;
@@ -137,15 +138,15 @@ public class MyPanel extends JPanel implements Runnable {
 
         if (this.drawBoxes)
         for (int i = 0; i < this.boxCount; i++)
-            this.shapes[0][i].draw(g, this.parent.rotationMatrix, this.parent.distance);
+            this.shapes[0][i].draw(g);
 
         if (this.drawTriangles)
         for (int i = 0; i < this.triangleCount; i++)
-            this.shapes[1][i].draw(g, this.parent.rotationMatrix, this.parent.distance);
+            this.shapes[1][i].draw(g);
 
         if (this.drawPaths)
         for (int i = 0; i < this.path3dCount; i++)
-            this.shapes[2][i].draw(g, this.parent.rotationMatrix, this.parent.distance);
+            this.shapes[2][i].draw(g);
 
         g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 15));
         int stringX = (int)-(super.getWidth() / 2);

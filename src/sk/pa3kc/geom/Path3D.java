@@ -4,10 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import sk.pa3kc.inter.Drawable;
-import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
-public class Path3D extends Shape3D implements Drawable {
+public class Path3D implements Drawable {
     public final Vertex[] vertexes = new Vertex[2];
     public final Color color;
     public final String text;
@@ -22,12 +21,12 @@ public class Path3D extends Shape3D implements Drawable {
     public Vertex[] getAll() { return this.vertexes.clone(); }
 
     @Override
-    public void draw(Graphics g, Matrix rotationMatrix, double distance) {
+    public void draw(Graphics g) {
         if (g == null) return;
 
         Vertex[] vertexCopy = this.vertexes.clone();
 
-        super.transform(vertexCopy, rotationMatrix, distance);
+        Shape3D.transform(vertexCopy);
 
         int x1 = (int) vertexCopy[0].getX();
         int y1 = (int) vertexCopy[0].getY();

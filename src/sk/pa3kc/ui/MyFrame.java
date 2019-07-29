@@ -8,13 +8,13 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import sk.pa3kc.Program;
-import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Schemas;
 import sk.pa3kc.util.Matrix.Editor;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.inter.Updatable;
 import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
+import sk.pa3kc.singletons.Matrixes;
 
 public class MyFrame extends JFrame implements Updatable {
     private static final long serialVersionUID = 1L;
@@ -38,14 +38,6 @@ public class MyFrame extends JFrame implements Updatable {
     private final int sliderMin = -90;
     private final int sliderCur = 0;
     private final int sliderMax = 269;
-    //endregion
-
-    //region Matrixes
-    private final Matrix xMatrix = new Matrix(4, 4);
-    private final Matrix yMatrix = new Matrix(4, 4);
-    private final Matrix zMatrix = new Matrix(4, 4);
-    public Matrix rotationMatrix = new Matrix(4, 4);
-    private final Matrix projectionMatrix = new Matrix(4, 4);
     //endregion
 
     public MyFrame(String name) {
@@ -105,15 +97,15 @@ public class MyFrame extends JFrame implements Updatable {
 
     @Override
     public void update(UpdateMode plane) {
-        if (plane.x == true) Schemas.applyRotationX(this.xMatrix, StrictMath.toRadians(this.xSlider.getValue()));
-        if (plane.y == true) Schemas.applyRotationY(this.yMatrix, StrictMath.toRadians(this.ySlider.getValue()));
-        if (plane.z == true) Schemas.applyRotationZ(this.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
+        if (plane.x == true) Schemas.applyRotationX(Matrixes.xMatrix, StrictMath.toRadians(this.xSlider.getValue()));
+        if (plane.y == true) Schemas.applyRotationY(Matrixes.yMatrix, StrictMath.toRadians(this.ySlider.getValue()));
+        if (plane.z == true) Schemas.applyRotationZ(Matrixes.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
         if (plane.w == true) this.distance = this.distance > this.distanceMax ? this.distanceMax : this.distance < this.distanceMin ? this.distanceMin : this.distance;
 
-        Editor editor = Editor.edit(this.rotationMatrix).indentify();
-        editor.multiply(this.xMatrix);
-        editor.multiply(this.yMatrix);
-        editor.multiply(this.zMatrix);
+        Editor editor = Editor.edit(Matrixes.rotationMatrix).indentify();
+        editor.multiply(Matrixes.xMatrix);
+        editor.multiply(Matrixes.yMatrix);
+        editor.multiply(Matrixes.zMatrix);
 
         this.updateCount++;
     }

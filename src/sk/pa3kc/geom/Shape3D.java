@@ -1,20 +1,21 @@
 package sk.pa3kc.geom;
 
+import sk.pa3kc.singletons.Matrixes;
 import sk.pa3kc.util.Matrix;
 import sk.pa3kc.util.Vertex;
 
-public abstract class Shape3D {
+public class Shape3D {
     private static final boolean APPLY_DISTANCE = false;
     private static final boolean APPLY_MULIPLICATION = false;
 
-    public Shape3D() {}
+    private Shape3D() {}
 
-    public void transform(Vertex[] vertexes, Matrix rotationMatrix, double distance) {
+    public static void transform(Vertex[] vertexes) {
         if (vertexes == null) return;
 
-        if (rotationMatrix != null)
+        if (Matrixes.rotationMatrix != null)
         for (int i = 0; i < vertexes.length; i++)
-            vertexes[i] = Vertex.multiply(vertexes[i], rotationMatrix);
+            vertexes[i] = Vertex.multiply(vertexes[i], Matrixes.rotationMatrix);
 
         if (APPLY_DISTANCE == true)
         for (int i = 0; i < vertexes.length; i++) {
