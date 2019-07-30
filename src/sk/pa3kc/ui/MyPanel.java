@@ -30,8 +30,8 @@ public class MyPanel extends JPanel implements Runnable {
     //endregion
 
     //region Switches
-    private final boolean drawBoxes = false;
-    private final boolean drawTriangles = true;
+    private final boolean drawBoxes = true;
+    private final boolean drawTriangles = false;
     private final boolean drawPaths = false;
     //endregion
 

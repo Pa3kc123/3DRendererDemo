@@ -97,15 +97,16 @@ public class MyFrame extends JFrame implements Updatable {
 
     @Override
     public void update(UpdateMode plane) {
-        if (plane.x == true) Schemas.applyRotationX(Matrixes.xMatrix, StrictMath.toRadians(this.xSlider.getValue()));
-        if (plane.y == true) Schemas.applyRotationY(Matrixes.yMatrix, StrictMath.toRadians(this.ySlider.getValue()));
-        if (plane.z == true) Schemas.applyRotationZ(Matrixes.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
-        if (plane.w == true) this.distance = this.distance > this.distanceMax ? this.distanceMax : this.distance < this.distanceMin ? this.distanceMin : this.distance;
+        if (plane.x) Schemas.applyRotationX(Matrixes.xMatrix, StrictMath.toRadians(this.xSlider.getValue()));
+        if (plane.y) Schemas.applyRotationY(Matrixes.yMatrix, StrictMath.toRadians(this.ySlider.getValue()));
+        if (plane.z) Schemas.applyRotationZ(Matrixes.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
+        if (plane.w) this.distance = this.distance > this.distanceMax ? this.distanceMax : this.distance < this.distanceMin ? this.distanceMin : this.distance;
 
-        MatrixEditor.identify(Matrixes.rotationMatrix);
-        MatrixEditor.multiply(Matrixes.rotationMatrix, Matrixes.xMatrix);
-        MatrixEditor.multiply(Matrixes.rotationMatrix, Matrixes.yMatrix);
-        MatrixEditor.multiply(Matrixes.rotationMatrix, Matrixes.zMatrix);
+        MatrixEditor editor = new MatrixEditor(Matrixes.rotationMatrix);
+        editor.identify();
+        editor.multiply(Matrixes.xMatrix);
+        editor.multiply(Matrixes.yMatrix);
+        editor.multiply(Matrixes.zMatrix);
 
         this.updateCount++;
     }

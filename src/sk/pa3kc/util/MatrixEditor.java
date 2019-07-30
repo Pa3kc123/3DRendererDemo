@@ -49,77 +49,93 @@ public class MatrixEditor {
     //endregion
 
     //region Public methods
-    public void add(Matrix mat, double number) { this.calculate(mat, number, ArithmeticOperation.ADD); }
-    public void add(Matrix mat1, Matrix mat2) { this.calculate(mat1, mat2, ArithmeticOperation.ADD); }
-    public void subtract(Matrix mat, double number) { this.calculate(mat, number, ArithmeticOperation.SUBTRACT); }
-    public void subtract(Matrix mat1, Matrix mat2) { this.calculate(mat1, mat2, ArithmeticOperation.SUBTRACT); }
-    public void multiply(Matrix mat, double number) { this.calculate(mat, number, ArithmeticOperation.MULTIPLY); }
-    public void multiply(Matrix mat1, Matrix mat2) { this.calculate(mat1, mat2, ArithmeticOperation.MULTIPLY); }
-    public void divide(Matrix mat, double number) { this.calculate(mat, number, ArithmeticOperation.DIVIDE); }
-    public void divide(Matrix mat1, Matrix mat2) { this.calculate(mat1, mat2, ArithmeticOperation.DIVIDE); }
+    public void add(double number) { this.calculate(number, ArithmeticOperation.ADD); }
+    public void add(Matrix mat) { this.calculate(mat, ArithmeticOperation.ADD); }
+    public void subtract(double number) { this.calculate(number, ArithmeticOperation.SUBTRACT); }
+    public void subtract(Matrix mat) { this.calculate(mat, ArithmeticOperation.SUBTRACT); }
+    public void multiply(double number) { this.calculate(number, ArithmeticOperation.MULTIPLY); }
+    public void multiply(Matrix mat) { this.calculate(mat, ArithmeticOperation.MULTIPLY); }
+    public void divide(double number) { this.calculate(number, ArithmeticOperation.DIVIDE); }
+    public void divide(Matrix mat) { this.calculate(mat, ArithmeticOperation.DIVIDE); }
+    public void identify() {
+        double[][] values = this.ref.getAllValues();
+
+        for (int row = 0; row < this.ref.getRowCount(); row++)
+        for (int col = 0; col < this.ref.getColCount(); col++)
+            values[row][col] = row == col ? 1 : 0;
+    }
     //endregion
 
     //region Package private static methods
-    private void calculate(Matrix mat, double number, ArithmeticOperation operation) {
+    private void calculate(double number, ArithmeticOperation operation) {
+        if (this.ref.isNotValid()) throw new RuntimeException("Referenced matrix is not valid");
+
+        double[][] values = this.ref.getAllValues();
+
         switch (operation) {
             case ADD:
             case SUBTRACT:
-                if (number == 0d) return mat.clone();
+                if (number == 0d) return;
             break;
             case MULTIPLY:
-                if (number == 0d) return new Matrix(mat.getRowCount(), mat.getColCount());
-                if (number == 1d) return mat.clone();
+                if (number == 1d) return;
+                if (number == 0d) {
+                    for (int row = 0; row < values.length; row++)
+                    for (int col = 0; col < values[row].length; col++)
+                        values[row][col] = 0;
+
+                    return;
+                }
             break;
             case DIVIDE:
                 if (number == 0d) throw new ArithmeticException("Cannot divide by zero");
-                if (number == 1d) return mat.clone();
+                if (number == 1d) return;
             break;
         }
 
-        if (mat.isNotValid()) throw new RuntimeException("Matrix is not valid");
-
-        Matrix result = mat.clone();
-        double[][] resultValues = result.getAllValues();
-
-        for (int row = 0; row < mat.getRowCount(); row++)
-        for (int col = 0; col < mat.getColCount(); col++)
+        for (int row = 0; row < values.length; row++)
+        for (int col = 0; col < values[row].length; col++)
         switch (operation) {
-            case ADD: resultValues[row][col] += number; break;
-            case SUBTRACT: resultValues[row][col] -= number; break;
-            case MULTIPLY: resultValues[row][col] *= number; break;
-            case DIVIDE: resultValues[row][col] /= number; break;
+            case ADD: values[row][col] += number; break;
+            case SUBTRACT: values[row][col] -= number; break;
+            case MULTIPLY: values[row][col] *= number; break;
+            case DIVIDE: values[row][col] /= number; break;
         }
     }
-    private void calculate(Matrix mat1, Matrix mat2, ArithmeticOperation operation) {
-        ValidationResult validation = validate(mat1, mat2);
-        if (validation.valid == false)
-            throw new RuntimeException("Matrix" + (validation.index + 1) + " is not valid");
+    private void calculate(Matrix mat, ArithmeticOperation operation) {
+        if (this.ref.isNotValid()) throw new RuntimeException("Referenced matrix is not valid");
+        if (mat.isNotValid()) throw new RuntimeException("Matrix is not valid");
 
         double[][] m1 = null;
         double[][] m2 = null;
 
-        if (mat1.getColCount() == mat2.getRowCount()) {
-            m1 = mat1.getAllValues();
-            m2 = mat2.getAllValues();
-        } else if (mat1.getRowCount() == mat2.getColCount()) {
-            m1 = mat2.getAllValues();
-            m2 = mat1.getAllValues();
-        } else throw new IllegalArgumentException("Invalid matrix sizes (" + mat1.getRowCount() + "x" + mat1.getColCount() + " <-> " + mat2.getRowCount() + "x" + mat2.getColCount() + ")");
+        if (this.ref.getColCount() == mat.getRowCount()) {
+            m1 = this.ref.getAllValues();
+            m2 = mat.getAllValues();
+        } else if (this.ref.getRowCount() == mat.getColCount()) {
+            m1 = mat.getAllValues();
+            m2 = this.ref.getAllValues();
+        } else throw new IllegalArgumentException("Invalid matrix sizes (" + this.ref.getRowCount() + "x" + this.ref.getColCount() + " <-> " + mat.getRowCount() + "x" + mat.getColCount() + ")");
 
         boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
         boolean oneOnly = ArrayUtils.compareAll(m2, 1);
         switch (operation) {
             case ADD:
             case SUBTRACT:
-                if (zeroOnly == true) return new Matrix(ArrayUtils.deepArrCopy(m1));
+                if (zeroOnly == true) return;
             break;
             case MULTIPLY:
-                if (zeroOnly == true) return new Matrix(m1.length, m1[0].length);
-                if (oneOnly == true) return new Matrix(ArrayUtils.deepArrCopy(m1));
+                if (oneOnly == true) return;
+                if (zeroOnly == true) {
+                    for (int row = 0; row < m1.length; row++)
+                    for (int col = 0; col < m1.length; col++)
+                        m1[row][col] = 0;
+                    return;
+                }
             break;
             case DIVIDE:
                 if (zeroOnly == true) throw new ArithmeticException("Cannot divide by zero");
-                if (oneOnly == true) return new Matrix(ArrayUtils.deepArrCopy(m1));
+                if (oneOnly == true) return;
             break;
         }
 
@@ -148,6 +164,11 @@ public class MatrixEditor {
                     result[row][col] += m1[row][i] / m2[i][col];
             break;
         }
+
+        double[][] values = this.ref.getAllValues();
+        for (int row = 0; row < values.length; row++)
+        for (int col = 0; col < values.length; col++)
+            values[row][col] = result[row][col];
     }
     public static ValidationResult validate(Matrix... matrixes) {
         for (int i = 0; i < matrixes.length; i++)

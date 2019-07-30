@@ -93,13 +93,13 @@ public class Vertex extends Matrix {
 
         return new Vertex(x, y, z);
     }
-    public static Vertex add(Matrix mat, double number) { return new Vertex(MatrixEditor.add(mat, number)); }
-    public static Vertex add(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.add(mat1, mat2)); }
-    public static Vertex subtract(Matrix mat, double number) { return new Vertex(MatrixEditor.subtract(mat, number)); }
-    public static Vertex subtract(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.subtract(mat1, mat2)); }
-    public static Vertex multiply(Matrix mat, double number) { return new Vertex(MatrixEditor.multiply(mat, number)); }
-    public static Vertex multiply(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.multiply(mat1, mat2)); }
-    public static Vertex divide(Matrix mat, double number) { return new Vertex(MatrixEditor.divide(mat, number)); }
-    public static Vertex divide(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.divide(mat1, mat2)); }
+    // public static Vertex add(Matrix mat, double number) { return new Vertex(MatrixEditor.add(mat, number)); }
+    // public static Vertex add(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.add(mat1, mat2)); }
+    // public static Vertex subtract(Matrix mat, double number) { return new Vertex(MatrixEditor.subtract(mat, number)); }
+    // public static Vertex subtract(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.subtract(mat1, mat2)); }
+    // public static Vertex multiply(Matrix mat, double number) { return new Vertex(MatrixEditor.multiply(mat, number)); }
+    // public static Vertex multiply(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.multiply(mat1, mat2)); }
+    // public static Vertex divide(Matrix mat, double number) { return new Vertex(MatrixEditor.divide(mat, number)); }
+    // public static Vertex divide(Matrix mat1, Matrix mat2) { return new Vertex(MatrixEditor.divide(mat1, mat2)); }
     //endregion
 }
