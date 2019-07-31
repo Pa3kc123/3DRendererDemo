@@ -5,6 +5,7 @@ import sk.pa3kc.enums.ArithmeticOperation;
 import sk.pa3kc.mylibrary.Universal;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.NumberUtils;
+import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.ValidationResult;
 
@@ -17,13 +18,13 @@ public class MatrixEditor {
 
     //region Public static functions
     public static void printMatrixes(Matrix... matrixes) {
-        ValidationResult validation = validate(matrixes);
-        if (validation.valid == false)
-            throw new RuntimeException("Matrix " + (validation.index + 1) + " is not valid");
+        for (int i = 0; i < matrixes.length; i++)
+        if (matrixes[i].isNotValid())
+            throw new RuntimeException(StringUtils.build("Matrix", i+1, "is not valid"));
 
         int maxRowCount = 0;
         for (Matrix matrix : matrixes)
-            maxRowCount = matrix.getRowCount() > maxRowCount ? matrix.getRowCount() : maxRowCount;
+            maxRowCount = Universal.max(matrix.getRowCount(), maxRowCount);
 
         StringBuilder builder = new StringBuilder();
         for (int row = 0; row < maxRowCount; row++) {
@@ -62,7 +63,7 @@ public class MatrixEditor {
 
         for (int row = 0; row < this.ref.getRowCount(); row++)
         for (int col = 0; col < this.ref.getColCount(); col++)
-            values[row][col] = row == col ? 1 : 0;
+            values[row][col] = row == col ? 1d : 0d;
     }
     //endregion
 
@@ -167,7 +168,7 @@ public class MatrixEditor {
 
         double[][] values = this.ref.getAllValues();
         for (int row = 0; row < values.length; row++)
-        for (int col = 0; col < values.length; col++)
+        for (int col = 0; col < values[row].length; col++)
             values[row][col] = result[row][col];
     }
     public static ValidationResult validate(Matrix... matrixes) {

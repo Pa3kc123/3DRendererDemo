@@ -2,3 +2,70 @@ https://en.wikipedia.org/wiki/Euler%E2%80%93Rodrigues_formula#Definition
 https://math.stackexchange.com/questions/2088515/rotation-matrix-about-arbitrary-direction
 arbitary rotation
 https://www.ntu.edu.sg/home/ehchua/programming/opengl/cg_basicstheory.html
+
+nominidumps
+dxlevel 98
+snd_mix_async 1
+cl_forcepreload 1
+cl_detaildist 2400
+cl_detailfade 0
+r_fastzreject -1
+r_threaded_particles 1
+r_threaded_renderables 1
+r_shadowrendertotexture 1
+mat_picmip -1
+mat_hdr_level 0
+mat_queue_mode -1
+mat_disable_bloom 1
+mat_filterlightmaps 1
+mat_forcemanagedtextureintohardware 0
+
+nominidumps - Don't creat minidumps, crash related.
+
+dxlevel - changes the DirectX mode used within a Source game. The player is only able to use modes that their hardware supports.
+The format is:
+
+dxlevel 80 - DirectX 8.0
+dxlevel 81 - DirectX 8.1
+dxlevel 90 - DirectX 9 (Shader Model 2)
+dxlevel 95 - DirectX 9 (Shader Model 3)
+dxlevel 98 - DX9Ex (DX9 on DX10 hardware (SM 4)
+
+snd_mix_async [0,1] - If set to 1, this command will allow multi-core CPUs to run most of the sound engine in parallel with the renderer, which can improve performance and reduce stuttering.
+
+cl_forcepreload [0,1] - If set to 1 forces all information to preload, reducing loading pauses and stuttering by not loading information on the fly.
+
+cl_detaildist [0-2400] - Determines the range at which detail props are shown (e.g. grass). Reducing this setting can increase performance, and conversely increasing this setting will improve image quality through more detail at the cost of performance.
+
+cl_detailfade [0-10000] - Determines the range at which detail props fade into view. Increasing this value can raise performance.
+
+r_fastzreject [-1,0,1] - If set to 1 activates a fast z-setting algorithm which takes advantage of hardware fast z reject for improved performance. If set to -1 detects your default hardware setting for this option. Initially this should be set to -1.
+
+r_threaded_particles [0,1] - Determines whether the particle system is multi-threaded. This should be set to 1 on systems with multi-core CPUs.
+
+r_threaded_renderables [0,1] - Determines whether part of the rendering system is multi-threaded. This can be set to 1 on systems with multi-core CPUs to potentially improve performance.
+
+shadow details:
+r_shadowrendertotexture 0 - low
+
+r_shadowrendertotexture 1 - medium
+
+r_shadowrendertotexture 1 - high
+r_flashlightdepthtexture 1 - high (plus this command to get high)
+
+mat_picmip [-1/1/2/3/4] - This variable is the same as the Texture Detail in-game setting, controls how detailed textures appear in Source games. You can raise this value to further reduce the quality of the textures and possibly improve performance.
+
+mat_hdr_level [0/1/2] - Set to 0 for no HDR, 1 for LDR and bloom on HDR maps, and 2 for full HDR and bloom on HDR maps.
+
+mat_queue_mode:
+
+-1=default
+0=synchronous single thread
+1=queued single thread
+2=queued multithreaded
+
+mat_disable_bloom [0,1] - Set 1 to disable bloom
+
+mat_filterlightmaps [0,1] - If set to 1, static lightmaps are rendered correctly. If set to 0, all areas of pre-rendered lighting will be blocky and unrealistic, but performance will be improved slightly at the cost of realism.
+
+mat_forcemanagedtextureintohardware [0,1] - If set to 1, attempts to force texture information into your Video RAM at the start of a level, alleviating any stuttering in the game. Also note that in my experience this setting can reduce FPS by up to 50%. Setting this variable to 0 may improve performance on some machines.

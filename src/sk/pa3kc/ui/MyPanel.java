@@ -17,7 +17,7 @@ import sk.pa3kc.geom.Triangle;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
 
-public class MyPanel extends JPanel implements Runnable {
+public class MyPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private MyFrame parent = null;
@@ -34,9 +34,6 @@ public class MyPanel extends JPanel implements Runnable {
     private final boolean drawTriangles = false;
     private final boolean drawPaths = false;
     //endregion
-
-    public boolean fpsThreadRunning = false;
-    public Thread fpsThread = new Thread(this);
 
     public MyPanel() {
         super();
@@ -121,8 +118,6 @@ public class MyPanel extends JPanel implements Runnable {
 
         super.setOpaque(true);
         super.setBackground(Color.BLACK);
-
-        this.fpsThread.start();
     }
 
     @Override
@@ -150,39 +145,15 @@ public class MyPanel extends JPanel implements Runnable {
         g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 15));
         int stringX = (int)-(super.getWidth() / 2);
         int stringY = (int)-(super.getHeight() / 2) + g.getFont().getSize();
-        g.drawString("FPS: ".concat(String.valueOf(this.framesPerSecond)), stringX, stringY);
+        g.drawString("FPS: ".concat(String.valueOf(Program.frameCounter)), stringX, stringY);
 
         stringY += g.getFont().getSize();
-        g.drawString("Updates: ".concat(String.valueOf(this.updatesPerSecond)), stringX, stringY);
+        g.drawString("Updates: ".concat(String.valueOf(Program.updateCounter)), stringX, stringY);
 
         stringY += g.getFont().getSize();
         g.drawString("toggled: ".concat(String.valueOf(Program.toggled)), stringX, stringY);
 
         if (Program.OS_NAME.contains("linux"))
             Toolkit.getDefaultToolkit().sync();
-
-        this.frameCount++;
-    }
-
-    private int framesPerSecond = 0;
-    private int updatesPerSecond = 0;
-    private int frameCount = 0;
-
-    @Override
-    public void run() {
-        this.fpsThreadRunning = true;
-        while (this.fpsThreadRunning == true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-
-            this.framesPerSecond = this.frameCount;
-            this.updatesPerSecond = this.parent.updateCount;
-
-            this.frameCount = 0;
-            this.parent.updateCount = 0;
-        }
     }
 }

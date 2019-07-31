@@ -9,61 +9,34 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
 
+import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.cmd.CmdUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
+import sk.pa3kc.singletons.MyThreadPool;
 import sk.pa3kc.ui.MyFrame;
 
 public class Program {
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
     public static final String OS_NAME = DefaultSystemPropertyStrings.OS_NAME;
+    public static final double FRAME_LIMIT = 60d;
 
     private static Program instance;
 
-    public final int CHOOSEN_GRAPHICS_DEVICE;
-    public final GraphicsConfiguration GRAPHICS_DEVICE_CONFIG;
-    public final Rectangle GRAPHICS_DEVICE_BOUNDS;
+    public static int CHOOSEN_GRAPHICS_DEVICE;
+    public static GraphicsConfiguration GRAPHICS_DEVICE_CONFIG;
+    public static Rectangle GRAPHICS_DEVICE_BOUNDS;
 
-    private static MyFrame mainFrame = null;
+    public static MyFrame mainFrame = null;
 
     public static boolean toggled = false;
 
-    public boolean uiThreadRunning = false;
-    public final Thread uiThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            uiThreadRunning = true;
+    public static int frameCounter = 0;
+    public static int updateCounter = 0;
 
-            int errorCounter = 0;
-            while (uiThreadRunning == true) {
-                try {
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            mainFrame.myPanel.repaint();
-                        }
-                    };
-                    SwingUtilities.invokeAndWait(runnable);
-                } catch (Throwable ex) {
-                    errorCounter++;
-
-                    if (errorCounter == 5) {
-                        if (ex instanceof InvocationTargetException) ex.printStackTrace();
-                        else if (ex instanceof InterruptedException) ex.printStackTrace();
-                        else ex.printStackTrace();
-
-                        System.err.println("Multiple errors occured during drawing cycle... Exiting");
-                        System.exit(0xFF);
-                    }
-                }
-                errorCounter = 0;
-            }
-        }
-    });
-
-    private Program(int choosenGraphicsDevice) {
+    private Program(int graphicsDeviceIndex) {
         GraphicsDevice[] devices = null;
         try {
             devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
@@ -71,9 +44,9 @@ public class Program {
             ERROR(this, "No supported display found");
             System.exit(0xFF);
         }
-        this.CHOOSEN_GRAPHICS_DEVICE = choosenGraphicsDevice < 0 ? 0 : choosenGraphicsDevice > devices.length - 1 ? devices.length - 1 : choosenGraphicsDevice;
-        this.GRAPHICS_DEVICE_CONFIG = devices[CHOOSEN_GRAPHICS_DEVICE].getDefaultConfiguration();
-        this.GRAPHICS_DEVICE_BOUNDS = this.GRAPHICS_DEVICE_CONFIG.getBounds();
+        Program.CHOOSEN_GRAPHICS_DEVICE = graphicsDeviceIndex < 0 ? 0 : graphicsDeviceIndex > devices.length - 1 ? devices.length - 1 : graphicsDeviceIndex;
+        Program.GRAPHICS_DEVICE_CONFIG = devices[Program.CHOOSEN_GRAPHICS_DEVICE].getDefaultConfiguration();
+        Program.GRAPHICS_DEVICE_BOUNDS = Program.GRAPHICS_DEVICE_CONFIG.getBounds();
 
         Keyboard.getInst().getKeyInfo('g').addOnPressedAction(new Runnable() {
             @Override
@@ -86,13 +59,88 @@ public class Program {
                 }
             }
         });
+
+        MyThreadPool.uiThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("uiThread started");
+                MyThreadPool.uiThreadRunning = true;
+
+                final double nsPerUpdate = 1000000000.0d / Program.FRAME_LIMIT;
+
+                synchronized (Locks.UI_THREAD_LOCK) {
+                    try {
+                        Locks.UI_THREAD_LOCK.wait();
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                long lastTime = System.nanoTime();
+                double unprocessedTime = 0d;
+
+                int frames = 0;
+                int updates = 0;
+
+                long frameCounter = System.currentTimeMillis();
+
+                while (MyThreadPool.uiThreadRunning && MyThreadPool.allRunning) {
+                    long currentTime = System.nanoTime();
+                    long passedTime = currentTime - lastTime;
+                    lastTime = currentTime;
+                    unprocessedTime += passedTime;
+
+                    if (unprocessedTime >= nsPerUpdate) {
+                        unprocessedTime = 0;
+                        int value = 1;
+                        int countedValue = Program.mainFrame.ySlider.getValue() + value;
+                        Program.mainFrame.xSlider.setValue(countedValue > Program.mainFrame.sliderMax ? Program.mainFrame.sliderMin : countedValue);
+                        Program.mainFrame.ySlider.setValue(countedValue > Program.mainFrame.sliderMax ? Program.mainFrame.sliderMin : countedValue);
+                        Program.mainFrame.zSlider.setValue(countedValue > Program.mainFrame.sliderMax ? Program.mainFrame.sliderMin : countedValue);
+                        Program.mainFrame.update(UpdateMode.ALL);
+                        updates++;
+                    }
+
+                    try {
+                        SwingUtilities.invokeAndWait(new Runnable() {
+                            @Override
+                            public void run() {
+                                Program.mainFrame.myPanel.repaint();
+                            }
+                        });
+                    } catch (Throwable ex) {
+                        if (ex instanceof InvocationTargetException) ex.printStackTrace();
+                        else if (ex instanceof InterruptedException) ex.printStackTrace();
+                        else ex.printStackTrace();
+
+                        System.err.println("Multiple errors occured during drawing cycle... Exiting");
+                        System.exit(0xFF);
+                    }
+                    frames++;
+
+                    if (System.currentTimeMillis() - frameCounter >= 1000) {
+                        Program.updateCounter = updates;
+                        Program.frameCounter = frames;
+
+                        updates = 0;
+                        frames = 0;
+                        frameCounter += 1000;
+                    }
+                }
+                System.out.println("uiThread stopped");
+            }
+        });
+        MyThreadPool.uiThread.start();
     }
 
     public static Program getInst() { return instance; }
 
     public static <T> T castOrNull(Object value, Class<T> type) {
-        try { return type.cast(value); }
-        catch (ClassCastException ignored) { return null; }
+        try {
+            return type.cast(value);
+        } catch (ClassCastException ignored) {
+            return null;
+        }
     }
 
     public static void main(String[] args) {
@@ -111,9 +159,8 @@ public class Program {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-
-            instance.uiThread.start();
         }
+        MyThreadPool.uiThread.start();
     }
 
     private enum LogTag {

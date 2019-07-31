@@ -15,6 +15,7 @@ import sk.pa3kc.inter.Updatable;
 import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
 import sk.pa3kc.singletons.Matrixes;
+import sk.pa3kc.singletons.MyThreadPool;
 
 public class MyFrame extends JFrame implements Updatable {
     private static final long serialVersionUID = 1L;
@@ -23,21 +24,17 @@ public class MyFrame extends JFrame implements Updatable {
     public final double distanceMin = 1d;
     public double distance = 1d;
 
-    public int updateCount = 0;
-    public Thread updateThread;
-    public boolean updateThreadRunning = false;
-
     //region Components
     public final MyPanel myPanel = new MyPanel();
-    private final MySlider xSlider = new MySlider(this.sliderMin, this.sliderMax, this.sliderCur, this, UpdateMode.X);
-    private final MySlider ySlider = new MySlider(this.sliderMin, this.sliderMax, this.sliderCur, this, UpdateMode.Y);
-    private final MySlider zSlider = new MySlider(this.sliderMin, this.sliderMax, this.sliderCur, this, UpdateMode.Z);
+    public final MySlider xSlider = new MySlider(this.sliderMin, this.sliderMax, this.sliderCur, this, UpdateMode.X);
+    public final MySlider ySlider = new MySlider(this.sliderMin, this.sliderMax, this.sliderCur, this, UpdateMode.Y);
+    public final MySlider zSlider = new MySlider(this.sliderMin, this.sliderMax, this.sliderCur, this, UpdateMode.Z);
     //endregion
 
     //region Slider values
-    private final int sliderMin = -90;
-    private final int sliderCur = 0;
-    private final int sliderMax = 269;
+    public final int sliderMin = -90;
+    public final int sliderCur = 0;
+    public final int sliderMax = 269;
     //endregion
 
     public MyFrame(String name) {
@@ -57,36 +54,9 @@ public class MyFrame extends JFrame implements Updatable {
 
         this.update(UpdateMode.ALL);
 
-        this.updateThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                updateThreadRunning = true;
-
-                while (updateThreadRunning) {
-                    if (Program.toggled) {
-                        int value = 1;
-                        int countedValue = ySlider.getValue() + value;
-                        xSlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
-                        ySlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
-                        zSlider.setValue(countedValue > sliderMax ? sliderMin : countedValue);
-                        update(UpdateMode.ALL);
-                    } else {
-                        synchronized (Locks.KEYBOARD_LOCK) {
-                            try {
-                                Locks.KEYBOARD_LOCK.wait();
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        synchronized (Locks.MY_FRAME_LOCK) {
-            Locks.MY_FRAME_LOCK.notify();
+        synchronized (Locks.UI_THREAD_LOCK) {
+            Locks.UI_THREAD_LOCK.notify();
         }
-        this.updateThread.start();
     }
 
     @Override
@@ -107,16 +77,12 @@ public class MyFrame extends JFrame implements Updatable {
         editor.multiply(Matrixes.xMatrix);
         editor.multiply(Matrixes.yMatrix);
         editor.multiply(Matrixes.zMatrix);
-
-        this.updateCount++;
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        Program.getInst().uiThreadRunning = false;
-        this.myPanel.fpsThreadRunning = false;
-        this.updateThreadRunning = false;
+        MyThreadPool.requestShutdownOnAllThreads();
         Locks.notifyAllLocks();
     }
 }
