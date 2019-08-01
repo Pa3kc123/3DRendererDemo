@@ -1,4 +1,4 @@
-package sk.pa3kc.util;
+package sk.pa3kc.matrix;
 
 import sk.pa3kc.Program;
 import sk.pa3kc.enums.ArithmeticOperation;
@@ -6,15 +6,24 @@ import sk.pa3kc.mylibrary.Universal;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
-import sk.pa3kc.pojo.Matrix;
-import sk.pa3kc.pojo.ValidationResult;
+import sk.pa3kc.matrix.Matrix;
 
 public class MatrixEditor {
     private final Matrix ref;
 
-    public MatrixEditor(Matrix ref) { this.ref = ref; }
+    public MatrixEditor(Matrix ref) {
+        if (ref.isBeingEdited()) throw new IllegalStateException("Referenced matrix is already been edited by another editor");
+        this.ref = ref;
+        this.ref.setBeingEdited(true);
+    }
 
+    //region Getters
     public Matrix getReference() { return this.ref; }
+    //endregion
+
+    //region Setters
+    public void set(int row, int col, double value) { this.ref.setValueAt(row, col, value); }
+    //endregion
 
     //region Public static functions
     public static void printMatrixes(Matrix... matrixes) {
@@ -59,15 +68,25 @@ public class MatrixEditor {
     public void divide(double number) { this.calculate(number, ArithmeticOperation.DIVIDE); }
     public void divide(Matrix mat) { this.calculate(mat, ArithmeticOperation.DIVIDE); }
     public void identify() {
-        double[][] values = this.ref.getAllValues();
+        for (int row = 0; row < this.ref.rowCount; row++)
+        for (int col = 0; col < this.ref.colCount; col++)
+            this.ref.values[row][col] = row == col ? 1d : 0d;
+    }
+    public void setValueAt(int row, int col, double value) {
+        if (row >= this.ref.rowCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("row (", row, ") must be less than ", this.ref.rowCount));
+        if (col >= this.ref.colCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("col (", col, ") must be less than ", this.ref.colCount));
 
-        for (int row = 0; row < this.ref.getRowCount(); row++)
-        for (int col = 0; col < this.ref.getColCount(); col++)
-            values[row][col] = row == col ? 1d : 0d;
+        this.ref.values[row][col] = value;
+    }
+    public void replaceWith(double[][] ref) {
+        if (ref.length == 0) throw new RuntimeException("referenced value has 0 rows");
+        if (ref[0].length == 0) throw new RuntimeException("referenced value has 0 columns");
+
+        this.ref.values = ref;
     }
     //endregion
 
-    //region Package private static methods
+    //region Package private methods
     private void calculate(double number, ArithmeticOperation operation) {
         if (this.ref.isNotValid()) throw new RuntimeException("Referenced matrix is not valid");
 
@@ -166,15 +185,13 @@ public class MatrixEditor {
             break;
         }
 
-        double[][] values = this.ref.getAllValues();
-        for (int row = 0; row < values.length; row++)
-        for (int col = 0; col < values[row].length; col++)
-            values[row][col] = result[row][col];
+        this.ref.setAllValues(result);
     }
-    public static ValidationResult validate(Matrix... matrixes) {
-        for (int i = 0; i < matrixes.length; i++)
-            if (!matrixes[i].isValid()) return new ValidationResult(false, i);
-        return new ValidationResult(true, -1);
+    public void release() {
+        this.ref.setBeingEdited(false);
+        synchronized (this.ref.matrixLock) {
+            this.ref.matrixLock.notify();
+        }
     }
     //endregion
 }

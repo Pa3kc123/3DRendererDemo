@@ -13,8 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import sk.pa3kc.matrix.Matrix;
 import sk.pa3kc.mylibrary.util.NumberUtils;
-import sk.pa3kc.pojo.Matrix;
 
 public class MyDebugPanel extends JComponent {
     private static final long serialVersionUID = 1L;

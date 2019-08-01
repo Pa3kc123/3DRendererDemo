@@ -1,6 +1,6 @@
 package sk.pa3kc.singletons;
 
-import sk.pa3kc.pojo.Matrix;
+import sk.pa3kc.matrix.Matrix;
 
 public class Matrixes {
     public static final Matrix xMatrix = new Matrix(4, 4);

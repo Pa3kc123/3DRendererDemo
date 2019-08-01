@@ -8,14 +8,13 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import sk.pa3kc.Program;
-import sk.pa3kc.util.MatrixEditor;
 import sk.pa3kc.util.Schemas;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.inter.Updatable;
+import sk.pa3kc.matrix.MatrixEditor;
 import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
 import sk.pa3kc.singletons.Matrixes;
-import sk.pa3kc.singletons.MyThreadPool;
 
 public class MyFrame extends JFrame implements Updatable {
     private static final long serialVersionUID = 1L;
@@ -46,16 +45,16 @@ public class MyFrame extends JFrame implements Updatable {
 
         super.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         super.setFocusable(true);
-        super.setLocation(Program.getInst().GRAPHICS_DEVICE_BOUNDS.x, Program.getInst().GRAPHICS_DEVICE_BOUNDS.y);
+        super.setLocation(Program.GRAPHICS_DEVICE_BOUNDS.x, Program.GRAPHICS_DEVICE_BOUNDS.y);
         super.setResizable(false);
-        super.setSize(Program.getInst().GRAPHICS_DEVICE_BOUNDS.width, Program.getInst().GRAPHICS_DEVICE_BOUNDS.height);
+        super.setSize(Program.GRAPHICS_DEVICE_BOUNDS.width, Program.GRAPHICS_DEVICE_BOUNDS.height);
         super.setUndecorated(true);
         super.setVisible(true);
 
         this.update(UpdateMode.ALL);
 
-        synchronized (Locks.UI_THREAD_LOCK) {
-            Locks.UI_THREAD_LOCK.notify();
+        synchronized (Locks.MY_FRAME_LOCK) {
+            Locks.MY_FRAME_LOCK.notify();
         }
     }
 
@@ -72,17 +71,32 @@ public class MyFrame extends JFrame implements Updatable {
         if (plane.z) Schemas.applyRotationZ(Matrixes.zMatrix, StrictMath.toRadians(this.zSlider.getValue()));
         if (plane.w) this.distance = this.distance > this.distanceMax ? this.distanceMax : this.distance < this.distanceMin ? this.distanceMin : this.distance;
 
+        if (Matrixes.rotationMatrix.isBeingEdited())
+            Matrixes.rotationMatrix.waitForUnlock();
+
         MatrixEditor editor = new MatrixEditor(Matrixes.rotationMatrix);
         editor.identify();
+
+        if (Matrixes.xMatrix.isBeingEdited())
+            Matrixes.xMatrix.waitForUnlock();
         editor.multiply(Matrixes.xMatrix);
+
+        if (Matrixes.yMatrix.isBeingEdited())
+            Matrixes.yMatrix.waitForUnlock();
         editor.multiply(Matrixes.yMatrix);
+
+        if (Matrixes.zMatrix.isBeingEdited())
+            Matrixes.zMatrix.waitForUnlock();
         editor.multiply(Matrixes.zMatrix);
+
+        editor.release();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        MyThreadPool.requestShutdownOnAllThreads();
+        if (!Program.uiThread.isShutdownRequested())
+            Program.uiThread.requestShutdown();
         Locks.notifyAllLocks();
     }
 }

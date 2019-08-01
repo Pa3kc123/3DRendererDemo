@@ -38,7 +38,7 @@ public class MyPanel extends JPanel {
     public MyPanel() {
         super();
 
-        final List<Drawable> boxList = new ArrayList<Drawable>(); {
+        final List<Box> boxList = new ArrayList<Box>(); {
             boxList.add(new Box(new Vertex(-200, -200, -200), 400));
 
             // //Level 1
@@ -67,10 +67,7 @@ public class MyPanel extends JPanel {
             this.boxCount = boxList.size();
         }
 
-        final List<Drawable> triangleList = new ArrayList<Drawable>(); {
-            Vertex v11 = new Vertex(-200, 200, 0);
-            Vertex v12 = new Vertex(200, 100, 0);
-
+        final List<Triangle> triangleList = new ArrayList<Triangle>(); {
             // Vertex v21 = new Vertex(-200, 200, -200);
             // Vertex v22 = new Vertex(0, 0, 0);
             // Vertex v23 = new Vertex(-200, 200, -200);
@@ -79,14 +76,13 @@ public class MyPanel extends JPanel {
             // Vertex v32 = new Vertex(0, 0, 0);
             // Vertex v33 = new Vertex(-200, 200, -200);
 
-            triangleList.add(new Triangle(v11, v12, Color.WHITE));
             // triangleList.add(new Triangle(v21, v22, v23, Color.WHITE));
             // triangleList.add(new Triangle(v31, v32, v33, Color.WHITE));
 
             this.triangleCount = triangleList.size();
         }
 
-        final List<Drawable> path3dList = new ArrayList<Drawable>(); {
+        final List<Path3D> path3dList = new ArrayList<Path3D>(); {
             Vertex vx1 = new Vertex(-200, 0, 0);
             Vertex vx2 = new Vertex(200, 0, 0);
             Color cx = Color.GREEN;
@@ -145,10 +141,10 @@ public class MyPanel extends JPanel {
         g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 15));
         int stringX = (int)-(super.getWidth() / 2);
         int stringY = (int)-(super.getHeight() / 2) + g.getFont().getSize();
-        g.drawString("FPS: ".concat(String.valueOf(Program.frameCounter)), stringX, stringY);
+        g.drawString("FPS: ".concat(String.valueOf(Program.uiThread.getFrameCount())), stringX, stringY);
 
         stringY += g.getFont().getSize();
-        g.drawString("Updates: ".concat(String.valueOf(Program.updateCounter)), stringX, stringY);
+        g.drawString("UPS: ".concat(String.valueOf(Program.uiThread.getUpdateCount())), stringX, stringY);
 
         stringY += g.getFont().getSize();
         g.drawString("toggled: ".concat(String.valueOf(Program.toggled)), stringX, stringY);

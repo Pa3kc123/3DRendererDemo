@@ -10,13 +10,15 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 
 import sk.pa3kc.enums.UpdateMode;
+import sk.pa3kc.matrix.Matrix;
+import sk.pa3kc.matrix.MatrixEditor;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.cmd.CmdUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
-import sk.pa3kc.singletons.MyThreadPool;
 import sk.pa3kc.ui.MyFrame;
+import sk.pa3kc.util.UIThread;
 
 public class Program {
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
@@ -33,8 +35,7 @@ public class Program {
 
     public static boolean toggled = false;
 
-    public static int frameCounter = 0;
-    public static int updateCounter = 0;
+    public static UIThread uiThread = new UIThread(60, 60);
 
     private Program(int graphicsDeviceIndex) {
         GraphicsDevice[] devices = null;
@@ -60,47 +61,16 @@ public class Program {
             }
         });
 
-        MyThreadPool.uiThread = new Thread(new Runnable() {
+        Program.uiThread.addUpdateRunnables(new Runnable() {
             @Override
             public void run() {
-                System.out.println("uiThread started");
-                MyThreadPool.uiThreadRunning = true;
-
-                final double nsPerUpdate = 1000000000.0d / Program.FRAME_LIMIT;
-
-                synchronized (Locks.UI_THREAD_LOCK) {
-                    try {
-                        Locks.UI_THREAD_LOCK.wait();
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-
-                long lastTime = System.nanoTime();
-                double unprocessedTime = 0d;
-
-                int frames = 0;
-                int updates = 0;
-
-                long frameCounter = System.currentTimeMillis();
-
-                while (MyThreadPool.uiThreadRunning && MyThreadPool.allRunning) {
-                    long currentTime = System.nanoTime();
-                    long passedTime = currentTime - lastTime;
-                    lastTime = currentTime;
-                    unprocessedTime += passedTime;
-
-                    if (unprocessedTime >= nsPerUpdate) {
-                        unprocessedTime = 0;
-                        int value = 1;
-                        int countedValue = Program.mainFrame.ySlider.getValue() + value;
-                        Program.mainFrame.xSlider.setValue(countedValue > Program.mainFrame.sliderMax ? Program.mainFrame.sliderMin : countedValue);
-                        Program.mainFrame.ySlider.setValue(countedValue > Program.mainFrame.sliderMax ? Program.mainFrame.sliderMin : countedValue);
-                        Program.mainFrame.zSlider.setValue(countedValue > Program.mainFrame.sliderMax ? Program.mainFrame.sliderMin : countedValue);
-                        Program.mainFrame.update(UpdateMode.ALL);
-                        updates++;
-                    }
-
+                Program.mainFrame.update(UpdateMode.ALL);
+            }
+        });
+        Program.uiThread.addRenderRunnables(new Runnable() {
+            @Override
+            public void run() {
+                if (Program.toggled) {
                     try {
                         SwingUtilities.invokeAndWait(new Runnable() {
                             @Override
@@ -112,25 +82,12 @@ public class Program {
                         if (ex instanceof InvocationTargetException) ex.printStackTrace();
                         else if (ex instanceof InterruptedException) ex.printStackTrace();
                         else ex.printStackTrace();
-
                         System.err.println("Multiple errors occured during drawing cycle... Exiting");
                         System.exit(0xFF);
                     }
-                    frames++;
-
-                    if (System.currentTimeMillis() - frameCounter >= 1000) {
-                        Program.updateCounter = updates;
-                        Program.frameCounter = frames;
-
-                        updates = 0;
-                        frames = 0;
-                        frameCounter += 1000;
-                    }
                 }
-                System.out.println("uiThread stopped");
             }
         });
-        MyThreadPool.uiThread.start();
     }
 
     public static Program getInst() { return instance; }
@@ -153,6 +110,7 @@ public class Program {
                 mainFrame = new MyFrame("Test2");
             }
         });
+
         synchronized (Locks.MY_FRAME_LOCK) {
             try {
                 Locks.MY_FRAME_LOCK.wait();
@@ -160,7 +118,8 @@ public class Program {
                 ex.printStackTrace();
             }
         }
-        MyThreadPool.uiThread.start();
+
+        Program.uiThread.start();
     }
 
     private enum LogTag {

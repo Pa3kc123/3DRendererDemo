@@ -1,41 +1,68 @@
-package sk.pa3kc.pojo;
+package sk.pa3kc.matrix;
 
 import sk.pa3kc.Program;
 import sk.pa3kc.inter.Validatable;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
+import sk.pa3kc.mylibrary.util.StringUtils;
 
 public class Matrix implements Cloneable, Validatable {
-    private boolean valid = false;
-    private double[][] values = null;
-    private int rowCount = -1;
-    private int colCount = -1;
+    boolean valid = false;
+    double[][] values = null;
+    int rowCount = -1;
+    int colCount = -1;
+    boolean beingEdited = false;
+    public final Object matrixLock = new Object();
 
     //region Constructors
     public Matrix(int rowCount, int colCount) {
         this(new double[rowCount][colCount]);
     }
-    public Matrix(double[][] values) {
-        if (values == null) return;
+    public Matrix(double[][] ref) {
+        if (ref == null) return;
 
+        this.values = ref;
         this.rowCount = values.length;
         this.colCount = values.length != 0 ? values[0].length : -1;
         this.valid = this.rowCount != 0 && this.colCount != 0;
-
-        if (this.valid) {
-            this.values = new double[this.rowCount][this.colCount];
-
-            for (int row = 0; row < this.rowCount; row++)
-            for (int col = 0; col < this.colCount; col++)
-                this.values[row][col] = values[row][col];
-        }
     }
     //endregion
 
     //region Getters
-    public double[][] getAllValues() { return this.values; }
+    public double[][] getAllValues() { return ArrayUtils.deepArrCopy(this.values); }
     public double getValue(int row, int col) { return this.values[row][col]; }
     public int getRowCount() { return this.rowCount; }
     public int getColCount() { return this.colCount; }
+    public boolean isBeingEdited() { return this.beingEdited; }
+    public boolean isNotBeingEdited() { return !this.beingEdited; }
+    //endregion
+
+    //region Setters
+    void setAllValues(double[][] ref) {
+        if (ref == null) throw new NullPointerException("ref cannot be null");
+        this.values = ref;
+        this.rowCount = this.values.length;
+        this.colCount = this.values.length != 0 ? this.values[0].length : -1;
+        this.valid = this.rowCount != 0 && this.colCount != 0;
+    }
+    void setValueAt(int row, int col, double value) {
+        if (row >= this.rowCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("row (", row, ") must be less than ", this.rowCount));
+        if (col >= this.colCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("col (", col, ") must be less than ", this.colCount));
+
+        this.values[row][col] = value;
+    }
+    void setBeingEdited(boolean state) { this.beingEdited = state; }
+    //endregion
+
+    //region Public functions
+    public void waitForUnlock() {
+        synchronized (this.matrixLock) {
+            try {
+                this.matrixLock.wait();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
     //endregion
 
     //region Overrides
