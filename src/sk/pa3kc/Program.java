@@ -10,15 +10,14 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 
 import sk.pa3kc.enums.UpdateMode;
-import sk.pa3kc.matrix.Matrix;
-import sk.pa3kc.matrix.MatrixEditor;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
-import sk.pa3kc.mylibrary.cmd.CmdUtils;
-import sk.pa3kc.mylibrary.util.StringUtils;
+import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
 import sk.pa3kc.ui.MyFrame;
 import sk.pa3kc.util.UIThread;
+
+import static sk.pa3kc.util.Logger.ERROR;
 
 public class Program {
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
@@ -33,7 +32,7 @@ public class Program {
 
     public static MyFrame mainFrame = null;
 
-    public static boolean toggled = false;
+    public static boolean toggled = true;
 
     public static UIThread uiThread = new UIThread(60, 60);
 
@@ -45,7 +44,7 @@ public class Program {
             ERROR(this, "No supported display found");
             System.exit(0xFF);
         }
-        Program.CHOOSEN_GRAPHICS_DEVICE = graphicsDeviceIndex < 0 ? 0 : graphicsDeviceIndex > devices.length - 1 ? devices.length - 1 : graphicsDeviceIndex;
+        Program.CHOOSEN_GRAPHICS_DEVICE = NumberUtils.map(graphicsDeviceIndex, 0, devices.length);
         Program.GRAPHICS_DEVICE_CONFIG = devices[Program.CHOOSEN_GRAPHICS_DEVICE].getDefaultConfiguration();
         Program.GRAPHICS_DEVICE_BOUNDS = Program.GRAPHICS_DEVICE_CONFIG.getBounds();
 
@@ -53,11 +52,6 @@ public class Program {
             @Override
             public void run() {
                 Program.toggled = !Program.toggled;
-
-                if (Program.toggled)
-                synchronized (Locks.KEYBOARD_LOCK) {
-                    Locks.KEYBOARD_LOCK.notify();
-                }
             }
         });
 
@@ -120,30 +114,5 @@ public class Program {
         }
 
         Program.uiThread.start();
-    }
-
-    private enum LogTag {
-        ERROR,
-        DEBUG,
-        INFO
-    }
-    public static void ERROR(Object obj, String message) { log(obj, message, LogTag.ERROR); }
-    public static void DEBUG(Object obj, String message) { log(obj, message, LogTag.DEBUG); }
-    public static void INFO(Object obj, String message) { log(obj, message, LogTag.INFO); }
-
-    private static void log(Object obj, String message, LogTag tag) {
-        switch (tag) {
-            case ERROR:
-                CmdUtils.setForegroundRGB(0xFF, 0, 0);
-                System.out.println(StringUtils.build("[ERROR] ", obj.getClass().getSimpleName(), ": ", message));
-                CmdUtils.resetColor();
-            break;
-            case DEBUG:
-                System.out.println(StringUtils.build("[DEBUG] ", obj.getClass().getSimpleName(), ": ", message));
-            break;
-            case INFO:
-                System.out.println(StringUtils.build("[INFO] ",  obj.getClass().getSimpleName(), ": ", message));
-            break;
-        }
     }
 }
