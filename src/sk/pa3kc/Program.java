@@ -105,13 +105,7 @@ public class Program {
             }
         });
 
-        synchronized (Locks.MY_FRAME_LOCK) {
-            try {
-                Locks.MY_FRAME_LOCK.wait();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
+        Locks.MY_FRAME_LOCK.lock();
 
         Program.uiThread.start();
     }

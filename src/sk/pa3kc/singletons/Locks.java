@@ -1,15 +1,17 @@
 package sk.pa3kc.singletons;
 
+import sk.pa3kc.util.Lock;
+
 public class Locks {
-    public static final Object MY_FRAME_LOCK = new Object();
-    public static final Object UI_THREAD_LOCK = new Object();
-    public static final Object KEYBOARD_LOCK = new Object();
+    public static final Lock MY_FRAME_LOCK = new Lock("MY_FRAME_LOCK");;
+    public static final Lock UI_THREAD_LOCK = new Lock("UI_THREAD_LOCK");;
+    public static final Lock KEYBOARD_LOCK = new Lock("KEYBOARD_LOCK");;
 
     private Locks() {}
 
-    public static void notifyAllLocks() {
-        synchronized (MY_FRAME_LOCK) { MY_FRAME_LOCK.notifyAll(); }
-        synchronized (UI_THREAD_LOCK) { UI_THREAD_LOCK.notifyAll(); }
-        synchronized (KEYBOARD_LOCK) { KEYBOARD_LOCK.notifyAll(); }
+    public static void unlockAllLocks() {
+        Locks.MY_FRAME_LOCK.unlockAll();
+        Locks.UI_THREAD_LOCK.unlockAll();
+        Locks.KEYBOARD_LOCK.unlockAll();
     }
 }

@@ -53,9 +53,7 @@ public class MyFrame extends JFrame implements Updatable {
 
         this.update(UpdateMode.ALL);
 
-        synchronized (Locks.MY_FRAME_LOCK) {
-            Locks.MY_FRAME_LOCK.notify();
-        }
+        Locks.MY_FRAME_LOCK.unlockOne();
     }
 
     @Override
@@ -94,9 +92,9 @@ public class MyFrame extends JFrame implements Updatable {
 
     @Override
     public void dispose() {
-        super.dispose();
         if (!Program.uiThread.isShutdownRequested())
             Program.uiThread.requestShutdown();
-        Locks.notifyAllLocks();
+        Locks.unlockAllLocks();
+        super.dispose();
     }
 }

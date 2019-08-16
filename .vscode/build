@@ -5,12 +5,12 @@ tmpFile=/tmp/javaFiles.txt
 srcDir=$workspaceDir/src
 binDir=$workspaceDir/bin
 javac=$jdk6_64/bin/javac
+jar=$jdk6_64/bin/jar
 
-echo "Clearing old classes"
-rm --recursive --force $binDir/sk
+outputJar=$workspaceDir/3DRendererDemo.jar
 
-echo "Recreating directory tree"
 if ! [ -d $binDir ]; then
+    echo "Recreating directory tree"
     mkdir $binDir
 fi
 
@@ -19,3 +19,10 @@ find $srcDir -name *.java > $tmpFile
 
 echo "Compiling java files"
 $javac -cp $workspaceDir/lib/MyLibrary.jar:$binDir -d $binDir @$tmpFile
+
+echo "Extracting libraries"
+cd $workspaceDir/bin
+$jar -xf $workspaceDir/lib/MyLibrary.jar sk CmdUtils32.dll CmdUtils64.dll
+
+echo "Creating jar file"
+$jar -cfe $workspaceDir/3DRendererDemo.jar sk.pa3kc.Program -C $workspaceDir/bin .

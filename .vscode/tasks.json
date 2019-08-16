@@ -8,7 +8,7 @@
                 "options": {
                     "cwd": "${workspaceFolder}/.vscode"
                 },
-                "command": "./build.sh"
+                "command": "./build"
             },
             "windows": {
                 "options": {
@@ -21,6 +21,24 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "linux": {
+                "options": {
+                    "cwd": "${workspaceFolder}/.vscode"
+                },
+                "command": "./clean"
+            },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}\\.vscode"
+                },
+                "command": "clean.bat"
+            },
+            "problemMatcher": [],
+            "group": "none"
         }
     ]
 }
