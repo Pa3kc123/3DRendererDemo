@@ -17,10 +17,7 @@
                 "command": "build.bat"
             },
             "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "none"
         },
         {
             "label": "clean",
@@ -39,6 +36,20 @@
             },
             "problemMatcher": [],
             "group": "none"
+        },
+        {
+            "label": "rebuild",
+            "type": "shell",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "dependsOrder": "sequence"
         }
     ]
 }
