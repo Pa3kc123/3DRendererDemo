@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
-import sk.pa3kc.singletons.Keyboard;
 import sk.pa3kc.singletons.Locks;
 import sk.pa3kc.ui.MyFrame;
 import sk.pa3kc.util.UIThread;
@@ -22,7 +21,6 @@ import static sk.pa3kc.util.Logger.ERROR;
 public class Program {
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
     public static final String OS_NAME = DefaultSystemPropertyStrings.OS_NAME;
-    public static final double FRAME_LIMIT = 60d;
 
     private static Program instance;
 
@@ -34,7 +32,7 @@ public class Program {
 
     public static boolean toggled = true;
 
-    public static UIThread uiThread = new UIThread(60, 60);
+    public static UIThread uiThread = new UIThread(66, 60);
 
     private Program(int graphicsDeviceIndex) {
         GraphicsDevice[] devices = null;
@@ -48,12 +46,12 @@ public class Program {
         Program.GRAPHICS_DEVICE_CONFIG = devices[Program.CHOOSEN_GRAPHICS_DEVICE].getDefaultConfiguration();
         Program.GRAPHICS_DEVICE_BOUNDS = Program.GRAPHICS_DEVICE_CONFIG.getBounds();
 
-        Keyboard.getInst().getKeyInfo('g').addOnPressedAction(new Runnable() {
-            @Override
-            public void run() {
-                Program.toggled = !Program.toggled;
-            }
-        });
+        // Keyboard.getInst().getKeyInfo('g').addOnPressedAction(new Runnable() {
+        //     @Override
+        //     public void run() {
+        //         Program.toggled = !Program.toggled;
+        //     }
+        // });
 
         Program.uiThread.addUpdateRunnables(new Runnable() {
             @Override

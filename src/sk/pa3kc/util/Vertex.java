@@ -43,7 +43,7 @@ public class Vertex extends Matrix {
     public double getLength() { return this.isValid() ? StrictMath.sqrt(createDotProduct(this, this)) : -1d; }
     //endregion
 
-    //region Private functions
+    //region Private methods
     public void updateXYZ() {
         this.X = super.getRowCount() > 0 ? super.getValue(0, 0) : -1;
         this.Y = super.getRowCount() > 1 ? super.getValue(1, 0) : -1;
@@ -52,29 +52,32 @@ public class Vertex extends Matrix {
     }
     //endregion
 
-    //region Public static functions
+    //region Public functions
     public static void printVertexes(Vertex... vertexes) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < vertexes.length; i++) {
-            String x = StringUtils.build("X = ", NumberUtils.round(vertexes[i].X, 2));
-            String y = StringUtils.build("Y = ", NumberUtils.round(vertexes[i].Y, 2));
-            String z = StringUtils.build("Z = ", NumberUtils.round(vertexes[i].Z, 2));
-            String w = StringUtils.build("W = ", NumberUtils.round(vertexes[i].W, 2));
+            final String x = StringUtils.build("X = ", NumberUtils.round(vertexes[i].X, 2));
+            final String y = StringUtils.build("Y = ", NumberUtils.round(vertexes[i].Y, 2));
+            final String z = StringUtils.build("Z = ", NumberUtils.round(vertexes[i].Z, 2));
+            final String w = StringUtils.build("W = ", NumberUtils.round(vertexes[i].W, 2));
+
             builder.append(StringUtils.build(i, ". Vertex = [ ", x, " | ", y, " | ", z, " | ", w, " ]", Program.NEWLINE));
         }
+
         builder.append(Program.NEWLINE);
 
         System.out.print(builder.toString());
     }
-    //endregion
-
-    //region Public static methods
     public static double getLength(Vertex ver1, Vertex ver2) {
         if (ver1.isNotValid()) throw new RuntimeException("Vertex1 is not is not valid");
         if (ver2.isNotValid()) throw new RuntimeException("Vertex2 is not is not valid");
 
-        Vertex tmp = new Vertex(ver1.getX() - ver2.getX(), ver1.getY() - ver2.getY(), ver1.getZ() - ver2.getZ());
+        final double x = ver1.getX() - ver2.getX();
+        final double y = ver1.getY() - ver2.getY();
+        final double z = ver1.getZ() - ver2.getZ();
+
+        final Vertex tmp = new Vertex(x, y, z);
         return Math.sqrt(StrictMath.pow(tmp.getX(), 2) + StrictMath.pow(tmp.getY(), 2));
     }
     public static double createDotProduct(Vertex ver1, Vertex ver2) {

@@ -8,7 +8,7 @@ import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.matrix.Matrix;
 
 public class MatrixEditor {
-    private final Matrix ref;
+    private Matrix ref;
 
     public MatrixEditor(Matrix ref) {
         if (ref.isBeingEdited()) throw new IllegalStateException("Referenced matrix is already been edited by another editor");
@@ -24,7 +24,7 @@ public class MatrixEditor {
     public void set(int row, int col, double value) { this.ref.setValueAt(row, col, value); }
     //endregion
 
-    //region Public static functions
+    //region Public functions
     public static void printMatrixes(Matrix... matrixes) {
         for (int i = 0; i < matrixes.length; i++)
         if (matrixes[i].isNotValid())
@@ -85,11 +85,11 @@ public class MatrixEditor {
     }
     //endregion
 
-    //region Package private methods
+    //region Private methods
     private void calculate(double number, ArithmeticOperation operation) {
         if (this.ref.isNotValid()) throw new RuntimeException("Referenced matrix is not valid");
 
-        double[][] values = this.ref.getAllValues();
+        final double[][] values = this.ref.getAllValues();
 
         switch (operation) {
             case ADD:
@@ -125,8 +125,8 @@ public class MatrixEditor {
         if (this.ref.isNotValid()) throw new RuntimeException("Referenced matrix is not valid");
         if (mat.isNotValid()) throw new RuntimeException("Matrix is not valid");
 
-        double[][] m1 = null;
-        double[][] m2 = null;
+        final double[][] m1;
+        final double[][] m2;
 
         if (this.ref.getColCount() == mat.getRowCount()) {
             m1 = this.ref.getAllValues();
@@ -134,7 +134,10 @@ public class MatrixEditor {
         } else if (this.ref.getRowCount() == mat.getColCount()) {
             m1 = mat.getAllValues();
             m2 = this.ref.getAllValues();
-        } else throw new IllegalArgumentException("Invalid matrix sizes (" + this.ref.getRowCount() + "x" + this.ref.getColCount() + " <-> " + mat.getRowCount() + "x" + mat.getColCount() + ")");
+        } else {
+            String msg = StringUtils.build("Invalid matrix sizes (", this.ref.getRowCount(), "x", this.ref.getColCount(), " <-> ", mat.getRowCount(), "x", mat.getColCount(), ")");
+            throw new IllegalArgumentException(msg);
+        }
 
         boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
         boolean oneOnly = ArrayUtils.compareAll(m2, 1);
@@ -158,12 +161,12 @@ public class MatrixEditor {
             break;
         }
 
-        int m1RowCount = m1.length;
-        int m1ColCount = m1[0].length;
-        int m2RowCount = m2.length;
-        int m2ColCount = m2[0].length;
+        final int m1RowCount = m1.length;
+        final int m1ColCount = m1[0].length;
+        final int m2RowCount = m2.length;
+        final int m2ColCount = m2[0].length;
 
-        double[][] result = new double[NumberUtils.min(m1RowCount, m2RowCount)][NumberUtils.min(m1ColCount, m2ColCount)];
+        final double[][] result = new double[NumberUtils.min(m1RowCount, m2RowCount)][NumberUtils.min(m1ColCount, m2ColCount)];
 
         for (int row = 0; row < m1RowCount; row++)
         for (int col = 0; col < m2ColCount; col++)
@@ -189,8 +192,9 @@ public class MatrixEditor {
     public void release() {
         this.ref.setBeingEdited(false);
         synchronized (this.ref.matrixLock) {
-            this.ref.matrixLock.notify();
+            this.ref.matrixLock.notifyAll();
         }
+        this.ref = null;
     }
     //endregion
 }

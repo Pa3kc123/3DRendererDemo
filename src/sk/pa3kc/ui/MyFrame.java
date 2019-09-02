@@ -32,12 +32,20 @@ public class MyFrame extends JFrame implements Updatable {
 
     //region Slider values
     public final int sliderMin = -90;
-    public final int sliderCur = 0;
+    public final int sliderCur = 45;
     public final int sliderMax = 269;
     //endregion
 
     public MyFrame(String name) {
         super(name);
+
+        Keyboard.getInst().getKeyInfo('g').addOnReleasedAction(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+
         JPanel pane = (JPanel)super.getContentPane();
         super.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 

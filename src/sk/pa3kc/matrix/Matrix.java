@@ -6,12 +6,13 @@ import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
 public class Matrix implements Cloneable, Validatable {
-    boolean valid = false;
-    double[][] values = null;
-    int rowCount = -1;
-    int colCount = -1;
-    boolean beingEdited = false;
     public final Object matrixLock = new Object();
+
+    boolean valid;
+    double[][] values;
+    int rowCount;
+    int colCount;
+    boolean beingEdited;
 
     //region Constructors
     public Matrix(int rowCount, int colCount) {
@@ -28,7 +29,7 @@ public class Matrix implements Cloneable, Validatable {
     //endregion
 
     //region Getters
-    public double[][] getAllValues() { return ArrayUtils.deepArrCopy(this.values); }
+    public double[][] getAllValues() { return this.values; }
     public double getValue(int row, int col) { return this.values[row][col]; }
     public int getRowCount() { return this.rowCount; }
     public int getColCount() { return this.colCount; }
@@ -53,7 +54,7 @@ public class Matrix implements Cloneable, Validatable {
     void setBeingEdited(boolean state) { this.beingEdited = state; }
     //endregion
 
-    //region Public functions
+    //region Public methods
     public void waitForUnlock() {
         synchronized (this.matrixLock) {
             try {
