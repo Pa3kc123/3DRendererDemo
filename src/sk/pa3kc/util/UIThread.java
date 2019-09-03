@@ -73,15 +73,20 @@ public class UIThread extends Thread {
     }
     //endregion
 
+    //region Public methods
+    public void requestShutdown() {
+        this.shutdownRequested = true;
+    }
+    //endregion
+
     //region Overrides
     @Override
     public void run() {
-        super.run();
         this.running = true;
         System.out.println("uiThread started");
 
         final double nsPerUpdate = 1000000000.0d / this.UPDATE_LIMIT;
-        final double nsPerFrame = 1000000000.0d / this.FRAME_LIMIT;
+        // final double nsPerFrame = 1000000000.0d / this.FRAME_LIMIT;
 
         long lastTime = System.nanoTime();
         double unprocessedTime = 0d;
@@ -122,8 +127,4 @@ public class UIThread extends Thread {
         System.out.println("uiThread stopped");
     }
     //endregion
-
-    public void requestShutdown() {
-        this.shutdownRequested = false;
-    }
 }

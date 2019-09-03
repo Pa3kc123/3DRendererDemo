@@ -2,7 +2,6 @@ package sk.pa3kc.matrix;
 
 import sk.pa3kc.Program;
 import sk.pa3kc.enums.ArithmeticOperation;
-import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.matrix.Matrix;
@@ -10,18 +9,27 @@ import sk.pa3kc.matrix.Matrix;
 public class MatrixEditor {
     private Matrix ref;
 
+    //region Constructors
     public MatrixEditor(Matrix ref) {
         if (ref.isBeingEdited()) throw new IllegalStateException("Referenced matrix is already been edited by another editor");
         this.ref = ref;
         this.ref.setBeingEdited(true);
     }
+    public static MatrixEditor empty() { return new MatrixEditor(new Matrix(0, 0)); }
+    //endregion
 
     //region Getters
     public Matrix getReference() { return this.ref; }
     //endregion
 
-    //region Setters
-    public void set(int row, int col, double value) { this.ref.setValueAt(row, col, value); }
+    //region Changers
+    public MatrixEditor changeReference(Matrix ref) {
+        if (ref == null) throw new NullPointerException("Reference cannot be null");
+        if (ref.isBeingEdited()) throw new IllegalStateException("Referenced matrix is already been edited by another editor");
+        this.ref = ref;
+        this.ref.setBeingEdited(true);
+        return this;
+    }
     //endregion
 
     //region Public functions
@@ -51,37 +59,66 @@ public class MatrixEditor {
             }
             builder.replace(builder.length() - 2, builder.length(), "|" + Program.NEWLINE);
         }
-        builder.append(Program.NEWLINE);
 
-        System.out.print(builder.toString());
+        System.out.println(builder.toString());
     }
     //endregion
 
     //region Public methods
-    public void add(double number) { this.calculate(number, ArithmeticOperation.ADD); }
-    public void add(Matrix mat) { this.calculate(mat, ArithmeticOperation.ADD); }
-    public void subtract(double number) { this.calculate(number, ArithmeticOperation.SUBTRACT); }
-    public void subtract(Matrix mat) { this.calculate(mat, ArithmeticOperation.SUBTRACT); }
-    public void multiply(double number) { this.calculate(number, ArithmeticOperation.MULTIPLY); }
-    public void multiply(Matrix mat) { this.calculate(mat, ArithmeticOperation.MULTIPLY); }
-    public void divide(double number) { this.calculate(number, ArithmeticOperation.DIVIDE); }
-    public void divide(Matrix mat) { this.calculate(mat, ArithmeticOperation.DIVIDE); }
-    public void identify() {
+    public MatrixEditor add(double number) {
+        this.calculate(number, ArithmeticOperation.ADD);
+        return this;
+    }
+    public MatrixEditor add(Matrix mat) {
+        this.calculate(mat, ArithmeticOperation.ADD);
+        return this;
+    }
+    public MatrixEditor subtract(double number) {
+        this.calculate(number, ArithmeticOperation.SUBTRACT);
+        return this;
+    }
+    public MatrixEditor subtract(Matrix mat) {
+        this.calculate(mat, ArithmeticOperation.SUBTRACT);
+        return this;
+    }
+    public MatrixEditor multiply(double number) {
+        this.calculate(number, ArithmeticOperation.MULTIPLY);
+        return this;
+    }
+    public MatrixEditor multiply(Matrix mat) {
+        this.calculate(mat, ArithmeticOperation.MULTIPLY);
+        return this;
+    }
+    public MatrixEditor divide(double number) {
+        this.calculate(number, ArithmeticOperation.DIVIDE);
+        return this;
+    }
+    public MatrixEditor divide(Matrix mat) {
+        this.calculate(mat, ArithmeticOperation.DIVIDE);
+        return this;
+    }
+    public MatrixEditor identify() {
         for (int row = 0; row < this.ref.rowCount; row++)
         for (int col = 0; col < this.ref.colCount; col++)
             this.ref.values[row][col] = row == col ? 1d : 0d;
+
+        return this;
     }
-    public void setValueAt(int row, int col, double value) {
+    public MatrixEditor setValueAt(int row, int col, double value) {
         if (row >= this.ref.rowCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("row (", row, ") must be less than ", this.ref.rowCount));
         if (col >= this.ref.colCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("col (", col, ") must be less than ", this.ref.colCount));
 
         this.ref.values[row][col] = value;
+
+        return this;
     }
-    public void replaceWith(double[][] ref) {
-        if (ref.length == 0) throw new RuntimeException("referenced value has 0 rows");
-        if (ref[0].length == 0) throw new RuntimeException("referenced value has 0 columns");
+    public MatrixEditor replaceWith(double[][] ref) {
+        if (ref.length == 0) throw new RuntimeException("reference has no rows");
+        if (ref[0].length == 0) throw new RuntimeException("reference has no columns");
 
         this.ref.values = ref;
+
+        return this;
     }
     //endregion
 
@@ -139,27 +176,27 @@ public class MatrixEditor {
             throw new IllegalArgumentException(msg);
         }
 
-        boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
+        /*boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
         boolean oneOnly = ArrayUtils.compareAll(m2, 1);
         switch (operation) {
             case ADD:
             case SUBTRACT:
-                if (zeroOnly == true) return;
+                if (zeroOnly) return;
             break;
             case MULTIPLY:
-                if (oneOnly == true) return;
-                if (zeroOnly == true) {
+                if (oneOnly) return;
+                if (zeroOnly) {
                     for (int row = 0; row < m1.length; row++)
                     for (int col = 0; col < m1.length; col++)
-                        m1[row][col] = 0;
+                        this.ref.setAllValues(new double[m1.length][m1.length]);
                     return;
                 }
             break;
             case DIVIDE:
-                if (zeroOnly == true) throw new ArithmeticException("Cannot divide by zero");
-                if (oneOnly == true) return;
+                if (zeroOnly) throw new ArithmeticException("Cannot divide by zero");
+                if (oneOnly) return;
             break;
-        }
+        }*/
 
         final int m1RowCount = m1.length;
         final int m1ColCount = m1[0].length;
@@ -191,9 +228,7 @@ public class MatrixEditor {
     }
     public void release() {
         this.ref.setBeingEdited(false);
-        synchronized (this.ref.matrixLock) {
-            this.ref.matrixLock.notifyAll();
-        }
+        this.ref.matrixLock.unlockAll();
         this.ref = null;
     }
     //endregion

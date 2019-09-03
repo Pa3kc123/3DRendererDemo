@@ -5,7 +5,7 @@ import sk.pa3kc.matrix.Matrix;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
-public class Vertex extends Matrix {
+public class Vertex extends Matrix implements Cloneable {
     private double X;
     private double Y;
     private double Z;
@@ -96,5 +96,10 @@ public class Vertex extends Matrix {
 
         return new Vertex(x, y, z);
     }
+    //endregion
+
+    //region Overrides
+    @Override
+    public Matrix clone() { return new Vertex(super.clone()); }
     //endregion
 }

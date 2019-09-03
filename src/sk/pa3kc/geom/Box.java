@@ -29,8 +29,9 @@ public class Box implements Drawable {
     public void draw(Graphics g) {
         if (g == null) return;
 
-        Vertex[] vertexCopy = new Vertex[this.vertexes.length];
-        System.arraycopy(this.vertexes, 0, vertexCopy, 0, this.vertexes.length);
+        final Vertex[] vertexCopy = new Vertex[this.vertexes.length];
+        for (int i = 0; i < this.vertexes.length; i++)
+            vertexCopy[i] = (Vertex)this.vertexes[i].clone();
 
         Shape3D.transform(vertexCopy);
 

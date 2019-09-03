@@ -3,9 +3,9 @@ package sk.pa3kc.singletons;
 import sk.pa3kc.matrix.Matrix;
 
 public class Matrixes {
-    public static final Matrix xMatrix = new Matrix(4, 4);
-    public static final Matrix yMatrix = new Matrix(4, 4);
-    public static final Matrix zMatrix = new Matrix(4, 4);
-    public static final Matrix rotationMatrix = new Matrix(4, 4);
-    public static final Matrix projectionMatrix = new Matrix(4, 4);
+    public static final Matrix X_MATRIX = Matrix.newIdentifiedMatrix(4, 4);
+    public static final Matrix Y_MATRIX = Matrix.newIdentifiedMatrix(4, 4);
+    public static final Matrix Z_MATRIX = Matrix.newIdentifiedMatrix(4, 4);
+    public static final Matrix ROTATION_MATRIX = new Matrix(4, 4);
+    public static final Matrix PROJECTION_MATRIX = new Matrix(4, 4);
 }

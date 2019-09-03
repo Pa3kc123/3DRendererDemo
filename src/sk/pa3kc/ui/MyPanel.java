@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import sk.pa3kc.Program;
 import sk.pa3kc.geom.Box;
@@ -16,11 +15,16 @@ import sk.pa3kc.geom.Path3D;
 import sk.pa3kc.geom.Triangle;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
+import sk.pa3kc.mylibrary.util.StringUtils;
 
 public class MyPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private MyFrame parent = null;
+    private final int FONT_SIZE = 15;
+    private final Font FONT = new Font("Dialog", Font.PLAIN, FONT_SIZE);
+    private final Toolkit TOOLKIT = Toolkit.getDefaultToolkit();
+
+    // private final MyFrame parent = (MyFrame)SwingUtilities.getAncestorOfClass(MyFrame.class, this);
 
     //region Redering objects
     private final int boxCount;
@@ -120,9 +124,6 @@ public class MyPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (this.parent == null)
-            this.parent = (MyFrame) SwingUtilities.getAncestorOfClass(MyFrame.class, this);
-
         g.translate(this.getWidth() / 2, this.getHeight() / 2);
         g.setColor(Color.WHITE);
 
@@ -138,18 +139,18 @@ public class MyPanel extends JPanel {
         for (int i = 0; i < this.path3dCount; i++)
             this.shapes[2][i].draw(g);
 
-        g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 15));
+        g.setFont(FONT);
         int stringX = (int)-(super.getWidth() / 2);
-        int stringY = (int)-(super.getHeight() / 2) + g.getFont().getSize();
-        g.drawString("FPS: ".concat(String.valueOf(Program.uiThread.getFrameCount())), stringX, stringY);
+        int stringY = (int)-(super.getHeight() / 2) + FONT_SIZE;
+        g.drawString(StringUtils.build("FPS: ", Program.uiThread.getFrameCount()), stringX, stringY);
 
-        stringY += g.getFont().getSize();
-        g.drawString("UPS: ".concat(String.valueOf(Program.uiThread.getUpdateCount())), stringX, stringY);
+        stringY += FONT_SIZE;
+        g.drawString(StringUtils.build("UPS: ", Program.uiThread.getUpdateCount()), stringX, stringY);
 
-        stringY += g.getFont().getSize();
-        g.drawString("toggled: ".concat(String.valueOf(Program.toggled)), stringX, stringY);
+        stringY += FONT_SIZE;
+        g.drawString(StringUtils.build("toggled: ", Program.toggled), stringX, stringY);
 
         if (Program.OS_NAME.contains("linux"))
-            Toolkit.getDefaultToolkit().sync();
+            TOOLKIT.sync();
     }
 }

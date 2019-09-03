@@ -13,23 +13,23 @@ public class Player {
     private MovementDirection moveDirection = MovementDirection.NONE;
     private boolean isMoving = false;
     private Vertex location = new Vertex(0d, 0d, 0d, 1d);
-    private Vertex lookDirection = new Vertex(0d, 0d, 0d, 1d);
+    // private Vertex lookDirection = new Vertex(0d, 0d, 0d, 1d);
 
     public MovementDirection getMoveDirection() { return this.moveDirection; }
     public boolean getIsMoving() { return this.isMoving; }
-    public final Vertex getLocation() { return this.location; }
+    public Vertex getLocation() { return this.location; }
 
     public void setDirection(MovementDirection direction) {
         this.moveDirection = direction;
         this.isMoving = this.moveDirection != MovementDirection.NONE;
     }
-    public void setLocation(Vertex location) {
-        if (location.isValid() == false || location.getRowCount() < this.location.getRowCount() || location.getColCount() < this.location.getColCount())
+    public void setLocation(Vertex ver) {
+        if (ver.isNotValid() || ver.getRowCount() < this.location.getRowCount() || ver.getColCount() < this.location.getColCount())
             throw new IllegalArgumentException("location argument is not valid");
 
-        double[][] values = this.location.getAllValues();
+        final double[][] values = this.location.getAllValues();
         for (int row = 0; row < this.location.getRowCount(); row++)
         for (int col = 0; col < this.location.getColCount(); col++)
-            values[row][col] = location.getValue(row, col);
+            values[row][col] = ver.getValue(row, col);
     }
 }

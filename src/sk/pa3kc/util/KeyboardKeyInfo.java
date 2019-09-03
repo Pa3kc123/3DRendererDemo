@@ -9,9 +9,10 @@ public class KeyboardKeyInfo {
     public final int keyId;
 
     private final ArrayList<Runnable> onPressedActions = new ArrayList<Runnable>();
+    private final ArrayList<Runnable> onTypedActions = new ArrayList<Runnable>();
     private final ArrayList<Runnable> onReleasedActions = new ArrayList<Runnable>();
 
-    private boolean _isPressed = false;
+    private boolean isPressed = false;
 
     //Constructor
     public KeyboardKeyInfo(int keyId) {
@@ -39,12 +40,21 @@ public class KeyboardKeyInfo {
 
         return res;
     }
+    public boolean addOnTypedAction(Runnable action) {
+        if (action == null) return false;
+
+        boolean res = !this.onTypedActions.contains(action);
+
+        if (res) this.onPressedActions.add(action);
+
+        return res;
+    }
     public boolean addOnReleasedAction(Runnable action) {
         if (action == null) return false;
 
         boolean res = !this.onReleasedActions.contains(action);
 
-        if (!res) this.onReleasedActions.add(action);
+        if (res) this.onReleasedActions.add(action);
 
         return res;
     }
@@ -57,6 +67,13 @@ public class KeyboardKeyInfo {
 
         return res;
     }
+    public boolean removeOnTypedAction(Runnable action) {
+        boolean res = this.onTypedActions.contains(action);
+
+        if (res) this.onTypedActions.remove(action);
+
+        return res;
+    }
     public boolean removeOnReleasedAction(Runnable action) {
         boolean res = this.onReleasedActions.contains(action);
 
@@ -66,22 +83,27 @@ public class KeyboardKeyInfo {
     }
 
     //Getters
-    public boolean isPressed() { return this._isPressed; }
-    public boolean isReleased() { return !this._isPressed; }
+    public boolean isPressed() { return this.isPressed; }
+    public boolean isReleased() { return !this.isPressed; }
 
     //Events
     public void onPressed() {
-        if (!this._isPressed) {
-            this._isPressed = true;
+        if (!this.isPressed) {
+            this.isPressed = true;
 
             for (Runnable action : this.onPressedActions)
             if (action != null)
                 action.run();
         }
     }
+    public void onTyped() {
+        for (Runnable action : this.onTypedActions)
+        if (action != null)
+            action.run();
+    }
     public void onReleased() {
-        if (this._isPressed) {
-            this._isPressed = false;
+        if (this.isPressed) {
+            this.isPressed = false;
 
             for (Runnable action : this.onReleasedActions)
             if (action != null)

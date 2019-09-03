@@ -1,41 +1,31 @@
 package sk.pa3kc.singletons;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import sk.pa3kc.util.KeyboardKeyInfo;
 
 public class Keyboard {
-    private static Keyboard instance = new Keyboard();
+    private Keyboard() {}
 
-    private final KeyboardKeyInfo[] supportedChars;
+    private static final KeyboardKeyInfo[] _supportedChars = new KeyboardKeyInfo[] {
+        new KeyboardKeyInfo(KeyEvent.VK_G),
+        new KeyboardKeyInfo(KeyEvent.VK_H)
+    };
 
-    private char lastRequestedChar = '\0';
-    private KeyboardKeyInfo lastRequestedKeyInfo = null;
+    private static char _lastRequestedChar = '\0';
+    private static KeyboardKeyInfo _lastRequestedKeyInfo = null;
 
-    private Keyboard() {
-        this.supportedChars = new ArrayList<KeyboardKeyInfo>() {
-            private static final long serialVersionUID = 1L;
-
-            {
-                super.add(new KeyboardKeyInfo(KeyEvent.VK_G));
-            }
-        }.toArray(new KeyboardKeyInfo[0]);
-    }
-
-    public static Keyboard getInst() { return instance; }
-
-    public int getSupportedCharCount() { return this.supportedChars.length; }
-    public KeyboardKeyInfo getKeyInfo(int index) { return this.supportedChars[index]; }
-    public KeyboardKeyInfo getKeyInfo(char symbol) {
-        if (symbol == lastRequestedChar) return this.lastRequestedKeyInfo;
+    public static int getSupportedCharCount() { return _supportedChars.length; }
+    public static KeyboardKeyInfo getKeyInfo(int index) { return _supportedChars[index]; }
+    public static KeyboardKeyInfo getKeyInfo(char symbol) {
+        if (symbol == _lastRequestedChar) return _lastRequestedKeyInfo;
 
         KeyboardKeyInfo result = null;
 
-        for (KeyboardKeyInfo keyInfo : this.supportedChars)
+        for (KeyboardKeyInfo keyInfo : _supportedChars)
         if (keyInfo.symbol == symbol) {
-            this.lastRequestedChar = symbol;
-            this.lastRequestedKeyInfo = keyInfo;
+            _lastRequestedChar = symbol;
+            _lastRequestedKeyInfo = keyInfo;
             result = keyInfo;
             break;
         }
@@ -43,11 +33,12 @@ public class Keyboard {
         return result;
     }
 
-    public void processKeyEvent(KeyEvent event) {
-        for (KeyboardKeyInfo keyInfo : this.supportedChars)
+    public static void processKeyEvent(KeyEvent event) {
+        for (KeyboardKeyInfo keyInfo : _supportedChars)
         if (keyInfo.keyId == event.getKeyCode())
         switch (event.getID()) {
             case KeyEvent.KEY_PRESSED: keyInfo.onPressed(); break;
+            case KeyEvent.KEY_TYPED: keyInfo.onTyped(); break;
             case KeyEvent.KEY_RELEASED: keyInfo.onReleased(); break;
         }
     }

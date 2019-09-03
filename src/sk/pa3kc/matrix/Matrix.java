@@ -3,10 +3,12 @@ package sk.pa3kc.matrix;
 import sk.pa3kc.Program;
 import sk.pa3kc.inter.Validatable;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
+import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
+import sk.pa3kc.util.Lock;
 
 public class Matrix implements Cloneable, Validatable {
-    public final Object matrixLock = new Object();
+    public final Lock matrixLock = new Lock("matrixLock");
 
     boolean valid;
     double[][] values;
@@ -25,6 +27,14 @@ public class Matrix implements Cloneable, Validatable {
         this.rowCount = values.length;
         this.colCount = values.length != 0 ? values[0].length : -1;
         this.valid = this.rowCount != 0 && this.colCount != 0;
+    }
+    public static Matrix newIdentifiedMatrix(int rowCount, int colCount) {
+        double[][] values = new double[rowCount][colCount];
+
+        for (int i = 0; i < rowCount && i < colCount; i++)
+            values[i][i] = 1d;
+
+        return new Matrix(values);
     }
     //endregion
 
@@ -56,13 +66,7 @@ public class Matrix implements Cloneable, Validatable {
 
     //region Public methods
     public void waitForUnlock() {
-        synchronized (this.matrixLock) {
-            try {
-                this.matrixLock.wait();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
+        this.matrixLock.lock();
     }
     //endregion
 
@@ -75,7 +79,7 @@ public class Matrix implements Cloneable, Validatable {
     public Matrix clone() {
         if (!this.valid) throw new RuntimeException("Matrix is not valid");
 
-        double[][] tmpValues = ArrayUtils.deepArrCopy(this.values);
+        final double[][] tmpValues = ArrayUtils.deepArrCopy(this.values);
 
         return new Matrix(tmpValues);
     }
@@ -93,13 +97,12 @@ public class Matrix implements Cloneable, Validatable {
             builder.append("{");
             for (int col = 0; col < this.colCount; col++) {
                 builder.append(" ");
-                builder.append(this.values[row][col]);
+                builder.append(NumberUtils.round(this.values[row][col], 2));
                 builder.append(",");
             }
             builder.replace(builder.length() - 1, builder.length(), " }");
             builder.append(Program.NEWLINE);
         }
-        builder.append(Program.NEWLINE);
 
         return builder.toString();
     }
@@ -107,7 +110,7 @@ public class Matrix implements Cloneable, Validatable {
     public boolean equals(Object obj) {
         if (!(obj instanceof Matrix)) return false;
 
-        Matrix ref = (Matrix)obj;
+        final Matrix ref = (Matrix)obj;
 
         return ref.valid == this.valid && ref.values.equals(this.values) && ref.colCount == this.colCount && ref.rowCount == this.rowCount;
     }

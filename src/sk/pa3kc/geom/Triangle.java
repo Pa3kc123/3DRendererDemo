@@ -23,7 +23,9 @@ public class Triangle implements Drawable {
     public void draw(Graphics g) {
         if (g == null) return;
 
-        Vertex[] vertexCopy = this.vertexes.clone();
+        final Vertex[] vertexCopy = new Vertex[this.vertexes.length];
+        for (int i = 0; i < this.vertexes.length; i++)
+            vertexCopy[i] = (Vertex)this.vertexes[i].clone();
 
         Shape3D.transform(vertexCopy);
 

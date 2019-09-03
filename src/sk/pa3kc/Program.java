@@ -35,12 +35,13 @@ public class Program {
     public static UIThread uiThread = new UIThread(66, 60);
 
     private Program(int graphicsDeviceIndex) {
-        GraphicsDevice[] devices = null;
+        final GraphicsDevice[] devices;
         try {
             devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         } catch (HeadlessException ex) {
             ERROR(this, "No supported display found");
             System.exit(0xFF);
+            return;
         }
         Program.CHOOSEN_GRAPHICS_DEVICE = NumberUtils.map(graphicsDeviceIndex, 0, devices.length);
         Program.GRAPHICS_DEVICE_CONFIG = devices[Program.CHOOSEN_GRAPHICS_DEVICE].getDefaultConfiguration();
@@ -83,14 +84,6 @@ public class Program {
     }
 
     public static Program getInst() { return instance; }
-
-    public static <T> T castOrNull(Object value, Class<T> type) {
-        try {
-            return type.cast(value);
-        } catch (ClassCastException ignored) {
-            return null;
-        }
-    }
 
     public static void main(String[] args) {
         System.setProperty("sun.java2d.opengl", "false");
