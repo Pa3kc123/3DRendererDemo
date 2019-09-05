@@ -17,8 +17,10 @@ public class Triangle implements Drawable {
         this.color = color;
     }
 
-    public Vertex[] getAll() { return this.vertexes.clone(); }
-
+    @Override
+    public Vertex[] getAll() { return this.vertexes; }
+    @Override
+    public Vertex[] cloneAll() { return this.vertexes.clone(); }
     @Override
     public void draw(Graphics g) {
         if (g == null) return;

@@ -23,17 +23,25 @@ public class Box implements Drawable {
         this.vertexes[7] = new Vertex(ver.getX() + length, ver.getY(), ver.getZ() + width);
     }
 
-    public Vertex[] getAll() { return this.vertexes.clone(); }
-
     @Override
-    public void draw(Graphics g) {
-        if (g == null) return;
-
+    public Vertex[] getAll() { return this.vertexes; }
+    @Override
+    public Vertex[] cloneAll() {
         final Vertex[] vertexCopy = new Vertex[this.vertexes.length];
         for (int i = 0; i < this.vertexes.length; i++)
             vertexCopy[i] = (Vertex)this.vertexes[i].clone();
 
+        return vertexCopy;
+    }
+    @Override
+    public void draw(Graphics g) {
+        if (g == null) return;
+
+        final Vertex[] vertexCopy = this.cloneAll();
         Shape3D.transform(vertexCopy);
+
+        for (int i = 0; i < vertexCopy.length; i++)
+            g.drawString(String.valueOf(i), (int)vertexCopy[i].getX(), (int)vertexCopy[i].getY());
 
         for (int i = 0; i < 4; i++) {
             int x1 = (int)vertexCopy[i].getX();
@@ -44,20 +52,20 @@ public class Box implements Drawable {
             g.drawLine(x1, y1, x2, y2);
         }
 
-        for (int i = 0; i < 4; i++) {
-            int x1 = (int)vertexCopy[i].getX();
-            int y1 = (int)vertexCopy[i].getY();
-            int x2 = (int)vertexCopy[i+4].getX();
-            int y2 = (int)vertexCopy[i+4].getY();
-
-            g.drawLine(x1, y1, x2, y2);
-        }
-
         for (int i = 4; i < 8; i++) {
             int x1 = (int)vertexCopy[i].getX();
             int y1 = (int)vertexCopy[i].getY();
             int x2 = (int)vertexCopy[i+1 == 8 ? 4 : i+1].getX();
             int y2 = (int)vertexCopy[i+1 == 8 ? 4 : i+1].getY();
+
+            g.drawLine(x1, y1, x2, y2);
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int x1 = (int)vertexCopy[i].getX();
+            int y1 = (int)vertexCopy[i].getY();
+            int x2 = (int)vertexCopy[i+4].getX();
+            int y2 = (int)vertexCopy[i+4].getY();
 
             g.drawLine(x1, y1, x2, y2);
         }

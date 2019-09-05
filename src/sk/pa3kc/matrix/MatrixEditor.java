@@ -149,8 +149,8 @@ public class MatrixEditor {
             break;
         }
 
-        for (int row = 0; row < values.length; row++)
-        for (int col = 0; col < values[row].length; col++)
+        for (int row = 0; row < this.ref.getRowCount(); row++)
+        for (int col = 0; col < this.ref.getColCount(); col++)
         switch (operation) {
             case ADD: values[row][col] += number; break;
             case SUBTRACT: values[row][col] -= number; break;
@@ -159,7 +159,7 @@ public class MatrixEditor {
         }
     }
     private void calculate(Matrix mat, ArithmeticOperation operation) {
-        if (this.ref.isNotValid()) throw new RuntimeException("Referenced matrix is not valid");
+        if (this.ref.isNotValid()) throw new RuntimeException("Reference is not valid");
         if (mat.isNotValid()) throw new RuntimeException("Matrix is not valid");
 
         final double[][] m1;
@@ -172,52 +172,24 @@ public class MatrixEditor {
             m1 = mat.getAllValues();
             m2 = this.ref.getAllValues();
         } else {
-            String msg = StringUtils.build("Invalid matrix sizes (", this.ref.getRowCount(), "x", this.ref.getColCount(), " <-> ", mat.getRowCount(), "x", mat.getColCount(), ")");
+            final int m1RowCount = this.ref.getRowCount();
+            final int m1ColCount = this.ref.getColCount();
+            final int m2RowCount = mat.getRowCount();
+            final int m2ColCount = mat.getColCount();
+
+            String msg = StringUtils.build("Invalid matrix sizes (", m1RowCount, "x", m1ColCount, " <-> ", m2RowCount, "x", m2ColCount, ")");
             throw new IllegalArgumentException(msg);
         }
 
-        /*boolean zeroOnly = ArrayUtils.compareAll(m2, 0);
-        boolean oneOnly = ArrayUtils.compareAll(m2, 1);
+        final double[][] result = new double[NumberUtils.min(m1.length, m2.length)][NumberUtils.min(m1[0].length, m2[0].length)];
+
+        for (int row = 0; row < m1.length; row++)
+        for (int col = 0; col < m2[0].length; col++)
+        for (int i = 0; i < m1[0].length; i++)
         switch (operation) {
-            case ADD:
-            case SUBTRACT:
-                if (zeroOnly) return;
-            break;
-            case MULTIPLY:
-                if (oneOnly) return;
-                if (zeroOnly) {
-                    for (int row = 0; row < m1.length; row++)
-                    for (int col = 0; col < m1.length; col++)
-                        this.ref.setAllValues(new double[m1.length][m1.length]);
-                    return;
-                }
-            break;
-            case DIVIDE:
-                if (zeroOnly) throw new ArithmeticException("Cannot divide by zero");
-                if (oneOnly) return;
-            break;
-        }*/
-
-        final int m1RowCount = m1.length;
-        final int m1ColCount = m1[0].length;
-        final int m2RowCount = m2.length;
-        final int m2ColCount = m2[0].length;
-
-        final double[][] result = new double[NumberUtils.min(m1RowCount, m2RowCount)][NumberUtils.min(m1ColCount, m2ColCount)];
-
-        for (int row = 0; row < m1RowCount; row++)
-        for (int col = 0; col < m2ColCount; col++)
-        for (int i = 0; i < m1ColCount; i++)
-        switch (operation) {
-            case ADD:
-                result[row][col] += m1[row][i] + m2[i][col];
-            break;
-            case SUBTRACT:
-                result[row][col] += m1[row][i] - m2[i][col];
-            break;
-            case MULTIPLY:
-                result[row][col] += m1[row][i] * m2[i][col];
-            break;
+            case ADD: result[row][col] += m1[row][i] + m2[i][col]; break;
+            case SUBTRACT: result[row][col] += m1[row][i] - m2[i][col]; break;
+            case MULTIPLY: result[row][col] += m1[row][i] * m2[i][col]; break;
             case DIVIDE:
                 if (m2[i][col] != 0d)
                     result[row][col] += m1[row][i] / m2[i][col];
@@ -232,4 +204,10 @@ public class MatrixEditor {
         this.ref = null;
     }
     //endregion
+
+    @Override
+    protected void finalize() throws Throwable {
+        this.release();
+        super.finalize();
+    }
 }

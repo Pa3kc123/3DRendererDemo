@@ -25,7 +25,7 @@ public class MyFrame extends JFrame implements Updatable {
 
     public final double distanceMax = 10d;
     public final double distanceMin = 1d;
-    public double distance = 1d;
+    public double distance = 100d;
 
     //region Components
     public final MyPanel myPanel = new MyPanel();
@@ -33,7 +33,7 @@ public class MyFrame extends JFrame implements Updatable {
 
     //region Slider values
     public final int sliderMin = -90;
-    public final int sliderDef = 45;
+    public final int sliderDef = 0;
     public final int sliderMax = 269;
     public int sliderCur = sliderDef;
     //endregion
@@ -44,7 +44,7 @@ public class MyFrame extends JFrame implements Updatable {
         final Runnable action = new Runnable() {
             @Override
             public void run() {
-                sliderCur++;
+                sliderCur += 2;
             }
         };
 
@@ -72,6 +72,8 @@ public class MyFrame extends JFrame implements Updatable {
     @Override
     protected void processKeyEvent(KeyEvent e) {
         super.processKeyEvent(e);
+        System.out.println(e.getKeyChar());
+
         Keyboard.processKeyEvent(e);
     }
 

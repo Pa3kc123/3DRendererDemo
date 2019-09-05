@@ -95,6 +95,8 @@ public class UIThread extends Thread {
         int updates = 0;
 
         long frameCounter = System.currentTimeMillis();
+        int updateErrorCounter = 0;
+        int renderErrorCounter = 0;
 
         while (!this.shutdownRequested) {
             long currentTime = System.nanoTime();
@@ -104,14 +106,32 @@ public class UIThread extends Thread {
 
             if (unprocessedTime >= nsPerUpdate) {
                 unprocessedTime = 0;
-                for (Runnable runnable : this.updateRunnables)
-                    runnable.run();
-                updates++;
+                try {
+                    for (Runnable runnable : this.updateRunnables)
+                        runnable.run();
+                    updates++;
+                    updateErrorCounter = 0;
+                } catch (Exception ex) {
+                    updateErrorCounter++;
+                    if (updateErrorCounter == 5) {
+                        ex.printStackTrace();
+                        System.exit(0xFF);
+                    }
+                }
             }
 
-            for (Runnable runnable : this.renderRunnables)
-                runnable.run();
-            frames++;
+            try {
+                for (Runnable runnable : this.renderRunnables)
+                    runnable.run();
+                frames++;
+                renderErrorCounter = 0;
+            } catch (Exception ex) {
+                renderErrorCounter++;
+                if (renderErrorCounter == 5) {
+                    ex.printStackTrace();
+                    System.exit(0xFF);
+                }
+            }
 
             if (System.currentTimeMillis() - frameCounter >= 1000) {
                 this.updateCount = updates;

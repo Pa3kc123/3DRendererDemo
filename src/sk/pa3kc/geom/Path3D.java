@@ -18,8 +18,10 @@ public class Path3D implements Drawable {
         this.text = text;
     }
 
-    public Vertex[] getAll() { return this.vertexes.clone(); }
-
+    @Override
+    public Vertex[] getAll() { return this.vertexes; }
+    @Override
+    public Vertex[] cloneAll() { return this.vertexes.clone(); }
     @Override
     public void draw(Graphics g) {
         if (g == null) return;

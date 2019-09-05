@@ -5,34 +5,32 @@ import sk.pa3kc.util.Vertex;
 
 import static sk.pa3kc.singletons.Matrixes.*;
 
+import sk.pa3kc.Program;
+
 public class Shape3D {
+    private Shape3D() {}
 
     private static final MatrixEditor editor = MatrixEditor.empty();
-
-    private Shape3D() {}
 
     public static void transform(Vertex[] vertexes) {
         if (vertexes == null) return;
 
-        if (ROTATION_MATRIX != null)
         for (Vertex vertex : vertexes) {
             if (vertex.isBeingEdited())
                 vertex.waitForUnlock();
 
-            editor.changeReference(vertex).multiply(ROTATION_MATRIX);
+            final double myZ = 1d / (Program.mainFrame.distance - vertex.getZ());
+            editor.changeReference(PROJECTION_MATRIX);
+            editor.setValueAt(0, 0, myZ);
+            editor.setValueAt(1, 1, myZ);
+            editor.release();
+
+            editor.changeReference(vertex);
+            editor.multiply(ROTATION_MATRIX);
+            editor.multiply(PROJECTION_MATRIX);
+            editor.multiply(200d);
             editor.release();
             vertex.updateXYZ();
         }
-
-        /*for (int i = 0; i < editors.length; i++) {
-            double myZ = 1d / (distance - vertexes[i].getZ());
-            editors[i].multiply(new Matrix(new double[][] {
-                { myZ, 0d, 0d, 0d },
-                { 0d, myZ, 0d, 0d }
-            }));
-        }
-
-        for (MatrixEditor editor : editors)
-            editor.multiply(200);*/
     }
 }
