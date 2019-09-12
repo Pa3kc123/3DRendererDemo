@@ -164,7 +164,7 @@ public class MyPanel extends JPanel {
 
             if (cycle > TIMER_CYCLE_LIMIT) {
                 String msg = StringUtils.build("Linux sync took ", cycle, "ms");
-                Logger.WARN(this, msg);
+                Logger.WARN(msg);
             }
         }
     }

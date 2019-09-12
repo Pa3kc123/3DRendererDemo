@@ -19,6 +19,10 @@ public class UIThread extends Thread {
     private int frameCount = 0;
 
     public UIThread(long updateLimit, long frameLimit) {
+        super(new Runnable() {
+            @Override
+            public void run() {}
+        });
         this.UPDATE_LIMIT = updateLimit;
         this.FRAME_LIMIT = frameLimit;
     }
@@ -105,7 +109,7 @@ public class UIThread extends Thread {
     @Override
     public void run() {
         this.running = true;
-        Logger.DEBUG(this, "uiThread started");
+        Logger.DEBUG("uiThread started");
 
         int frames = 0;
         int updates = 0;
@@ -125,12 +129,12 @@ public class UIThread extends Thread {
         Timer timer = new Timer(false);
 
         long delta;
-        // main game loop
+        // main loop
         while (!this.shutdownRequested) {
             long now = System.currentTimeMillis();
 
             // should we draw next frame?
-            if (updateLimited) {
+            if (renderLimited) {
                 delta = now - lastRender;
                 if (delta >= msecPerRender) {
                     lastRender = now - (delta - msecPerRender);
@@ -146,13 +150,18 @@ public class UIThread extends Thread {
             }
 
             // is it time for updating next game iteration?
-            delta = now - lastUpdate;
-            if (delta >= msecPerUpdate) {
-                lastUpdate = now - (delta - msecPerUpdate);
+            if (updateLimited) {
+                delta = now - lastUpdate;
+                if (delta >= msecPerUpdate) {
+                    lastUpdate = now - (delta - msecPerUpdate);
 
+                    for (Runnable task : this.updateRunnables)
+                        task.run();
+                    updates++;
+                }
+            } else {
                 for (Runnable task : this.updateRunnables)
                     task.run();
-
                 updates++;
             }
 
@@ -169,13 +178,13 @@ public class UIThread extends Thread {
 
             long cycle = timer.cycle();
             if (cycle > Program.TIMER_CYCLE_LIMIT)
-                Logger.WARN(this, StringUtils.build("UI cycle took ", cycle, "ms"));
+                Logger.WARN(StringUtils.build("UI cycle took ", cycle, "ms"));
 
             timer.reset();
         }
 
         this.running = false;
-        System.out.println("uiThread stopped");
+        Logger.DEBUG("uiThread stopped");
     }
     // endregion
 }
