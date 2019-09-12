@@ -13,9 +13,13 @@ import sk.pa3kc.Program;
 import sk.pa3kc.geom.Box;
 import sk.pa3kc.geom.Path3D;
 import sk.pa3kc.geom.Triangle;
+import sk.pa3kc.util.Logger;
+import sk.pa3kc.util.Timer;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
 import sk.pa3kc.mylibrary.util.StringUtils;
+
+import static sk.pa3kc.Program.TIMER_CYCLE_LIMIT;
 
 public class MyPanel extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -150,7 +154,18 @@ public class MyPanel extends JPanel {
         stringY += FONT_SIZE;
         g.drawString(StringUtils.build("toggled: ", Program.toggled), stringX, stringY);
 
-        if (Program.OS_NAME.contains("linux"))
-            TOOLKIT.sync();
+        if (Program.OS_NAME.contains("Linux")) {
+            long cycle = Timer.time(new Runnable() {
+                @Override
+                public void run() {
+                    TOOLKIT.sync();
+                }
+            });
+
+            if (cycle > TIMER_CYCLE_LIMIT) {
+                String msg = StringUtils.build("Linux sync took ", cycle, "ms");
+                Logger.WARN(this, msg);
+            }
+        }
     }
 }

@@ -2,10 +2,13 @@ package sk.pa3kc.util;
 
 import sk.pa3kc.mylibrary.pojo.ObjectPointer;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
+import sk.pa3kc.mylibrary.util.StringUtils;
+
+import sk.pa3kc.Program;
 
 public class UIThread extends Thread {
-    private final double FRAME_LIMIT;
-    private final double UPDATE_LIMIT;
+    private final long FRAME_LIMIT;
+    private final long UPDATE_LIMIT;
 
     private Runnable[] updateRunnables = new Runnable[0];
     private Runnable[] renderRunnables = new Runnable[0];
@@ -15,21 +18,38 @@ public class UIThread extends Thread {
     private int updateCount = 0;
     private int frameCount = 0;
 
-    public UIThread(double updateLimit, double frameLimit) {
+    public UIThread(long updateLimit, long frameLimit) {
         this.UPDATE_LIMIT = updateLimit;
         this.FRAME_LIMIT = frameLimit;
     }
 
-    //region Getters
-    public boolean isRunning() { return this.running; }
-    public boolean isShutdownRequested() { return this.shutdownRequested; }
-    public double getFrameLimit() { return this.FRAME_LIMIT; }
-    public double getUpdateLimit() { return this.UPDATE_LIMIT; }
-    public int getFrameCount() { return this.frameCount; }
-    public int getUpdateCount() { return this.updateCount; }
-    //endregion
+    // region Getters
+    public boolean isRunning() {
+        return this.running;
+    }
 
-    //region Adders
+    public boolean isShutdownRequested() {
+        return this.shutdownRequested;
+    }
+
+    public long getFrameLimit() {
+        return this.FRAME_LIMIT;
+    }
+
+    public long getUpdateLimit() {
+        return this.UPDATE_LIMIT;
+    }
+
+    public int getFrameCount() {
+        return this.frameCount;
+    }
+
+    public int getUpdateCount() {
+        return this.updateCount;
+    }
+    // endregion
+
+    // region Adders
     public boolean[] addUpdateRunnables(Runnable... runnables) {
         ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
         boolean[] results = ArrayUtils.addAll(pointer, runnables);
@@ -38,6 +58,7 @@ public class UIThread extends Thread {
 
         return results;
     }
+
     public boolean[] addRenderRunnables(Runnable... runnables) {
         ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
         boolean[] results = ArrayUtils.addAll(pointer, runnables);
@@ -46,9 +67,9 @@ public class UIThread extends Thread {
 
         return results;
     }
-    //endregion
+    // endregion
 
-    //region Removers
+    // region Removers
     public boolean[] removeUpdateRunnables(Runnable... runnables) {
         ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
         boolean[] results = new boolean[runnables.length];
@@ -60,6 +81,7 @@ public class UIThread extends Thread {
 
         return results;
     }
+
     public boolean[] removeRenderRunnables(Runnable... runnables) {
         ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
         boolean[] results = new boolean[runnables.length];
@@ -71,80 +93,89 @@ public class UIThread extends Thread {
 
         return results;
     }
-    //endregion
+    // endregion
 
-    //region Public methods
+    // region Public methods
     public void requestShutdown() {
         this.shutdownRequested = true;
     }
-    //endregion
+    // endregion
 
-    //region Overrides
+    // region Overrides
     @Override
     public void run() {
         this.running = true;
-        System.out.println("uiThread started");
-
-        final double nsPerUpdate = 1000000000.0d / this.UPDATE_LIMIT;
-        // final double nsPerFrame = 1000000000.0d / this.FRAME_LIMIT;
-
-        long lastTime = System.nanoTime();
-        double unprocessedTime = 0d;
+        Logger.DEBUG(this, "uiThread started");
 
         int frames = 0;
         int updates = 0;
 
-        long frameCounter = System.currentTimeMillis();
-        int updateErrorCounter = 0;
-        int renderErrorCounter = 0;
+        long lastIteration = System.currentTimeMillis();
+        long lastRender = lastIteration;
+        long lastUpdate = lastIteration;
+        long lastLog = lastIteration;
 
+        final boolean updateLimited = this.UPDATE_LIMIT != -1;
+        final boolean renderLimited = this.FRAME_LIMIT != -1;
+
+        long msecPerUpdate = 1000 / this.UPDATE_LIMIT;
+        long msecPerRender = 1000 / this.FRAME_LIMIT;
+        long msecPerLog = 1000 / 1;
+
+        Timer timer = new Timer(false);
+
+        long delta;
+        // main game loop
         while (!this.shutdownRequested) {
-            long currentTime = System.nanoTime();
-            long passedTime = currentTime - lastTime;
-            lastTime = currentTime;
-            unprocessedTime += passedTime;
+            long now = System.currentTimeMillis();
 
-            if (unprocessedTime >= nsPerUpdate) {
-                unprocessedTime = 0;
-                try {
-                    for (Runnable runnable : this.updateRunnables)
-                        runnable.run();
-                    updates++;
-                    updateErrorCounter = 0;
-                } catch (Exception ex) {
-                    updateErrorCounter++;
-                    if (updateErrorCounter == 5) {
-                        ex.printStackTrace();
-                        System.exit(0xFF);
-                    }
+            // should we draw next frame?
+            if (updateLimited) {
+                delta = now - lastRender;
+                if (delta >= msecPerRender) {
+                    lastRender = now - (delta - msecPerRender);
+
+                    for (Runnable task : this.renderRunnables)
+                        task.run();
+                    frames++;
                 }
-            }
-
-            try {
-                for (Runnable runnable : this.renderRunnables)
-                    runnable.run();
+            } else {
+                for (Runnable task : this.renderRunnables)
+                    task.run();
                 frames++;
-                renderErrorCounter = 0;
-            } catch (Exception ex) {
-                renderErrorCounter++;
-                if (renderErrorCounter == 5) {
-                    ex.printStackTrace();
-                    System.exit(0xFF);
-                }
             }
 
-            if (System.currentTimeMillis() - frameCounter >= 1000) {
-                this.updateCount = updates;
+            // is it time for updating next game iteration?
+            delta = now - lastUpdate;
+            if (delta >= msecPerUpdate) {
+                lastUpdate = now - (delta - msecPerUpdate);
+
+                for (Runnable task : this.updateRunnables)
+                    task.run();
+
+                updates++;
+            }
+
+            delta = now - lastLog;
+            if (delta >= msecPerLog) {
+                lastLog = now - (delta - msecPerLog);
+
                 this.frameCount = frames;
+                this.updateCount = updates;
 
-                updates = 0;
                 frames = 0;
-                frameCounter += 1000;
+                updates = 0;
             }
+
+            long cycle = timer.cycle();
+            if (cycle > Program.TIMER_CYCLE_LIMIT)
+                Logger.WARN(this, StringUtils.build("UI cycle took ", cycle, "ms"));
+
+            timer.reset();
         }
 
         this.running = false;
         System.out.println("uiThread stopped");
     }
-    //endregion
+    // endregion
 }

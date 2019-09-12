@@ -25,7 +25,7 @@ public class MyFrame extends JFrame implements Updatable {
 
     public final double distanceMax = 10d;
     public final double distanceMin = 1d;
-    public double distance = 100d;
+    public double distance = 2d;
 
     //region Components
     public final MyPanel myPanel = new MyPanel();
@@ -72,8 +72,6 @@ public class MyFrame extends JFrame implements Updatable {
     @Override
     protected void processKeyEvent(KeyEvent e) {
         super.processKeyEvent(e);
-        System.out.println(e.getKeyChar());
-
         Keyboard.processKeyEvent(e);
     }
 

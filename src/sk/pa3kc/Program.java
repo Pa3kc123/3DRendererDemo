@@ -19,6 +19,8 @@ import sk.pa3kc.util.UIThread;
 import static sk.pa3kc.util.Logger.ERROR;
 
 public class Program {
+    public static long TIMER_CYCLE_LIMIT;
+
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
     public static final String OS_NAME = DefaultSystemPropertyStrings.OS_NAME;
 
@@ -43,8 +45,8 @@ public class Program {
             System.exit(0xFF);
             return;
         }
-        Program.CHOOSEN_GRAPHICS_DEVICE = NumberUtils.map(graphicsDeviceIndex, 0, devices.length);
-        Program.GRAPHICS_DEVICE_CONFIG = devices[Program.CHOOSEN_GRAPHICS_DEVICE].getDefaultConfiguration();
+        Program.CHOOSEN_GRAPHICS_DEVICE = NumberUtils.map(graphicsDeviceIndex, 1, devices.length);
+        Program.GRAPHICS_DEVICE_CONFIG = devices[Program.CHOOSEN_GRAPHICS_DEVICE - 1].getDefaultConfiguration();
         Program.GRAPHICS_DEVICE_BOUNDS = Program.GRAPHICS_DEVICE_CONFIG.getBounds();
 
         // Keyboard.getInst().getKeyInfo('g').addOnPressedAction(new Runnable() {
@@ -86,8 +88,9 @@ public class Program {
     public static Program getInst() { return instance; }
 
     public static void main(String[] args) {
-        System.setProperty("sun.java2d.opengl", "false");
-        instance = new Program(args.length != 0 ? Integer.parseInt(args[0]) - 1 : 0);
+        System.out.println(Program.OS_NAME);
+        instance = new Program(args.length > 0 ? Integer.parseInt(args[0]) : 1);
+        TIMER_CYCLE_LIMIT = args.length > 1 ? Long.parseLong(args[1]) : 50L;
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
