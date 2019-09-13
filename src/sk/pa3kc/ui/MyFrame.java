@@ -104,8 +104,8 @@ public class MyFrame extends JFrame implements Updatable {
 
     @Override
     public void dispose() {
-        if (!Program.uiThread.isShutdownRequested())
-            Program.uiThread.requestShutdown();
+        if (!Program.UI_THREAD.isShutdownRequested())
+            Program.UI_THREAD.requestShutdown();
         Locks.unlockAllLocks();
         super.dispose();
     }

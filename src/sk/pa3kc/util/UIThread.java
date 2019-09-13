@@ -44,11 +44,11 @@ public class UIThread extends Thread {
         return this.UPDATE_LIMIT;
     }
 
-    public int getFrameCount() {
+    public int getFPS() {
         return this.frameCount;
     }
 
-    public int getUpdateCount() {
+    public int getUPS() {
         return this.updateCount;
     }
     // endregion

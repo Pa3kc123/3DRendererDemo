@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
+import sk.pa3kc.pojo.Parameter;
 import sk.pa3kc.singletons.Locks;
 import sk.pa3kc.ui.MyFrame;
 import sk.pa3kc.util.Logger;
@@ -20,23 +21,34 @@ import sk.pa3kc.util.UIThread;
 public class Program {
     private Program() {}
 
+    private interface Parameters {
+        public static final Parameter<Integer> MAX_FPS = new Parameter<Integer>("-fps", new Integer(-1));
+        public static final Parameter<Integer> MAX_UPS = new Parameter<Integer>("-ups", new Integer(66));
+        public static final Parameter<Integer> MONITOR_INDEX = new Parameter<Integer>("-monitor_index", new Integer(1));
+        public static final Parameter<Long> UI_CYCLE = new Parameter<Long>("-ui_cycle_delay_warn", new Long(50L));
+        public static final Parameter<Long> LINUX_SYNC = new Parameter<Long>("-sync_delay_warn", new Long(50L));
+    }
+
     public static long TIMER_CYCLE_LIMIT;
 
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
     public static final String OS_NAME = DefaultSystemPropertyStrings.OS_NAME;
 
-    public static int CHOOSEN_GRAPHICS_DEVICE;
     public static GraphicsConfiguration GRAPHICS_DEVICE_CONFIG;
     public static Rectangle GRAPHICS_DEVICE_BOUNDS;
 
-    public static MyFrame mainFrame = null;
+    public static MyFrame mainFrame;
 
-    public static boolean toggled = true;
-
-    public static UIThread uiThread = new UIThread(66, -1);
+    public static final UIThread UI_THREAD = new UIThread(66, -1);
 
     public static void main(String[] args) {
+
+        for (int i = 0; i < args.length; i++) {
+            TIMER_CYCLE_LIMIT = args.length > 1 ? Long.parseLong(args[1]) : 50L;
+        }
+
         final GraphicsDevice[] devices;
+
         try {
             devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         } catch (HeadlessException ex) {
@@ -46,38 +58,34 @@ public class Program {
         }
 
         final int graphicsDeviceIndex = args.length > 0 ? Integer.parseInt(args[0]) : 1;
-        CHOOSEN_GRAPHICS_DEVICE = NumberUtils.map(graphicsDeviceIndex, 1, devices.length);
-        GRAPHICS_DEVICE_CONFIG = devices[CHOOSEN_GRAPHICS_DEVICE - 1].getDefaultConfiguration();
+        GRAPHICS_DEVICE_CONFIG = devices[NumberUtils.map(graphicsDeviceIndex, 1, devices.length) - 1].getDefaultConfiguration();
         GRAPHICS_DEVICE_BOUNDS = GRAPHICS_DEVICE_CONFIG.getBounds();
 
-        uiThread.addUpdateRunnables(new Runnable() {
+        UI_THREAD.addUpdateRunnables(new Runnable() {
             @Override
             public void run() {
                 mainFrame.update(UpdateMode.ALL);
             }
         });
-        uiThread.addRenderRunnables(new Runnable() {
+        UI_THREAD.addRenderRunnables(new Runnable() {
             @Override
             public void run() {
-                if (toggled) {
-                    try {
-                        SwingUtilities.invokeAndWait(new Runnable() {
-                            @Override
-                            public void run() {
-                                mainFrame.myPanel.repaint();
-                            }
-                        });
-                    } catch (Throwable ex) {
-                        if (ex instanceof InvocationTargetException) ex.printStackTrace();
-                        else if (ex instanceof InterruptedException) ex.printStackTrace();
-                        else ex.printStackTrace();
-                        System.err.println("Multiple errors occured during drawing cycle... Exiting");
-                        System.exit(0xFF);
-                    }
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainFrame.myPanel.repaint();
+                        }
+                    });
+                } catch (Throwable ex) {
+                    if (ex instanceof InvocationTargetException) ex.printStackTrace();
+                    else if (ex instanceof InterruptedException) ex.printStackTrace();
+                    else ex.printStackTrace();
+                    System.err.println("Multiple errors occured during drawing cycle... Exiting");
+                    System.exit(0xFF);
                 }
             }
         });
-        TIMER_CYCLE_LIMIT = args.length > 1 ? Long.parseLong(args[1]) : 50L;
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -88,6 +96,14 @@ public class Program {
 
         Locks.MY_FRAME_LOCK.lock();
 
-        Program.uiThread.start();
+        Program.UI_THREAD.start();
+    }
+
+    private static void parseArgs(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == Parameters.MAX_FPS.getFlagName()) {
+
+            }
+        }
     }
 }

@@ -49,48 +49,53 @@ public class MyPanel extends JPanel {
         final List<Box> boxList = new ArrayList<Box>(); {
             boxList.add(new Box(new Vertex(-200, -200, -200), 400));
 
-            // //Level 1
-            // boxList.add(new Box(new Vertex(-300, 100, -300), 200));
-            // boxList.add(new Box(new Vertex(-100, 100, -300), 200));
-            // boxList.add(new Box(new Vertex(100, 100, -300), 200));
+            /*
+            // Level 1
+            boxList.add(new Box(new Vertex(-300, 100, -300), 200));
+            boxList.add(new Box(new Vertex(-100, 100, -300), 200));
+            boxList.add(new Box(new Vertex(100, 100, -300), 200));
 
-            // boxList.add(new Box(new Vertex(-300, 100, -100), 200));
-            // boxList.add(new Box(new Vertex(-100, 100, -100), 200));
-            // boxList.add(new Box(new Vertex(100, 100, -100), 200));
+            boxList.add(new Box(new Vertex(-300, 100, -100), 200));
+            boxList.add(new Box(new Vertex(-100, 100, -100), 200));
+            boxList.add(new Box(new Vertex(100, 100, -100), 200));
 
-            // boxList.add(new Box(new Vertex(-300, 100, 100), 200));
-            // boxList.add(new Box(new Vertex(-100, 100, 100), 200));
-            // boxList.add(new Box(new Vertex(100, 100, 100), 200));
+            boxList.add(new Box(new Vertex(-300, 100, 100), 200));
+            boxList.add(new Box(new Vertex(-100, 100, 100), 200));
+            boxList.add(new Box(new Vertex(100, 100, 100), 200));
 
-            // //Level 2
-            // boxList.add(new Box(new Vertex(-200, -100, -200), 200));
-            // boxList.add(new Box(new Vertex(0, -100, -200), 200));
+            // Level 2
+            boxList.add(new Box(new Vertex(-200, -100, -200), 200));
+            boxList.add(new Box(new Vertex(0, -100, -200), 200));
 
-            // boxList.add(new Box(new Vertex(-200, -100, 0), 200));
-            // boxList.add(new Box(new Vertex(0, -100, 0), 200));
+            boxList.add(new Box(new Vertex(-200, -100, 0), 200));
+            boxList.add(new Box(new Vertex(0, -100, 0), 200));
 
-            // //Level 3
-            // boxList.add(new Box(new Vertex(-100, -300, -100), 200));
+            // Level 3
+            boxList.add(new Box(new Vertex(-100, -300, -100), 200));
+            */
 
             this.boxCount = boxList.size();
         }
 
         final List<Triangle> triangleList = new ArrayList<Triangle>(); {
-            // Vertex v21 = new Vertex(-200, 200, -200);
-            // Vertex v22 = new Vertex(0, 0, 0);
-            // Vertex v23 = new Vertex(-200, 200, -200);
+            /*
+            Vertex v21 = new Vertex(-200, 200, -200);
+            Vertex v22 = new Vertex(0, 0, 0);
+            Vertex v23 = new Vertex(-200, 200, -200);
 
-            // Vertex v31 = new Vertex(200, 200, -200);
-            // Vertex v32 = new Vertex(0, 0, 0);
-            // Vertex v33 = new Vertex(-200, 200, -200);
+            Vertex v31 = new Vertex(200, 200, -200);
+            Vertex v32 = new Vertex(0, 0, 0);
+            Vertex v33 = new Vertex(-200, 200, -200);
 
-            // triangleList.add(new Triangle(v21, v22, v23, Color.WHITE));
-            // triangleList.add(new Triangle(v31, v32, v33, Color.WHITE));
+            triangleList.add(new Triangle(v21, v22, v23, Color.WHITE));
+            triangleList.add(new Triangle(v31, v32, v33, Color.WHITE));
+            */
 
             this.triangleCount = triangleList.size();
         }
 
         final List<Path3D> path3dList = new ArrayList<Path3D>(); {
+            /*
             Vertex vx1 = new Vertex(-200, 0, 0);
             Vertex vx2 = new Vertex(200, 0, 0);
             Color cx = Color.GREEN;
@@ -106,6 +111,7 @@ public class MyPanel extends JPanel {
             path3dList.add(new Path3D(vx1, vx2, cx, "X"));
             path3dList.add(new Path3D(vy1, vy2, cy, "Y"));
             path3dList.add(new Path3D(vz1, vz2, cz, "Z"));
+            */
 
             this.path3dCount = path3dList.size();
         }
@@ -146,13 +152,10 @@ public class MyPanel extends JPanel {
         g.setFont(FONT);
         int stringX = (int)-(super.getWidth() / 2);
         int stringY = (int)-(super.getHeight() / 2) + FONT_SIZE;
-        g.drawString(StringUtils.build("FPS: ", Program.uiThread.getFrameCount()), stringX, stringY);
+        g.drawString(StringUtils.build("FPS: ", Program.UI_THREAD.getFPS()), stringX, stringY);
 
         stringY += FONT_SIZE;
-        g.drawString(StringUtils.build("UPS: ", Program.uiThread.getUpdateCount()), stringX, stringY);
-
-        stringY += FONT_SIZE;
-        g.drawString(StringUtils.build("toggled: ", Program.toggled), stringX, stringY);
+        g.drawString(StringUtils.build("UPS: ", Program.UI_THREAD.getUPS()), stringX, stringY);
 
         if (Program.OS_NAME.contains("Linux")) {
             long cycle = Timer.time(new Runnable() {
