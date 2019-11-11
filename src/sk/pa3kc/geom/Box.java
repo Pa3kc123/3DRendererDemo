@@ -43,29 +43,29 @@ public class Box implements Drawable {
         for (int i = 0; i < vertexCopy.length; i++)
             g.drawString(String.valueOf(i), (int)vertexCopy[i].getX(), (int)vertexCopy[i].getY());
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0, j = ((i+1) % 4); i < 4; i++) {
             int x1 = (int)vertexCopy[i].getX();
             int y1 = (int)vertexCopy[i].getY();
-            int x2 = (int)vertexCopy[i+1 == 4 ? 0 : i+1].getX();
-            int y2 = (int)vertexCopy[i+1 == 4 ? 0 : i+1].getY();
+            int x2 = (int)vertexCopy[j].getX();
+            int y2 = (int)vertexCopy[j].getY();
 
             g.drawLine(x1, y1, x2, y2);
         }
 
-        for (int i = 4; i < 8; i++) {
+        for (int i = 4, j = ((i+1) % 8); i < 8; i++) {
             int x1 = (int)vertexCopy[i].getX();
             int y1 = (int)vertexCopy[i].getY();
-            int x2 = (int)vertexCopy[i+1 == 8 ? 4 : i+1].getX();
-            int y2 = (int)vertexCopy[i+1 == 8 ? 4 : i+1].getY();
+            int x2 = (int)vertexCopy[j].getX();
+            int y2 = (int)vertexCopy[j].getY();
 
             g.drawLine(x1, y1, x2, y2);
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0, j = (i + 4); i < 4; i++) {
             int x1 = (int)vertexCopy[i].getX();
             int y1 = (int)vertexCopy[i].getY();
-            int x2 = (int)vertexCopy[i+4].getX();
-            int y2 = (int)vertexCopy[i+4].getY();
+            int x2 = (int)vertexCopy[j].getX();
+            int y2 = (int)vertexCopy[j].getY();
 
             g.drawLine(x1, y1, x2, y2);
         }

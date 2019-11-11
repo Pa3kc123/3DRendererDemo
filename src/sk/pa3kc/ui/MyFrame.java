@@ -77,9 +77,10 @@ public class MyFrame extends JFrame implements Updatable {
 
     @Override
     public void update(UpdateMode plane) {
-        if (plane.x) Schemas.applyRotationX(X_MATRIX, StrictMath.toRadians(this.sliderCur));
-        if (plane.y) Schemas.applyRotationY(Y_MATRIX, StrictMath.toRadians(this.sliderCur));
-        if (plane.z) Schemas.applyRotationZ(Z_MATRIX, StrictMath.toRadians(this.sliderCur));
+        final double rads = StrictMath.toRadians(this.sliderCur);
+        if (plane.x) Schemas.applyRotationX(X_MATRIX, rads);
+        if (plane.y) Schemas.applyRotationY(Y_MATRIX, rads);
+        if (plane.z) Schemas.applyRotationZ(Z_MATRIX, rads);
         if (plane.w) NumberUtils.map(this.distance, this.distanceMin, this.distanceMax);
 
         if (ROTATION_MATRIX.isBeingEdited())
