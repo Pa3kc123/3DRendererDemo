@@ -15,11 +15,12 @@ public class Shape3D {
     public static void transform(Vertex[] vertexes) {
         if (vertexes == null) return;
 
+        double myZ;
         for (Vertex vertex : vertexes) {
             if (vertex.isBeingEdited())
                 vertex.waitForUnlock();
 
-            final double myZ = 1d / (Program.mainFrame.distance - vertex.getZ());
+            myZ = 1d / (Program.mainFrame.distance - vertex.getZ());
             editor.changeReference(PROJECTION_MATRIX);
             editor.setValueAt(0, 0, myZ);
             editor.setValueAt(1, 1, myZ);

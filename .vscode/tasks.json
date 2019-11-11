@@ -15,9 +15,7 @@
                     "cwd": "${workspaceFolder}\\.vscode"
                 },
                 "command": "build.bat"
-            },
-            "problemMatcher": [],
-            "group": "none"
+            }
         },
         {
             "label": "clean",
@@ -33,9 +31,7 @@
                     "cwd": "${workspaceFolder}\\.vscode"
                 },
                 "command": "clean.bat"
-            },
-            "problemMatcher": [],
-            "group": "none"
+            }
         },
         {
             "label": "rebuild",
