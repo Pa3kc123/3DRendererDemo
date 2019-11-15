@@ -11,7 +11,7 @@ SET libDir=%workspaceDir%\lib
 if NOT EXIST %srcDir% (
     ECHO For some reason you are missing source files
     ECHO What else did you expect???
-    GOTO :EOF
+    GOTO :FINISH
 )
 
 IF NOT EXIST %binDir% (
@@ -22,27 +22,31 @@ IF NOT EXIST %binDir% (
 
 IF NOT EXIST %libDir% (
     ECHO Project requires MyLibrary.jar in 'lib' folder
-    GOTO :EOF
+    GOTO :FINISH
 )
 
-SET javac="%jdk6_64%\bin\javac.exe"
-IF NOT EXIST !javac! (
+IF DEFINED jdk6_64 (
+    SET javac="%jdk6_64%\bin\javac.exe"
+    SET jar="%jdk6_64%\bin\jar.exe"
+) ELSE IF DEFINED JDK_HOME (
     SET javac="%JDK_HOME%\bin\javac.exe"
-
-    if NOT EXIST !javac! (
-        ECHO Missing java compiler
-        GOTO :EOF
-    )
+    SET jar="%JDK_HOME%\bin\jar.exe"
+) ELSE IF DEFINED JAVA_HOME (
+    SET javac="%JAVA_HOME%\bin\javac.exe"
+    SET jar="%JAVA_HOME%\bin\jar.exe"
+) ELSE (
+    ECHO Could not find java files
+    GOTO :FINISH
 )
 
-SET jar="%jdk6_64%\bin\jar.exe"
-IF NOT EXIST !jar! (
-    SET jar="%JDK_HOME%\bin\jar.exe"
+IF NOT EXIST !javac! (
+    ECHO Missing java compiler
+    GOTO :FINISH
+)
 
-    IF NOT EXIST !jar! (
-        ECHO Missing jar archiver
-        GOTO :EOF
-    )
+IF NOT EXIST !jar! (
+    ECHO Missing jar archiver
+    GOTO :FINISH
 )
 
 ECHO Locating files
@@ -58,4 +62,7 @@ CD %workspaceDir%\bin
 ECHO Creating jar file
 %jar% -cfe %workspaceDir%\3DRendererDemo.jar sk.pa3kc.Program -C %workspaceDir%\bin .
 
-ENDLOCAL
+GOTO :FINISH
+
+:FINISH
+    ENDLOCAL

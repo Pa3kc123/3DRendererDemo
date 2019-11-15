@@ -39,9 +39,11 @@ public class Program {
 
     public static MyFrame mainFrame;
 
-    public static final UIThread UI_THREAD = new UIThread(66, -1);
+    public static final UIThread UI_THREAD = new UIThread(Parameters.MAX_UPS.getValue(), Parameters.MAX_FPS.getValue());
 
     public static void main(String[] args) {
+
+        parseArgs(args);
 
         for (int i = 0; i < args.length; i++) {
             TIMER_CYCLE_LIMIT = args.length > 1 ? Long.parseLong(args[1]) : 50L;
