@@ -12,22 +12,14 @@ import javax.swing.SwingUtilities;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
-import sk.pa3kc.pojo.Parameter;
 import sk.pa3kc.singletons.Locks;
+import sk.pa3kc.singletons.Parameters;
 import sk.pa3kc.ui.MyFrame;
 import sk.pa3kc.util.Logger;
 import sk.pa3kc.util.UIThread;
 
 public class Program {
     private Program() {}
-
-    private interface Parameters {
-        public static final Parameter<Integer> MAX_FPS = new Parameter<Integer>("-fps", new Integer(-1));
-        public static final Parameter<Integer> MAX_UPS = new Parameter<Integer>("-ups", new Integer(66));
-        public static final Parameter<Integer> MONITOR_INDEX = new Parameter<Integer>("-monitor_index", new Integer(1));
-        public static final Parameter<Long> UI_CYCLE = new Parameter<Long>("-ui_cycle_delay_warn", new Long(50L));
-        public static final Parameter<Long> LINUX_SYNC = new Parameter<Long>("-sync_delay_warn", new Long(50L));
-    }
 
     public static long TIMER_CYCLE_LIMIT;
 
@@ -39,11 +31,12 @@ public class Program {
 
     public static MyFrame mainFrame;
 
-    public static final UIThread UI_THREAD = new UIThread(Parameters.MAX_UPS.getValue(), Parameters.MAX_FPS.getValue());
+    public static UIThread UI_THREAD = null;
 
     public static void main(String[] args) {
+        Parameters.init(args);
 
-        parseArgs(args);
+        new UIThread(Parameters.getInst().MAX_UPS.getValue(), Parameters.getInst().MAX_FPS.getValue());
 
         for (int i = 0; i < args.length; i++) {
             TIMER_CYCLE_LIMIT = args.length > 1 ? Long.parseLong(args[1]) : 50L;
@@ -99,13 +92,5 @@ public class Program {
         Locks.MY_FRAME_LOCK.lock();
 
         Program.UI_THREAD.start();
-    }
-
-    private static void parseArgs(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] == Parameters.MAX_FPS.getFlagName()) {
-
-            }
-        }
     }
 }

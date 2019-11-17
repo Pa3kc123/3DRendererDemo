@@ -1,27 +1,56 @@
 package sk.pa3kc.singletons;
 
+import sk.pa3kc.enums.ParameterCvar;
+import sk.pa3kc.enums.ParameterIndex;
+import sk.pa3kc.pojo.Pair;
+import sk.pa3kc.util.SizedMap;
+
 public class Parameters {
-    private Parameters() {}
+    private static Parameters INST = null;
 
-    private static final String[] flags = new String[6];
+    public final Pair<ParameterIndex, Integer> MAX_FPS = new Pair<ParameterIndex, Integer>(ParameterIndex.INDEX_MAX_FPS, -1);
+    public final Pair<ParameterIndex, Integer> MAX_UPS = new Pair<ParameterIndex, Integer>(ParameterIndex.INDEX_MAX_UPS, 66);
+    public final Pair<ParameterIndex, Integer> MONITOR_INDEX = new Pair<ParameterIndex, Integer>(ParameterIndex.INDEX_MONITOR_INDEX, 1);
+    public final Pair<ParameterIndex, Long> UI_CYCLE = new Pair<ParameterIndex, Long>(ParameterIndex.INDEX_UI_CYCLE, 50L);
+    public final Pair<ParameterIndex, Long> LINUX_SYNC = new Pair<ParameterIndex, Long>(ParameterIndex.INDEX_LINUX_SYNC, 50L);
 
-    public static String[] getAllFlags() { return flags; }
-    public static String getFlag(int index) { return flags[index]; }
-}
+    private Parameters(String[] args) {
+        int optionCount = 0;
+        for (String arg : args) {
+            if (arg.startsWith("-")) {
+                optionCount++;
+            }
+        }
 
-enum ParameterEnum {
-    FPS("-fps"),
-    UPS("-ups"),
-    MONITOR_INDEX("-monitor_index"),
-    UI_CYCLE_DELAY_WARN("-ui_cycle_delay_warn"),
-    SYNC_DELAY_WARN("-sync_delay_warn");
+        final SizedMap<Integer, Pair> map = new SizedMap<>(optionCount);
 
-    public final String name;
-    ParameterEnum(String name) {
-        this.name = name;
+
+
+        for (int i = 0; i < args.length; i++) {
+            final ParameterIndex index = ParameterCvar.findByString(args[i]);
+
+            if (index == null) continue;
+
+            switch (index) {
+                case INDEX_MAX_FPS: break;
+                case INDEX_MAX_UPS: break;
+                case INDEX_MONITOR_INDEX: break;
+                case INDEX_UI_CYCLE: break;
+                case INDEX_LINUX_SYNC: break;
+            }
+        }
     }
-    @Override
-    public String toString() {
-        return this.name;
+
+    public static boolean init(String[] args) {
+        final boolean result = INST == null;
+
+        if (result) {
+            INST = new Parameters(args);
+        }
+
+        return result;
+    }
+    public static Parameters getInst() {
+        return INST;
     }
 }
