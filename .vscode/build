@@ -1,5 +1,5 @@
 #!/bin/bash
-workspaceDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"/..
+workspaceDir=$(pwd)/..
 tmpFile=/tmp/javaFiles.txt
 
 srcDir=$workspaceDir/src
@@ -21,8 +21,8 @@ echo "Compiling java files"
 $javac -cp $workspaceDir/lib/MyLibrary.jar:$binDir -d $binDir @$tmpFile
 
 echo "Extracting libraries"
-cd $workspaceDir/bin
+cd $binDir
 $jar -xf $workspaceDir/lib/MyLibrary.jar sk CmdUtils32.dll CmdUtils64.dll
 
 echo "Creating jar file"
-$jar -cfe $workspaceDir/3DRendererDemo.jar sk.pa3kc.Program -C $workspaceDir/bin .
+$jar -cfe $workspaceDir/3DRendererDemo.jar sk.pa3kc.Program -C $binDir .
