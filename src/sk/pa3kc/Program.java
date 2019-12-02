@@ -12,16 +12,15 @@ import javax.swing.SwingUtilities;
 import sk.pa3kc.enums.UpdateMode;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
+import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.singletons.Locks;
-import sk.pa3kc.singletons.Parameters;
 import sk.pa3kc.ui.MyFrame;
 import sk.pa3kc.util.Logger;
+import sk.pa3kc.util.Parameters;
 import sk.pa3kc.util.UIThread;
 
 public class Program {
     private Program() {}
-
-    public static long TIMER_CYCLE_LIMIT;
 
     public static final String NEWLINE = DefaultSystemPropertyStrings.LINE_SEPARATOR;
     public static final String OS_NAME = DefaultSystemPropertyStrings.OS_NAME;
@@ -31,16 +30,27 @@ public class Program {
 
     public static MyFrame mainFrame;
 
-    public static UIThread UI_THREAD = null;
+    public static UIThread UI_THREAD = new UIThread();
 
     public static void main(String[] args) {
-        Parameters.init(args);
+        final Parameters params = new Parameters(args);
 
-        new UIThread(Parameters.getInst().MAX_UPS.getValue(), Parameters.getInst().MAX_FPS.getValue());
+        for (String optionName : params.getOptionNames()) {
+            final String optionValue = params.getOption(optionName);
 
-        for (int i = 0; i < args.length; i++) {
-            TIMER_CYCLE_LIMIT = args.length > 1 ? Long.parseLong(args[1]) : 50L;
+            if (optionValue != null) {
+                final Configuration.Indexer index = Configuration.Indexer.fromString(optionName);
+
+                if (index != null) {
+                    final Configuration.Entry entry = Configuration.getInst().getProperty(index);
+                    entry.setValue(optionValue);
+                }
+            }
         }
+
+        System.exit(0x0);
+
+        UI_THREAD.start();
 
         final GraphicsDevice[] devices;
 
@@ -62,6 +72,7 @@ public class Program {
                 mainFrame.update(UpdateMode.ALL);
             }
         });
+
         UI_THREAD.addRenderRunnables(new Runnable() {
             @Override
             public void run() {

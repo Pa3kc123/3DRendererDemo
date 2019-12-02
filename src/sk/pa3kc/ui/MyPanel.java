@@ -18,8 +18,7 @@ import sk.pa3kc.util.Timer;
 import sk.pa3kc.util.Vertex;
 import sk.pa3kc.inter.Drawable;
 import sk.pa3kc.mylibrary.util.StringUtils;
-
-import static sk.pa3kc.Program.TIMER_CYCLE_LIMIT;
+import sk.pa3kc.singletons.Configuration;
 
 public class MyPanel extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -165,7 +164,7 @@ public class MyPanel extends JPanel {
                 }
             });
 
-            if (cycle > TIMER_CYCLE_LIMIT) {
+            if (cycle > Configuration.getInst().getLinuxSyncWarnTime()) {
                 String msg = StringUtils.build("Linux sync took ", cycle, "ms");
                 Logger.WARN(msg);
             }

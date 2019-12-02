@@ -3,13 +3,10 @@ package sk.pa3kc.util;
 import sk.pa3kc.mylibrary.pojo.ObjectPointer;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
-
+import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.Program;
 
 public class UIThread extends Thread {
-    private final long FRAME_LIMIT;
-    private final long UPDATE_LIMIT;
-
     private Runnable[] updateRunnables = new Runnable[0];
     private Runnable[] renderRunnables = new Runnable[0];
 
@@ -18,15 +15,6 @@ public class UIThread extends Thread {
     private int updateCount = 0;
     private int frameCount = 0;
 
-    public UIThread(long updateLimit, long frameLimit) {
-        super(new Runnable() {
-            @Override
-            public void run() {}
-        });
-        this.UPDATE_LIMIT = updateLimit;
-        this.FRAME_LIMIT = frameLimit;
-    }
-
     // region Getters
     public boolean isRunning() {
         return this.running;
@@ -34,14 +22,6 @@ public class UIThread extends Thread {
 
     public boolean isShutdownRequested() {
         return this.shutdownRequested;
-    }
-
-    public long getFrameLimit() {
-        return this.FRAME_LIMIT;
-    }
-
-    public long getUpdateLimit() {
-        return this.UPDATE_LIMIT;
     }
 
     public int getFPS() {
@@ -55,8 +35,8 @@ public class UIThread extends Thread {
 
     // region Adders
     public boolean[] addUpdateRunnables(Runnable... runnables) {
-        ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
-        boolean[] results = ArrayUtils.addAll(pointer, runnables);
+        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
+        final boolean[] results = ArrayUtils.addAll(pointer, runnables);
 
         this.updateRunnables = pointer.value;
 
@@ -64,8 +44,8 @@ public class UIThread extends Thread {
     }
 
     public boolean[] addRenderRunnables(Runnable... runnables) {
-        ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
-        boolean[] results = ArrayUtils.addAll(pointer, runnables);
+        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
+        final boolean[] results = ArrayUtils.addAll(pointer, runnables);
 
         this.renderRunnables = pointer.value;
 
@@ -75,8 +55,8 @@ public class UIThread extends Thread {
 
     // region Removers
     public boolean[] removeUpdateRunnables(Runnable... runnables) {
-        ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
-        boolean[] results = new boolean[runnables.length];
+        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
+        final boolean[] results = new boolean[runnables.length];
 
         ArrayUtils.removeDuplicates(new ObjectPointer<Runnable[]>(runnables));
 
@@ -87,8 +67,8 @@ public class UIThread extends Thread {
     }
 
     public boolean[] removeRenderRunnables(Runnable... runnables) {
-        ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
-        boolean[] results = new boolean[runnables.length];
+        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
+        final boolean[] results = new boolean[runnables.length];
 
         ArrayUtils.removeDuplicates(new ObjectPointer<Runnable[]>(runnables));
 
@@ -111,6 +91,10 @@ public class UIThread extends Thread {
         this.running = true;
         Logger.DEBUG("uiThread started");
 
+        final boolean updateLimited = Program.config.getMaxUps() != -1;
+        final boolean renderLimited = Program.config.getMaxFps() != -1;
+        final Timer timer = new Timer(false);
+
         int frames = 0;
         int updates = 0;
 
@@ -119,14 +103,9 @@ public class UIThread extends Thread {
         long lastUpdate = lastIteration;
         long lastLog = lastIteration;
 
-        final boolean updateLimited = this.UPDATE_LIMIT != -1;
-        final boolean renderLimited = this.FRAME_LIMIT != -1;
-
-        long msecPerUpdate = 1000 / this.UPDATE_LIMIT;
-        long msecPerRender = 1000 / this.FRAME_LIMIT;
+        long msecPerUpdate = 1000 / Program.config.getMaxUps();
+        long msecPerRender = 1000 / Program.config.getMaxFps();
         long msecPerLog = 1000 / 1;
-
-        Timer timer = new Timer(false);
 
         long delta;
         // main loop

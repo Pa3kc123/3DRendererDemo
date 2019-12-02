@@ -4,8 +4,6 @@ tmpFile=/tmp/javaFiles.txt
 
 srcDir=$workspaceDir/src
 binDir=$workspaceDir/bin
-javac=$jdk6_64/bin/javac
-jar=$jdk6_64/bin/jar
 
 outputJar=$workspaceDir/3DRendererDemo.jar
 
@@ -18,11 +16,11 @@ echo "Locating java files"
 find $srcDir -name *.java > $tmpFile
 
 echo "Compiling java files"
-$javac -cp $workspaceDir/lib/MyLibrary.jar:$binDir -d $binDir @$tmpFile
+javac -cp $workspaceDir/lib/MyLibrary.jar:$binDir -d $binDir @$tmpFile
 
 echo "Extracting libraries"
 cd $binDir
-$jar -xf $workspaceDir/lib/MyLibrary.jar sk CmdUtils32.dll CmdUtils64.dll
+jar -xf $workspaceDir/lib/MyLibrary.jar sk CmdUtils32.dll CmdUtils64.dll
 
 echo "Creating jar file"
-$jar -cfe $workspaceDir/3DRendererDemo.jar sk.pa3kc.Program -C $binDir .
+jar -cfe $workspaceDir/3DRendererDemo.jar sk.pa3kc.Program -C $binDir .
