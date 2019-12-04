@@ -19,7 +19,9 @@
                     "${workspaceFolder}/bin"
                 ]
             },
-            "args": "2"
+            "args": [
+                "--max_fps=120"
+            ]
         }
     ]
 }

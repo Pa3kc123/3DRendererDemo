@@ -4,7 +4,6 @@ import sk.pa3kc.mylibrary.pojo.ObjectPointer;
 import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Configuration;
-import sk.pa3kc.Program;
 
 public class UIThread extends Thread {
     private Runnable[] updateRunnables = new Runnable[0];
@@ -91,8 +90,8 @@ public class UIThread extends Thread {
         this.running = true;
         Logger.DEBUG("uiThread started");
 
-        final boolean updateLimited = Program.config.getMaxUps() != -1;
-        final boolean renderLimited = Program.config.getMaxFps() != -1;
+        final boolean updateLimited = Configuration.getInst().getMaxUps() != -1;
+        final boolean renderLimited = Configuration.getInst().getMaxFps() != -1;
         final Timer timer = new Timer(false);
 
         int frames = 0;
@@ -103,8 +102,8 @@ public class UIThread extends Thread {
         long lastUpdate = lastIteration;
         long lastLog = lastIteration;
 
-        long msecPerUpdate = 1000 / Program.config.getMaxUps();
-        long msecPerRender = 1000 / Program.config.getMaxFps();
+        long msecPerUpdate = 1000 / Configuration.getInst().getMaxUps();
+        long msecPerRender = 1000 / Configuration.getInst().getMaxFps();
         long msecPerLog = 1000 / 1;
 
         long delta;
@@ -156,7 +155,7 @@ public class UIThread extends Thread {
             }
 
             long cycle = timer.cycle();
-            if (cycle > Program.TIMER_CYCLE_LIMIT)
+            if (cycle > Configuration.getInst().getUiCycleWarnTime())
                 Logger.WARN(StringUtils.build("UI cycle took ", cycle, "ms"));
 
             timer.reset();

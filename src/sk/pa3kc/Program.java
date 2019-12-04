@@ -48,6 +48,8 @@ public class Program {
             }
         }
 
+        final Configuration config = Configuration.getInst();
+
         System.exit(0x0);
 
         UI_THREAD.start();

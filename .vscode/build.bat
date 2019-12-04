@@ -55,6 +55,11 @@ DIR /s /b %srcDir%\*.java > %tmpFile%
 ECHO Compiling java files
 %javac% -cp %workspaceDir%\lib\MyLibrary.jar;%binDir% -d %binDir% @%tmpFile%
 
+if ERRORLEVEL 1 (
+    ECHO Some errors occured while compiling files. Exiting...
+    GOTO :FINISH
+)
+
 ECHO Extracting libraries
 CD %workspaceDir%\bin
 %jar% -xf %workspaceDir%\lib\MyLibrary.jar sk CmdUtils32.dll CmdUtils64.dll
