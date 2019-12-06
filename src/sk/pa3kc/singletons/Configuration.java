@@ -1,35 +1,31 @@
 package sk.pa3kc.singletons;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+
+import sk.pa3kc.mylibrary.util.NumberUtils;
 
 public class Configuration {
     private static Configuration _inst = new Configuration();
 
-    private final Entry<? extends Number>[] entries;
+    private final Entry<?>[] entries;
 
     @SuppressWarnings("checked")
     private Configuration() {
-        final Collection<Entry<? extends Number>> entries = Collections.unmodifiableCollection(new ArrayList<Entry<? extends Number>>() {
+        final Collection<Entry<?>> entries = new ArrayList<Entry<?>>() {
             private static final long serialVersionUID = 1L;
 
             {
+                super.add(new Entry<Integer>("max_fps", "fps", Integer.valueOf(0), Indexer.MAX_FPS));
                 super.add(new Entry<Integer>("max_ups", "ups", Integer.valueOf(66), Indexer.MAX_UPS));
-                super.add(new Entry<Integer>("max_fps", "fps", Integer.valueOf(-1), Indexer.MAX_FPS));
                 super.add(new Entry<Integer>("monitor_index", "m", Integer.valueOf(1), Indexer.MONITOR_INDEX));
                 super.add(new Entry<Long>("ui_cycle_warn_time", "ui", Long.valueOf(50L), Indexer.UI_CYCLE_WARN_TIME));
-                super.add(new Entry<Long>("linux_sync_warn_time", null, Long.valueOf(50l), Indexer.LINUX_SYNC_WARN_TIME));
+                super.add(new Entry<Long>("linux_sync_warn_time", null, Long.valueOf(50L), Indexer.LINUX_SYNC_WARN_TIME));
+                super.add(new Entry<Boolean>("enable_debug", "debug", Boolean.valueOf(false), Indexer.DEBUG_ENABLED));
             }
-        });
+        };
 
         this.entries = entries.toArray(new Entry[0]);
-
-        final Entry<Number> tmp = new Entry<Integer>("", "", new Integer(10), null);
-        tmp.setValue(Integer.valueOf(10));
     };
     public static Configuration getInst() {
         return _inst;
@@ -50,26 +46,66 @@ public class Configuration {
     public long getLinuxSyncWarnTime() {
         return ((Long)this.entries[Indexer.LINUX_SYNC_WARN_TIME.index].getValue()).longValue();
     }
-    public Entry<? extends Number> getProperty(Indexer index) {
+    public boolean getDebugEnabled() {
+        return ((Boolean)this.entries[Indexer.DEBUG_ENABLED.index].getValue()).booleanValue();
+    }
+    public Entry<?> getProperty(Indexer index) {
         return this.entries[index.index];
     }
 
     public void setMaxFps(int value) {
         this.entries[Indexer.MAX_FPS.index].setValue(Integer.valueOf(value));
     }
+    public void setMaxUps(int value) {
+        this.entries[Indexer.MAX_UPS.index].setValue(Integer.valueOf(value));
+    }
+    public void setMonitorIndex(int value) {
+        this.entries[Indexer.MONITOR_INDEX.index].setValue(Integer.valueOf(value));
+    }
+    public void setUiCycleWarnTime(long value) {
+        this.entries[Indexer.UI_CYCLE_WARN_TIME.index].setValue(Long.valueOf(value));
+    }
+    public void setLinuxSyncWarnTime(long value) {
+        this.entries[Indexer.LINUX_SYNC_WARN_TIME.index].setValue(Long.valueOf(value));
+    }
+    public void setDebugEnabled(boolean value) {
+        this.entries[Indexer.DEBUG_ENABLED.index].setValue(Boolean.valueOf(value));
+    }
+    public boolean setProperty(Indexer index, Object value) {
+        return this.entries[index.index].setValue(value);
+    }
 
-    // TODO: Not working for some reason
-    // public <T> void setProperty(Indexer index, T value) {
-    //     final Entry<? extends Number> entry = this.entries[index.index];
-    //     entry.setValue(value);
-    // }
+    private static interface IndexerNames {
+        public static final String HELLO = "Hello";
+    }
+    public static interface TMP {
+        public static final int NONE = -1;
+        public static final int HELLO = 0;
+        public static final int THERE = 1;
+        public static final int[] values = new int[] {
+            HELLO,
+            THERE
+        };
+
+        public static int fromString(String value) {
+            if (value == null) {
+                return NONE;
+            }
+
+            for (int val : values) {
+            }
+
+            return NONE;
+        }
+    }
 
     public static enum Indexer {
         MAX_FPS(0),
         MAX_UPS(1),
         MONITOR_INDEX(2),
         UI_CYCLE_WARN_TIME(3),
-        LINUX_SYNC_WARN_TIME(4);
+        LINUX_SYNC_WARN_TIME(4),
+        DEBUG_ENABLED(5);
 
         public final int index;
 
@@ -77,7 +113,6 @@ public class Configuration {
             this.index = index;
         }
 
-        @SuppressWarnings("Unchecked")
         public static Indexer fromString(String value) {
             if (value == null) {
                 return null;
@@ -125,8 +160,15 @@ public class Configuration {
             return this.value;
         }
 
-        public void setValue(T value) {
-            this.value = value;
+        @SuppressWarnings("Unchecked")
+        public boolean setValue(Object value) {
+            final boolean typeCheck = value.getClass() == this.value.getClass();
+
+            if (typeCheck) {
+                this.value = (T)value;
+            }
+
+            return typeCheck;
         }
     }
 }

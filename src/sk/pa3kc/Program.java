@@ -41,16 +41,40 @@ public class Program {
             if (optionValue != null) {
                 final Configuration.Indexer index = Configuration.Indexer.fromString(optionName);
 
-                if (index != null) {
-                    final Configuration.Entry entry = Configuration.getInst().getProperty(index);
-                    entry.setValue(optionValue);
+                switch (index) {
+                    case MAX_FPS:
+                        int maxFps = tryParseInt(optionValue);
+                        if (maxFps != -1) {
+                            Configuration.getInst().setMaxFps(maxFps);
+                        }
+                    break;
+                    case MAX_UPS:
+                        int maxUps = tryParseInt(optionValue);
+                        if (maxUps != -1) {
+                            Configuration.getInst().setMaxUps(maxUps);
+                        }
+                    break;
+                    case MONITOR_INDEX:
+                        int monitorIndex = tryParseInt(optionValue);
+                        if (monitorIndex != -1) {
+                            Configuration.getInst().setMonitorIndex(monitorIndex);
+                        }
+                    break;
+                    case LINUX_SYNC_WARN_TIME:
+                        long linuxSyncWarnTime = tryParseLong(optionValue);
+                        if (linuxSyncWarnTime != -1) {
+                            Configuration.getInst().setLinuxSyncWarnTime(linuxSyncWarnTime);
+                        }
+                    break;
+                    case UI_CYCLE_WARN_TIME:
+                        long uiCycleWarnTime = tryParseLong(optionValue);
+                        if (uiCycleWarnTime != -1) {
+                            Configuration.getInst().setUiCycleWarnTime(uiCycleWarnTime);
+                        }
+                    break;
                 }
             }
         }
-
-        final Configuration config = Configuration.getInst();
-
-        System.exit(0x0);
 
         UI_THREAD.start();
 
@@ -64,7 +88,7 @@ public class Program {
             return;
         }
 
-        final int graphicsDeviceIndex = args.length > 0 ? Integer.parseInt(args[0]) : 1;
+        final int graphicsDeviceIndex = Configuration.getInst().getMonitorIndex();
         GRAPHICS_DEVICE_CONFIG = devices[NumberUtils.map(graphicsDeviceIndex, 1, devices.length) - 1].getDefaultConfiguration();
         GRAPHICS_DEVICE_BOUNDS = GRAPHICS_DEVICE_CONFIG.getBounds();
 

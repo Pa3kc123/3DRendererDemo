@@ -27,8 +27,6 @@ public class MyPanel extends JPanel {
     private final Font FONT = new Font("Dialog", Font.PLAIN, FONT_SIZE);
     private final Toolkit TOOLKIT = Toolkit.getDefaultToolkit();
 
-    // private final MyFrame parent = (MyFrame)SwingUtilities.getAncestorOfClass(MyFrame.class, this);
-
     //region Redering objects
     private final int boxCount;
     private final int triangleCount;
