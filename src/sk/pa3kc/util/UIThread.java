@@ -1,13 +1,13 @@
 package sk.pa3kc.util;
 
-import sk.pa3kc.mylibrary.pojo.ObjectPointer;
-import sk.pa3kc.mylibrary.util.ArrayUtils;
+import java.util.ArrayList;
+
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Configuration;
 
 public class UIThread extends Thread {
-    private Runnable[] updateRunnables = new Runnable[0];
-    private Runnable[] renderRunnables = new Runnable[0];
+    private ArrayList<Runnable> updatables = new ArrayList<Runnable>();
+    private ArrayList<Runnable> renderables = new ArrayList<Runnable>();
 
     private boolean shutdownRequested = false;
     private boolean running = false;
@@ -15,66 +15,23 @@ public class UIThread extends Thread {
     private int frameCount = 0;
 
     // region Getters
+    public ArrayList<Runnable> getUpdatables() {
+        return this.updatables;
+    }
+    public ArrayList<Runnable> getRenderables() {
+        return this.renderables;
+    }
     public boolean isRunning() {
         return this.running;
     }
-
     public boolean isShutdownRequested() {
         return this.shutdownRequested;
     }
-
     public int getFPS() {
         return this.frameCount;
     }
-
     public int getUPS() {
         return this.updateCount;
-    }
-    // endregion
-
-    // region Adders
-    public boolean[] addUpdateRunnables(Runnable... runnables) {
-        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
-        final boolean[] results = ArrayUtils.addAll(pointer, runnables);
-
-        this.updateRunnables = pointer.value;
-
-        return results;
-    }
-
-    public boolean[] addRenderRunnables(Runnable... runnables) {
-        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
-        final boolean[] results = ArrayUtils.addAll(pointer, runnables);
-
-        this.renderRunnables = pointer.value;
-
-        return results;
-    }
-    // endregion
-
-    // region Removers
-    public boolean[] removeUpdateRunnables(Runnable... runnables) {
-        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.updateRunnables);
-        final boolean[] results = new boolean[runnables.length];
-
-        ArrayUtils.removeDuplicates(new ObjectPointer<Runnable[]>(runnables));
-
-        for (int i = 0; i < runnables.length; i++)
-            results[i] = ArrayUtils.removeAll(pointer, runnables[i]);
-
-        return results;
-    }
-
-    public boolean[] removeRenderRunnables(Runnable... runnables) {
-        final ObjectPointer<Runnable[]> pointer = new ObjectPointer<Runnable[]>(this.renderRunnables);
-        final boolean[] results = new boolean[runnables.length];
-
-        ArrayUtils.removeDuplicates(new ObjectPointer<Runnable[]>(runnables));
-
-        for (int i = 0; i < runnables.length; i++)
-            results[i] = ArrayUtils.removeAll(pointer, runnables[i]);
-
-        return results;
     }
     // endregion
 
@@ -117,12 +74,12 @@ public class UIThread extends Thread {
                 if (delta >= msecPerRender) {
                     lastRender = now - (delta - msecPerRender);
 
-                    for (Runnable task : this.renderRunnables)
+                    for (Runnable task : this.renderables)
                         task.run();
                     frames++;
                 }
             } else {
-                for (Runnable task : this.renderRunnables)
+                for (Runnable task : this.renderables)
                     task.run();
                 frames++;
             }
@@ -133,12 +90,12 @@ public class UIThread extends Thread {
                 if (delta >= msecPerUpdate) {
                     lastUpdate = now - (delta - msecPerUpdate);
 
-                    for (Runnable task : this.updateRunnables)
+                    for (Runnable task : this.updatables)
                         task.run();
                     updates++;
                 }
             } else {
-                for (Runnable task : this.updateRunnables)
+                for (Runnable task : this.updatables)
                     task.run();
                 updates++;
             }

@@ -3,8 +3,6 @@ package sk.pa3kc.singletons;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import sk.pa3kc.mylibrary.util.NumberUtils;
-
 public class Configuration {
     private static Configuration _inst = new Configuration();
 
@@ -78,7 +76,7 @@ public class Configuration {
     private static interface IndexerNames {
         public static final String HELLO = "Hello";
     }
-    public static interface TMP {
+    public static abstract class TMP {
         public static final int NONE = -1;
         public static final int HELLO = 0;
         public static final int THERE = 1;

@@ -1,87 +1,107 @@
 package sk.pa3kc.matrix;
 
 import sk.pa3kc.Program;
-import sk.pa3kc.inter.Validatable;
-import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.NumberUtils;
-import sk.pa3kc.mylibrary.util.StringUtils;
-import sk.pa3kc.util.Lock;
 
-public class Matrix implements Cloneable, Validatable {
-    public final Lock matrixLock = new Lock("matrixLock");
+public class Matrix implements Cloneable {
+    public static final Matrix X_MATRIX = Matrix.identified(4, 4);
+    public static final Matrix Y_MATRIX = Matrix.identified(4, 4);
+    public static final Matrix Z_MATRIX = Matrix.identified(4, 4);
+    public static final Matrix ROTATION_MATRIX = new Matrix(4, 4);
+    public static final Matrix PROJECTION_MATRIX = new Matrix(4, 4);
 
-    boolean valid;
-    double[][] values;
-    int rowCount;
-    int colCount;
-    boolean beingEdited;
+    protected float[][] values;
+    private int rowCount;
+    private int colCount;
 
     //region Constructors
     public Matrix(int rowCount, int colCount) {
-        this(new double[rowCount][colCount]);
+        this(new float[rowCount][colCount]);
     }
-    public Matrix(double[][] ref) {
-        if (ref == null) return;
-
+    public Matrix(float[][] ref) {
         this.values = ref;
-        this.rowCount = values.length;
-        this.colCount = values.length != 0 ? values[0].length : -1;
-        this.valid = this.rowCount != 0 && this.colCount != 0;
-    }
-    public static Matrix newIdentifiedMatrix(int rowCount, int colCount) {
-        double[][] values = new double[rowCount][colCount];
 
-        for (int i = 0; i < rowCount && i < colCount; i++)
-            values[i][i] = 1d;
+        if (ref == null) {
+            this.rowCount = this.colCount = 0;
+        } else {
+            this.rowCount = values.length;
+            this.colCount = values.length != 0 ? values[0].length : -1;
+        }
+    }
+    public static Matrix identified(int rowCount, int colCount) {
+        final float[][] values = new float[rowCount][colCount];
+
+        for (int row = 0; row < rowCount; row++) {
+            for (int col = 0; col < colCount; col++) {
+                values[row][col] = row == col ? 1f : 0f;
+            }
+        }
 
         return new Matrix(values);
     }
     //endregion
 
     //region Getters
-    public double[][] getAllValues() { return this.values; }
-    public double getValue(int row, int col) { return this.values[row][col]; }
+    public float[][] getAllValues() { return this.values; }
+    public float[][] cloneAllValues() {
+        final float[][] matrix = new float[this.rowCount][this.colCount];
+
+        for (int row = 0; row < this.rowCount; row++) {
+            for (int col = 0; col < this.colCount; col++) {
+                matrix[row][col] = this.values[row][col];
+            }
+        }
+
+        return matrix;
+    }
+    public float getValueAt(int row, int col) { return this.values[row][col]; }
     public int getRowCount() { return this.rowCount; }
     public int getColCount() { return this.colCount; }
-    public boolean isBeingEdited() { return this.beingEdited; }
-    public boolean isNotBeingEdited() { return !this.beingEdited; }
     //endregion
 
     //region Setters
-    void setAllValues(double[][] ref) {
-        if (ref == null) throw new NullPointerException("ref cannot be null");
+    public void setAllValues(float[][] ref) {
         this.values = ref;
-        this.rowCount = this.values.length;
-        this.colCount = this.values.length != 0 ? this.values[0].length : -1;
-        this.valid = this.rowCount != 0 && this.colCount != 0;
-    }
-    void setValueAt(int row, int col, double value) {
-        if (row >= this.rowCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("row (", row, ") must be less than ", this.rowCount));
-        if (col >= this.colCount) throw new ArrayIndexOutOfBoundsException(StringUtils.build("col (", col, ") must be less than ", this.colCount));
 
+        if (ref == null) {
+            this.rowCount = this.colCount = 0;
+        } else {
+            this.rowCount = this.values.length;
+            this.colCount = this.values.length != 0 ? this.values[0].length : -1;
+        }
+    }
+    public void setValueAt(int row, int col, double value) {
+        this.values[row][col] = (float)value;
+    }
+    public void setValueAt(int row, int col, float value) {
         this.values[row][col] = value;
     }
-    void setBeingEdited(boolean state) { this.beingEdited = state; }
     //endregion
 
-    //region Public methods
-    public void waitForUnlock() {
-        this.matrixLock.lock();
+    //region Public Methods
+    public void identify() {
+        for (int row = 0; row < this.rowCount; row++) {
+            for (int col = 0; col < this.colCount; col++) {
+                this.values[row][col] = row == col ? 1f : 0f;
+            }
+        }
+    }
+    public void normalize() {
+        if (this.rowCount < 3 || this.colCount == 0) {
+            throw new IllegalArgumentException("mat must be at least of size 3x1");
+        }
+
+        final float l = (float)StrictMath.sqrt((this.values[0][0] * this.values[0][0]) + (this.values[1][0] * this.values[1][0]) + (this.values[2][0] * this.values[2][0]));
+        this.values[0][0] /= l;
+        this.values[1][0] /= l;
+        this.values[2][0] /= l;
     }
     //endregion
 
     //region Overrides
     @Override
-    public boolean isValid() { return this.valid; }
-    @Override
-    public boolean isNotValid() { return !this.valid; }
-    @Override
     public Matrix clone() {
-        if (!this.valid) throw new RuntimeException("Matrix is not valid");
-
-        final double[][] tmpValues = ArrayUtils.deepArrCopy(this.values);
-
-        return new Matrix(tmpValues);
+        return new Matrix(this.cloneAllValues());
     }
     @Override
     public String toString() {
@@ -89,19 +109,14 @@ public class Matrix implements Cloneable, Validatable {
         builder.append(this.rowCount);
         builder.append("x");
         builder.append(this.colCount);
-        builder.append(" ");
-        builder.append(this.valid ? "VALID" : "NOT VALID");
         builder.append(Program.NEWLINE);
 
         for (int row = 0; row < this.rowCount; row++) {
-            builder.append("{");
             for (int col = 0; col < this.colCount; col++) {
-                builder.append(" ");
                 builder.append(NumberUtils.round(this.values[row][col], 2));
-                builder.append(",");
+                builder.append(" | ");
             }
-            builder.replace(builder.length() - 1, builder.length(), " }");
-            builder.append(Program.NEWLINE);
+            builder.replace(builder.length() - 3, builder.length(), Program.NEWLINE);
         }
 
         return builder.toString();
@@ -112,7 +127,42 @@ public class Matrix implements Cloneable, Validatable {
 
         final Matrix ref = (Matrix)obj;
 
-        return ref.valid == this.valid && ref.values.equals(this.values) && ref.colCount == this.colCount && ref.rowCount == this.rowCount;
+        if (ref.colCount != this.colCount || ref.rowCount != this.rowCount) return false;
+        for (int row = 0; row < this.rowCount; row++) {
+            for (int col = 0; col < this.colCount; col++) {
+                if (ref.values[row][col] != this.values[row][col]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
     //endregion
+
+    public static void printMatrixes(Matrix... matrixes) {
+        int maxRowCount = 0;
+        for (Matrix matrix : matrixes)
+            maxRowCount = NumberUtils.max(matrix.getRowCount(), maxRowCount);
+
+        final StringBuilder builder = new StringBuilder();
+        for (int row = 0; row < maxRowCount; row++) {
+            builder.append("| ");
+            for (Matrix matrix : matrixes) {
+                if (row < matrix.getRowCount()) {
+                    for (int col = 0; col < matrix.getColCount(); col++)  {
+                        final double val = NumberUtils.round(matrix.values[row][col], 2);
+                        builder.append((val >= 0 ? "+" : "").concat(String.valueOf(val)));
+                    }
+                } else {
+                    for (int col = 0; col < matrix.getColCount(); col++)
+                        builder.append("-1.00");
+                }
+                builder.append("| ");
+            }
+            builder.replace(builder.length() - 2, builder.length(), "|" + Program.NEWLINE);
+        }
+
+        System.out.println(builder.toString());
+    }
 }

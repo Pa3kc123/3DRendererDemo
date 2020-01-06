@@ -1,10 +1,11 @@
 package sk.pa3kc.geom;
 
 import java.awt.Color;
-import java.awt.Graphics;
 
 import sk.pa3kc.inter.Drawable;
 import sk.pa3kc.util.Vertex;
+
+import sun.java2d.SunGraphics2D;
 
 public class Path3D implements Drawable {
     public final Vertex[] vertexes = new Vertex[2];
@@ -19,11 +20,7 @@ public class Path3D implements Drawable {
     }
 
     @Override
-    public Vertex[] getAll() { return this.vertexes; }
-    @Override
-    public Vertex[] cloneAll() { return this.vertexes.clone(); }
-    @Override
-    public void draw(Graphics g) {
+    public void draw(SunGraphics2D g) {
         if (g == null) return;
 
         final Vertex[] vertexCopy = new Vertex[this.vertexes.length];

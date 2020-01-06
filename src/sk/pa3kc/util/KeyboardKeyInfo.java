@@ -26,65 +26,22 @@ public class KeyboardKeyInfo {
     public KeyboardKeyInfo(char symbol, int keyId, Runnable onPressedAction, Runnable onReleasedAction) {
         this.symbol = symbol;
         this.keyId = keyId;
-        this.addOnPressedAction(onPressedAction);
-        this.addOnReleasedAction(onReleasedAction);
-    }
-
-    //Adders
-    public boolean addOnPressedAction(Runnable action) {
-        if (action == null) return false;
-
-        boolean res = !this.onPressedActions.contains(action);
-
-        if (res) this.onPressedActions.add(action);
-
-        return res;
-    }
-    public boolean addOnTypedAction(Runnable action) {
-        if (action == null) return false;
-
-        boolean res = !this.onTypedActions.contains(action);
-
-        if (res) this.onPressedActions.add(action);
-
-        return res;
-    }
-    public boolean addOnReleasedAction(Runnable action) {
-        if (action == null) return false;
-
-        boolean res = !this.onReleasedActions.contains(action);
-
-        if (res) this.onReleasedActions.add(action);
-
-        return res;
-    }
-
-    //Removers
-    public boolean removeOnPressedAction(Runnable action) {
-        boolean res = this.onPressedActions.contains(action);
-
-        if (res) this.onPressedActions.remove(action);
-
-        return res;
-    }
-    public boolean removeOnTypedAction(Runnable action) {
-        boolean res = this.onTypedActions.contains(action);
-
-        if (res) this.onTypedActions.remove(action);
-
-        return res;
-    }
-    public boolean removeOnReleasedAction(Runnable action) {
-        boolean res = this.onReleasedActions.contains(action);
-
-        if (res) this.onReleasedActions.remove(action);
-
-        return res;
+        this.onPressedActions.add(onPressedAction);
+        this.onReleasedActions.add(onReleasedAction);
     }
 
     //Getters
     public boolean isPressed() { return this.isPressed; }
     public boolean isReleased() { return !this.isPressed; }
+    public ArrayList<Runnable> getOnPressedActions() {
+        return this.onPressedActions;
+    }
+    public ArrayList<Runnable> getOnTypedActions() {
+        return this.onTypedActions;
+    }
+    public ArrayList<Runnable> getOnReleasedActions() {
+        return this.onReleasedActions;
+    }
 
     //Events
     public void onPressed() {

@@ -1,11 +1,7 @@
 package sk.pa3kc.inter;
 
-import java.awt.Graphics;
-
-import sk.pa3kc.util.Vertex;
+import sun.java2d.SunGraphics2D;
 
 public interface Drawable {
-    Vertex[] getAll();
-    Vertex[] cloneAll();
-    void draw(Graphics g);
+    void draw(SunGraphics2D g);
 }

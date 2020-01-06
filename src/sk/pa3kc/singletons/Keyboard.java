@@ -32,12 +32,14 @@ public class Keyboard {
     }
 
     public static void processKeyEvent(KeyEvent event) {
-        for (KeyboardKeyInfo keyInfo : _supportedChars)
-        if (keyInfo.keyId == event.getKeyCode())
-        switch (event.getID()) {
-            case KeyEvent.KEY_PRESSED: keyInfo.onPressed(); break;
-            case KeyEvent.KEY_TYPED: keyInfo.onTyped(); break;
-            case KeyEvent.KEY_RELEASED: keyInfo.onReleased(); break;
+        for (KeyboardKeyInfo keyInfo : _supportedChars) {
+            if (keyInfo.keyId == event.getKeyCode()) {
+                switch (event.getID()) {
+                    case KeyEvent.KEY_PRESSED: keyInfo.onPressed(); return;
+                    case KeyEvent.KEY_TYPED: keyInfo.onTyped(); return;
+                    case KeyEvent.KEY_RELEASED: keyInfo.onReleased(); return;
+                }
+            }
         }
     }
 }

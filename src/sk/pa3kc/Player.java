@@ -4,16 +4,14 @@ import sk.pa3kc.enums.MovementDirection;
 import sk.pa3kc.util.Vertex;
 
 public class Player {
-    private static final Player INSTANCE = new Player();
-
-    private Player() { }
-
-    public static Player getInstance() { return INSTANCE; }
-
     private MovementDirection moveDirection = MovementDirection.NONE;
     private boolean isMoving = false;
-    private Vertex location = new Vertex(0d, 0d, 0d, 1d);
-    // private Vertex lookDirection = new Vertex(0d, 0d, 0d, 1d);
+
+    private final Vertex location;
+
+    public Player(Vertex location) {
+        this.location = location;
+    }
 
     public MovementDirection getMoveDirection() { return this.moveDirection; }
     public boolean getIsMoving() { return this.isMoving; }
@@ -24,12 +22,9 @@ public class Player {
         this.isMoving = this.moveDirection != MovementDirection.NONE;
     }
     public void setLocation(Vertex ver) {
-        if (ver.isNotValid() || ver.getRowCount() < this.location.getRowCount() || ver.getColCount() < this.location.getColCount())
-            throw new IllegalArgumentException("location argument is not valid");
-
-        final double[][] values = this.location.getAllValues();
-        for (int row = 0; row < this.location.getRowCount(); row++)
-        for (int col = 0; col < this.location.getColCount(); col++)
-            values[row][col] = ver.getValue(row, col);
+        this.location.setX(ver.getX());
+        this.location.setY(ver.getY());
+        this.location.setZ(ver.getZ());
+        this.location.setW(ver.getW());
     }
 }
