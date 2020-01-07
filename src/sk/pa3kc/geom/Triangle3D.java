@@ -2,39 +2,65 @@ package sk.pa3kc.geom;
 
 import java.awt.Color;
 
-import sk.pa3kc.inter.Drawable;
-import sk.pa3kc.util.Vertex;
+import sk.pa3kc.Program;
+import sk.pa3kc.geom.Drawable;
+import sk.pa3kc.matrix.MatrixMath;
+import sk.pa3kc.matrix.VertexMath;
+import sk.pa3kc.pojo.Matrix;
+import sk.pa3kc.pojo.Vertex;
 
 import sun.java2d.SunGraphics2D;
 
-public class Triangle3D implements Drawable {
-    public final Vertex[] vertexes = new Vertex[3];
+public class Triangle3D extends Drawable {
+    public final Vertex[] vertecies = new Vertex[3];
     public final Color color;
 
+    public float dotProduct = 0f;
+
+    public Triangle3D(Vertex ver1, Vertex ver2, Vertex ver3) {
+        this(ver1, ver2, ver3, Color.WHITE);
+    }
     public Triangle3D(Vertex ver1, Vertex ver2, Vertex ver3, Color color) {
-        this.vertexes[0] = ver1;
-        this.vertexes[1] = ver2;
-        this.vertexes[2] = ver3;
+        this.vertecies[0] = ver1;
+        this.vertecies[1] = ver2;
+        this.vertecies[2] = ver3;
         this.color = color;
     }
 
     @Override
     public void draw(SunGraphics2D g) {
-        if (g == null) return;
+        final Vertex[] vertecies = super.translate(this.vertecies);
 
-        final Vertex[] vertexCopy = new Vertex[this.vertexes.length];
-        for (int i = 0; i < this.vertexes.length; i++) {
-            vertexCopy[i] = this.vertexes[i].clone();
-        }
+        this.dotProduct = MatrixMath.dotProduct(super.normal.getAllValues(), vertecies[0].getAllValues());
+        final int[] xPoints = new int[vertecies.length];
+        final int[] yPoints = new int[vertecies.length];
 
-        Shape3D.transform(vertexCopy);
+        if (this.dotProduct < 0f) {
+            for (int i = 0; i < vertecies.length; i++) {
+                final float[][] normalizedLight = Program.world.getLight().cloneAllValues();
+                MatrixMath.normalize(normalizedLight);
 
-        for (int i = 0; i < vertexCopy.length; i++) {
-            int x1 = (int) vertexCopy[i].getX();
-            int y1 = (int) vertexCopy[i].getY();
-            int x2 = (int) vertexCopy[i+1 == vertexCopy.length ? 0 : i+1].getX();
-            int y2 = (int) vertexCopy[i+1 == vertexCopy.length ? 0 : i+1].getY();
-            g.drawLine(x1, y1, x2, y2);
+                // final float dp = MatrixMath.dotProduct(vertecies[0].getAllValues(), normalizedLight);
+
+                // Projection
+                VertexMath.multiply(vertecies[i].getAllValues(), Matrix.PROJECTION_MATRIX.getAllValues());
+
+                vertecies[i].setX((vertecies[i].getX() + 1f) * (0.5f * (float)Program.GRAPHICS_DEVICE_BOUNDS.getWidth()));
+                vertecies[i].setY((vertecies[i].getY() + 1f) * (0.5f * (float)Program.GRAPHICS_DEVICE_BOUNDS.getHeight()));
+
+                xPoints[i] = (int)vertecies[i].getX();
+                yPoints[i] = (int)vertecies[i].getY();
+            }
+
+            final int tmp = g.getColor().getRGB();
+
+            g.setColor(Color.BLACK);
+            g.drawPolygon(xPoints, yPoints, vertecies.length);
+
+            g.setColor(Color.WHITE);
+            g.fillPolygon(xPoints, yPoints, vertecies.length);
+
+            g.setColor(new Color(tmp));
         }
     }
 }

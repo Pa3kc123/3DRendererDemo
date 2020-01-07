@@ -5,16 +5,19 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
+import java.io.File;
+import java.util.Arrays;
 
-import sk.pa3kc.matrix.Matrix;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
+import sk.pa3kc.pojo.Matrix;
+import sk.pa3kc.pojo.Vertex;
 import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.ui.MainFrame;
 import sk.pa3kc.util.Logger;
+import sk.pa3kc.util.ObjFile;
 import sk.pa3kc.util.Parameters;
 import sk.pa3kc.util.UIThread;
-import sk.pa3kc.util.Vertex;
 
 public class Program {
     private Program() {}
@@ -32,6 +35,20 @@ public class Program {
     public static World world;
 
     public static void main(String[] args) {
+        if (args.length == 0) {
+            System.exit(1);
+        }
+
+        ObjFile obj = null;
+
+        try {
+            obj = new ObjFile(new File(args[0]));
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            System.exit(2);
+            return;
+        }
+
         final Parameters params = new Parameters(args);
 
         for (String optionName : params.getOptionNames()) {
@@ -106,6 +123,7 @@ public class Program {
 
         Program.world = new World(2);
         Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 300f, 1f));
+        Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
         Program.UI_THREAD = new UIThread();
         Program.mainFrame = new MainFrame("Test2");
         Program.UI_THREAD.start();

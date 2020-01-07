@@ -1,13 +1,12 @@
-package sk.pa3kc.util;
+package sk.pa3kc.pojo;
 
 import sk.pa3kc.Program;
-import sk.pa3kc.matrix.Matrix;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
 public class Vertex extends Matrix implements Cloneable {
     public Vertex() {
-        super(4, 1);
+        super(new float[4][1]);
     }
     public Vertex(float x, float y, float z) {
         this(x, y, z, 1f);
@@ -20,8 +19,8 @@ public class Vertex extends Matrix implements Cloneable {
             { w }
         });
     }
-    public Vertex(Matrix mat) {
-        super(mat.getAllValues());
+    public Vertex(float[][] mat) {
+        super(mat);
     }
 
     //region Getters
@@ -81,6 +80,8 @@ public class Vertex extends Matrix implements Cloneable {
 
     //region Overrides
     @Override
-    public Vertex clone() { return new Vertex(super.clone()); }
+    public Vertex clone() {
+        return new Vertex(super.cloneAllValues());
+    }
     //endregion
 }

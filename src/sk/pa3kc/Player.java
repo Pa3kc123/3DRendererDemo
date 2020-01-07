@@ -1,7 +1,7 @@
 package sk.pa3kc;
 
 import sk.pa3kc.enums.MovementDirection;
-import sk.pa3kc.util.Vertex;
+import sk.pa3kc.pojo.Vertex;
 
 public class Player {
     private MovementDirection moveDirection = MovementDirection.NONE;

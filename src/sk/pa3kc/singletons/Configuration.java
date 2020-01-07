@@ -73,30 +73,6 @@ public class Configuration {
         return this.entries[index.index].setValue(value);
     }
 
-    private static interface IndexerNames {
-        public static final String HELLO = "Hello";
-    }
-    public static abstract class TMP {
-        public static final int NONE = -1;
-        public static final int HELLO = 0;
-        public static final int THERE = 1;
-        public static final int[] values = new int[] {
-            HELLO,
-            THERE
-        };
-
-        public static int fromString(String value) {
-            if (value == null) {
-                return NONE;
-            }
-
-            for (int val : values) {
-            }
-
-            return NONE;
-        }
-    }
-
     public static enum Indexer {
         MAX_FPS(0),
         MAX_UPS(1),
@@ -158,7 +134,7 @@ public class Configuration {
             return this.value;
         }
 
-        @SuppressWarnings("Unchecked")
+        @SuppressWarnings("unchecked")
         public boolean setValue(Object value) {
             final boolean typeCheck = value.getClass() == this.value.getClass();
 
