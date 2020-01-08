@@ -1,10 +1,10 @@
 package sk.pa3kc;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import sk.pa3kc.geom.Drawable;
 import sk.pa3kc.pojo.Vertex;
-import sun.java2d.SunGraphics2D;
 
 public class World {
     private final ArrayList<Drawable> mesh = new ArrayList<Drawable>();
@@ -27,7 +27,7 @@ public class World {
         return this.light;
     }
 
-    public void draw(SunGraphics2D g) {
+    public void draw(Graphics2D g) {
         for (Drawable obj : this.mesh) {
             obj.draw(g);
         }

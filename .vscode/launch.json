@@ -9,14 +9,14 @@
             "mainClass": "sk.pa3kc.Program",
             "windows": {
                 "classPaths": [
-                    "${workspaceFolder}\\lib\\MyLibrary.jar",
+                    "${workspaceFolder}\\lib\\MyLibrary-1.0.jar",
                     "${workspaceFolder}\\bin"
                 ],
                 "args": "${workspaceFolder}\\assets\\crystal.obj --max_fps=120 --monitor_index=2"
             },
             "linux": {
                 "classPaths": [
-                    "${workspaceFolder}/lib/MyLibrary.jar",
+                    "${workspaceFolder}/lib/MyLibrary-1.0.jar",
                     "${workspaceFolder}/bin"
                 ],
                 "args": "${workspaceFolder}/assets/crystal.obj --max_fps=120 --monitor_index=2"

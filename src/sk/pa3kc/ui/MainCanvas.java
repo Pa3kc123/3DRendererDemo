@@ -2,6 +2,7 @@ package sk.pa3kc.ui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -16,7 +17,6 @@ import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
 import sk.pa3kc.singletons.Keyboard;
-import sun.java2d.SunGraphics2D;
 
 public class MainCanvas extends DoubleBufferedCanvas {
     private static final long serialVersionUID = 1L;
@@ -126,7 +126,7 @@ public class MainCanvas extends DoubleBufferedCanvas {
     }
 
     @Override
-    public void paintBuffer(SunGraphics2D g) {
+    public void paintBuffer(Graphics2D g) {
         world.draw(g);
 
         g.setFont(FONT);

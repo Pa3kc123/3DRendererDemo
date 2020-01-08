@@ -1,6 +1,7 @@
 package sk.pa3kc.geom;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 import sk.pa3kc.Program;
 import sk.pa3kc.geom.Drawable;
@@ -8,8 +9,6 @@ import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.matrix.VertexMath;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
-
-import sun.java2d.SunGraphics2D;
 
 public class Triangle3D extends Drawable {
     public final Vertex[] vertecies = new Vertex[3];
@@ -28,7 +27,7 @@ public class Triangle3D extends Drawable {
     }
 
     @Override
-    public void draw(SunGraphics2D g) {
+    public void draw(Graphics2D g) {
         final Vertex[] vertecies = super.translate(this.vertecies);
 
         this.dotProduct = MatrixMath.dotProduct(super.normal.getAllValues(), vertecies[0].getAllValues());

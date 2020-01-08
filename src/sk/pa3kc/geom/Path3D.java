@@ -1,9 +1,9 @@
 package sk.pa3kc.geom;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 import sk.pa3kc.pojo.Vertex;
-import sun.java2d.SunGraphics2D;
 
 public class Path3D extends Drawable implements Cloneable {
     public final Vertex[] vertecies = new Vertex[2];
@@ -18,7 +18,7 @@ public class Path3D extends Drawable implements Cloneable {
     }
 
     @Override
-    public void draw(SunGraphics2D g) {
+    public void draw(Graphics2D g) {
         final Vertex[] vertecies = super.translate(this.vertecies);
 
         int x1 = (int) vertecies[0].getX();

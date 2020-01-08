@@ -4,48 +4,22 @@
         {
             "label": "build",
             "type": "shell",
-            "linux": {
-                "options": {
-                    "cwd": "${workspaceFolder}/.vscode"
-                },
-                "command": "./build"
-            },
-            "windows": {
-                "options": {
-                    "cwd": "${workspaceFolder}\\.vscode"
-                },
-                "command": "build.bat"
+            "command": "mvn",
+            "args": [
+                "install"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         },
         {
             "label": "clean",
             "type": "shell",
-            "linux": {
-                "options": {
-                    "cwd": "${workspaceFolder}/.vscode"
-                },
-                "command": "./clean"
-            },
-            "windows": {
-                "options": {
-                    "cwd": "${workspaceFolder}\\.vscode"
-                },
-                "command": "clean.bat"
-            }
-        },
-        {
-            "label": "rebuild",
-            "type": "shell",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "dependsOn": [
-                "clean",
-                "build"
+            "command": "mvn",
+            "args": [
+                "clean"
             ],
-            "dependsOrder": "sequence"
         }
     ]
 }

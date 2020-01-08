@@ -2,14 +2,13 @@ package sk.pa3kc.ui;
 
 import java.awt.Canvas;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.VolatileImage;
-
-import sun.java2d.SunGraphics2D;
 
 public abstract class DoubleBufferedCanvas extends Canvas {
     private static final long serialVersionUID = 1L;
     private VolatileImage backendImage;
-    private SunGraphics2D backendGraphics;
+    private Graphics2D backendGraphics;
     private int fontSize;
 
     public DoubleBufferedCanvas() {
@@ -32,7 +31,7 @@ public abstract class DoubleBufferedCanvas extends Canvas {
         System.gc();
 
         this.backendImage = super.createVolatileImage(super.getWidth(), super.getHeight());
-        this.backendGraphics = (SunGraphics2D)this.backendImage.getGraphics();
+        this.backendGraphics = (Graphics2D)this.backendImage.getGraphics();
         this.fontSize = this.backendGraphics.getFont().getSize();
     }
 
@@ -75,5 +74,5 @@ public abstract class DoubleBufferedCanvas extends Canvas {
         this.backendImage = null;
     }
 
-    public abstract void paintBuffer(SunGraphics2D g);
+    public abstract void paintBuffer(Graphics2D g);
 }

@@ -8,6 +8,10 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.util.Arrays;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
@@ -33,6 +37,7 @@ public class Program {
     public static UIThread UI_THREAD;
     public static MainFrame mainFrame;
     public static World world;
+    private static Thread loopThread = null;
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -124,8 +129,44 @@ public class Program {
         Program.world = new World(2);
         Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 300f, 1f));
         Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
-        Program.UI_THREAD = new UIThread();
-        Program.mainFrame = new MainFrame("Test2");
-        Program.UI_THREAD.start();
+        // Program.UI_THREAD = new UIThread();
+        try {
+            Display.setDisplayMode(new DisplayMode(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height));
+            Display.setTitle("Test Window");
+            Display.create();
+
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(0, 0, Display.getWidth(), Display.getHeight(), near, far);
+
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
+            GL11.glBegin(GL11.GL_TRIANGLES);
+            GL11.glVertex2f(0, 0);
+            GL11.glVertex2f(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
+            GL11.glVertex2f(GRAPHICS_DEVICE_BOUNDS.width, 0);
+            GL11.glEnd();
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            Display.destroy();
+            System.exit(1);
+            return;
+        }
+
+        loopThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!Display.isCloseRequested()) {
+                    Display.update();
+                    Display.sync(60);
+                }
+                Display.destroy();
+                System.exit(0);
+            }
+        });
+        loopThread.start();
+        // Program.mainFrame = new MainFrame("Test2");
+        // Program.UI_THREAD.start();
     }
 }

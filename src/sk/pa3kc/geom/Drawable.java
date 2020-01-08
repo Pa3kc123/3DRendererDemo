@@ -1,16 +1,17 @@
 package sk.pa3kc.geom;
 
+import java.awt.Graphics2D;
+
 import sk.pa3kc.Program;
 import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.matrix.VertexMath;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
-import sun.java2d.SunGraphics2D;
 
 public abstract class Drawable {
     protected final Vertex normal = new Vertex();
 
-    public abstract void draw(SunGraphics2D g);
+    public abstract void draw(Graphics2D g);
 
     protected Vertex[] translate(Vertex[] vertecies) {
         if (vertecies == null) return null;
