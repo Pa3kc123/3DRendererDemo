@@ -6,15 +6,15 @@
             "name": "Debug (Launch) with Arguments Prompt",
             "request": "launch",
             "projectName": "3DRedererDemo",
+            "classPaths": [
+                "${workspaceFolder}/bin/classes"
+            ],
             "mainClass": "sk.pa3kc.Program",
-            "windows": {
-                "cwd": "${workspaceFolder}\\bin\\classes",
-                "args": "assets\\crystal.obj --max_fps=120 --monitor_index=2"
-            },
-            "linux": {
-                "cwd": "${workspaceFolder}/bin/classes",
-                "args": "assets/crystal.obj --max_fps=120 --monitor_index=2"
-            }
+            "args": [
+                "${workspaceFolder}/assets/crystal.obj",
+                "--max_fps=120",
+                "--monitor_index=2"
+            ]
         }
     ]
 }

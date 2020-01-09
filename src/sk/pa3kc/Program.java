@@ -8,9 +8,7 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.util.Arrays;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import sk.pa3kc.matrix.MatrixMath;
@@ -130,23 +128,6 @@ public class Program {
         Program.world = new World(2);
         Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 300f, 1f));
         Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
-
-        try {
-            Display.setDisplayMode(new DisplayMode(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height));
-            Display.setTitle("Test Window");
-            Display.create();
-
-            GL11.glMatrixMode(GL11.GL_PROJECTION);
-            GL11.glLoadIdentity();
-            GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), near, far);
-
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-            Display.destroy();
-            System.exit(1);
-            return;
-        }
 
         Program.UI_THREAD.getUpdatables().add(new Runnable() {
             @Override
