@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import sk.pa3kc.geom.Drawable;
 import sk.pa3kc.pojo.Vertex;
 
-public class World {
+public class World extends Drawable {
     private final ArrayList<Drawable> mesh = new ArrayList<Drawable>();
 
     private final Player[] players;
@@ -30,6 +30,13 @@ public class World {
     public void draw(Graphics2D g) {
         for (Drawable obj : this.mesh) {
             obj.draw(g);
+        }
+    }
+
+    @Override
+    public void drawGL() {
+        for (Drawable obj : this.mesh) {
+            obj.drawGL();
         }
     }
 

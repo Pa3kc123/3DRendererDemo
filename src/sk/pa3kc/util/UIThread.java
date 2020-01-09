@@ -8,6 +8,7 @@ import sk.pa3kc.singletons.Configuration;
 public class UIThread extends Thread {
     private ArrayList<Runnable> updatables = new ArrayList<Runnable>();
     private ArrayList<Runnable> renderables = new ArrayList<Runnable>();
+    private Runnable finisher = null;
 
     private boolean shutdownRequested = false;
     private boolean running = false;
@@ -20,6 +21,9 @@ public class UIThread extends Thread {
     }
     public ArrayList<Runnable> getRenderables() {
         return this.renderables;
+    }
+    public Runnable getFinisher() {
+        return this.finisher;
     }
     public boolean isRunning() {
         return this.running;
@@ -36,8 +40,11 @@ public class UIThread extends Thread {
     // endregion
 
     // region Public methods
-    public void requestShutdown() {
-        this.shutdownRequested = true;
+    public void setRequestShutdown(boolean shutdownRequested) {
+        this.shutdownRequested = shutdownRequested;
+    }
+    public void setFinisher(Runnable finisher) {
+        this.finisher = finisher;
     }
     // endregion
 
@@ -119,6 +126,7 @@ public class UIThread extends Thread {
         }
 
         this.running = false;
+        this.finisher.run();
         Logger.DEBUG("uiThread stopped");
     }
     // endregion

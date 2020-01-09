@@ -8,18 +8,12 @@
             "projectName": "3DRedererDemo",
             "mainClass": "sk.pa3kc.Program",
             "windows": {
-                "classPaths": [
-                    "${workspaceFolder}\\lib\\MyLibrary-1.0.jar",
-                    "${workspaceFolder}\\bin"
-                ],
-                "args": "${workspaceFolder}\\assets\\crystal.obj --max_fps=120 --monitor_index=2"
+                "cwd": "${workspaceFolder}\\bin\\classes",
+                "args": "assets\\crystal.obj --max_fps=120 --monitor_index=2"
             },
             "linux": {
-                "classPaths": [
-                    "${workspaceFolder}/lib/MyLibrary-1.0.jar",
-                    "${workspaceFolder}/bin"
-                ],
-                "args": "${workspaceFolder}/assets/crystal.obj --max_fps=120 --monitor_index=2"
+                "cwd": "${workspaceFolder}/bin/classes",
+                "args": "assets/crystal.obj --max_fps=120 --monitor_index=2"
             }
         }
     ]

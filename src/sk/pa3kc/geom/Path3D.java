@@ -31,6 +31,12 @@ public class Path3D extends Drawable implements Cloneable {
         g.setColor(Color.WHITE);
         g.drawString(this.text, x2, y2);
     }
+
+    @Override
+    public void drawGL() {
+
+    }
+
     @Override
     protected Triangle3D clone() {
         return null;

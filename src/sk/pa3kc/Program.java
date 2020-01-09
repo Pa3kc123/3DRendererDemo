@@ -8,10 +8,12 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.util.Arrays;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
@@ -34,10 +36,9 @@ public class Program {
 
     public static float FOV = 90f;
 
-    public static UIThread UI_THREAD;
+    public static UIThread UI_THREAD = new UIThread();
     public static MainFrame mainFrame;
     public static World world;
-    private static Thread loopThread = null;
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -129,7 +130,7 @@ public class Program {
         Program.world = new World(2);
         Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 300f, 1f));
         Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
-        // Program.UI_THREAD = new UIThread();
+
         try {
             Display.setDisplayMode(new DisplayMode(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height));
             Display.setTitle("Test Window");
@@ -137,16 +138,9 @@ public class Program {
 
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glLoadIdentity();
-            GL11.glOrtho(0, 0, Display.getWidth(), Display.getHeight(), near, far);
+            GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), near, far);
 
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
-            GL11.glBegin(GL11.GL_TRIANGLES);
-            GL11.glVertex2f(0, 0);
-            GL11.glVertex2f(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
-            GL11.glVertex2f(GRAPHICS_DEVICE_BOUNDS.width, 0);
-            GL11.glEnd();
         } catch (Throwable ex) {
             ex.printStackTrace();
             Display.destroy();
@@ -154,19 +148,89 @@ public class Program {
             return;
         }
 
-        loopThread = new Thread(new Runnable() {
+        Program.UI_THREAD.getUpdatables().add(new Runnable() {
             @Override
             public void run() {
-                while (!Display.isCloseRequested()) {
-                    Display.update();
-                    Display.sync(60);
+                if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                    final Player player = Program.world.getPlayers()[0];
+                    player.getLocation().setZ(player.getLocation().getZ() + 5f);
                 }
+                if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                    final Player player = Program.world.getPlayers()[0];
+                    player.getLocation().setZ(player.getLocation().getZ() - 5f);
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+                    Program.UI_THREAD.setRequestShutdown(true);
+                }
+            }
+        });
+
+        Program.UI_THREAD.getUpdatables().add(new Runnable() {
+            @Override
+            public void run() {
+                MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
+                MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
+                // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
+                MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
+                MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
+            }
+        });
+
+        Program.UI_THREAD.getRenderables().add(new Runnable() {
+            @Override
+            public void run() {
+                Program.world.drawGL();
+                Display.update();
+                Program.UI_THREAD.setRequestShutdown(Display.isCloseRequested());
+            }
+        });
+
+        Program.UI_THREAD.setFinisher(new Runnable() {
+            @Override
+            public void run() {
                 Display.destroy();
                 System.exit(0);
             }
         });
-        loopThread.start();
+
+        Program.UI_THREAD.start();
         // Program.mainFrame = new MainFrame("Test2");
-        // Program.UI_THREAD.start();
+    }
+
+    private static float angleX = 0f;
+    private static float deltaX = 0f;
+    private static float angleY = 0f;
+    private static float deltaY = 0f;
+    private static float angleZ = 0f;
+
+    private static boolean mouse1Pressed = false;
+    private static boolean mouse2Pressed = false;
+    private static boolean mouse3Pressed = false;
+    private static int lastX = 0;
+    private static int lastY = 0;
+
+    public static void updateXRotation(float delta) {
+        angleX += delta;
+        if (angleX >= 360f) {
+            angleX -= 360f;
+        } else if (angleX < 0f) {
+            angleX += 359;
+        }
+    }
+    public static void updateYRotation(float delta) {
+        angleY += delta;
+        if (angleY >= 360f) {
+            angleY -= 360f;
+        } else if (angleY < 0f) {
+            angleY += 359;
+        }
+    }
+    public static void updateZRotation(float delta) {
+        angleZ += delta;
+        if (angleZ >= 360f) {
+            angleZ -= 360f;
+        } else if (angleZ < 0f) {
+            angleZ += 359;
+        }
     }
 }

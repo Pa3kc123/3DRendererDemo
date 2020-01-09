@@ -29,8 +29,7 @@ public class MainFrame extends Frame implements WindowListener {
 
     @Override
     public void dispose() {
-        if (!Program.UI_THREAD.isShutdownRequested())
-            Program.UI_THREAD.requestShutdown();
+        Program.UI_THREAD.setRequestShutdown(true);
         super.dispose();
     }
 
