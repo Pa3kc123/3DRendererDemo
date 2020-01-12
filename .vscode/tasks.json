@@ -9,12 +9,21 @@
                 "clean",
                 "compile",
                 "dependency:unpack-dependencies",
-                "jar:jar"
+                "-f",
+                "${workspaceFolder}/pom.xml"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "unpack-dependecies",
+            "type": "shell",
+            "command": "mvn",
+            "args": [
+                "dependency:unpack-dependencies"
+            ]
         }
     ]
 }

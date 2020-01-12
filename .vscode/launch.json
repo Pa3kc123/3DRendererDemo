@@ -13,7 +13,7 @@
             "args": [
                 "${workspaceFolder}/assets/crystal.obj",
                 "--max_fps=120",
-                "--monitor_index=2"
+                "--monitor_index=1"
             ]
         }
     ]

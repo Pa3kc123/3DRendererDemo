@@ -29,7 +29,7 @@ public class MainFrame extends Frame implements WindowListener {
 
     @Override
     public void dispose() {
-        Program.UI_THREAD.setRequestShutdown(true);
+        // Program.UI_THREAD.setRequestShutdown(true);
         super.dispose();
     }
 
@@ -67,5 +67,42 @@ public class MainFrame extends Frame implements WindowListener {
     @Override
     public void windowDeactivated(WindowEvent e) {
         Logger.DEBUG("windowDeactivated");
+    }
+
+    private static float angleX = 0f;
+    private static float deltaX = 0f;
+    private static float angleY = 0f;
+    private static float deltaY = 0f;
+    private static float angleZ = 0f;
+
+    private static boolean mouse1Pressed = false;
+    private static boolean mouse2Pressed = false;
+    private static boolean mouse3Pressed = false;
+    private static int lastX = 0;
+    private static int lastY = 0;
+
+    public static void updateXRotation(float delta) {
+        angleX += delta;
+        if (angleX >= 360f) {
+            angleX -= 360f;
+        } else if (angleX < 0f) {
+            angleX += 359;
+        }
+    }
+    public static void updateYRotation(float delta) {
+        angleY += delta;
+        if (angleY >= 360f) {
+            angleY -= 360f;
+        } else if (angleY < 0f) {
+            angleY += 359;
+        }
+    }
+    public static void updateZRotation(float delta) {
+        angleZ += delta;
+        if (angleZ >= 360f) {
+            angleZ -= 360f;
+        } else if (angleZ < 0f) {
+            angleZ += 359;
+        }
     }
 }

@@ -2,34 +2,41 @@ package sk.pa3kc.util;
 
 import java.util.ArrayList;
 
+import org.lwjgl.glfw.GLFW;
+
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Configuration;
+import sk.pa3kc.ui.GLWindow;
 
-public class UIThread extends Thread {
+public abstract class UIThread implements Runnable {
+    private enum ThreadState {
+        RUNNING,
+        // PAUSING,
+        // PAUSED,
+        STOPPING,
+        STOPPED
+    }
+
     private ArrayList<Runnable> updatables = new ArrayList<Runnable>();
     private ArrayList<Runnable> renderables = new ArrayList<Runnable>();
-    private Runnable finisher = null;
 
-    private boolean shutdownRequested = false;
-    private boolean running = false;
+    private final Thread thread;
+    private ThreadState state = ThreadState.STOPPED;
+    private long window = GLWindow.GL_NULL;
+
     private int updateCount = 0;
     private int frameCount = 0;
 
-    // region Getters
+    public UIThread() {
+        this.thread = new Thread(this);
+    }
+
+    //region Getters
     public ArrayList<Runnable> getUpdatables() {
         return this.updatables;
     }
     public ArrayList<Runnable> getRenderables() {
         return this.renderables;
-    }
-    public Runnable getFinisher() {
-        return this.finisher;
-    }
-    public boolean isRunning() {
-        return this.running;
-    }
-    public boolean isShutdownRequested() {
-        return this.shutdownRequested;
     }
     public int getFPS() {
         return this.frameCount;
@@ -37,46 +44,65 @@ public class UIThread extends Thread {
     public int getUPS() {
         return this.updateCount;
     }
-    // endregion
+    //endregion
 
-    // region Public methods
-    public void setRequestShutdown(boolean shutdownRequested) {
-        this.shutdownRequested = shutdownRequested;
+    //region Setters
+    public void setWindow(long window) {
+        this.window = window;
     }
-    public void setFinisher(Runnable finisher) {
-        this.finisher = finisher;
-    }
-    // endregion
+    //endregion
 
-    // region Overrides
+    //region Public methods
+    public void start() {
+        this.threadStateChanged(ThreadState.RUNNING);
+        this.thread.start();
+    }
+    public void stop() {
+        this.threadStateChanged(ThreadState.STOPPING);
+    }
+    public void threadStateChanged(ThreadState newState) {
+        this.state = newState;
+        Logger.DEBUG(StringUtils.build("UIThread#threadStateChanged -> ", this.state.toString()));
+    }
+    //endregion
+
+    //region Overrides
     @Override
     public void run() {
-        this.running = true;
-        Logger.DEBUG("uiThread started");
+        this.init();
 
-        final boolean updateLimited = Configuration.getInst().getMaxUps() != -1;
-        final boolean renderLimited = Configuration.getInst().getMaxFps() != -1;
         final Timer timer = new Timer(false);
+        long msecPerUpdate = Configuration.getInst().getMaxUps();
+        long msecPerRender = Configuration.getInst().getMaxFps();
+        long msecPerLog = 1000;
+
+        if (Configuration.getInst().getMaxUps() != 0) {
+            msecPerUpdate = 1000 / Configuration.getInst().getMaxUps();
+        }
+
+        if (Configuration.getInst().getMaxFps() != 0) {
+            msecPerRender = 1000 / Configuration.getInst().getMaxFps();
+        }
+
+        long lastRender;
+        long lastUpdate;
+        long lastLog;
+        {
+            long lastIteration = System.currentTimeMillis();
+            lastRender = lastIteration;
+            lastUpdate = lastIteration;
+            lastLog = lastIteration;
+        }
 
         int frames = 0;
         int updates = 0;
-
-        long lastIteration = System.currentTimeMillis();
-        long lastRender = lastIteration;
-        long lastUpdate = lastIteration;
-        long lastLog = lastIteration;
-
-        long msecPerUpdate = 1000 / Configuration.getInst().getMaxUps();
-        long msecPerRender = 1000 / Configuration.getInst().getMaxFps();
-        long msecPerLog = 1000 / 1;
-
         long delta;
-        // main loop
-        while (!this.shutdownRequested) {
+
+        while (this.state != ThreadState.STOPPING) {
             long now = System.currentTimeMillis();
 
             // should we draw next frame?
-            if (renderLimited) {
+            if (msecPerRender != 0L) {
                 delta = now - lastRender;
                 if (delta >= msecPerRender) {
                     lastRender = now - (delta - msecPerRender);
@@ -92,7 +118,7 @@ public class UIThread extends Thread {
             }
 
             // is it time for updating next game iteration?
-            if (updateLimited) {
+            if (msecPerUpdate != 0) {
                 delta = now - lastUpdate;
                 if (delta >= msecPerUpdate) {
                     lastUpdate = now - (delta - msecPerUpdate);
@@ -113,21 +139,27 @@ public class UIThread extends Thread {
 
                 this.frameCount = frames;
                 this.updateCount = updates;
+                if (this.window != GLWindow.GL_NULL) {
+                    GLFW.glfwSetWindowTitle(this.window, "FPS: " + this.frameCount + " | UPS: " + this.updateCount);
+                }
 
                 frames = 0;
                 updates = 0;
             }
 
-            long cycle = timer.cycle();
-            if (cycle > Configuration.getInst().getUiCycleWarnTime())
-                Logger.WARN(StringUtils.build("UI cycle took ", cycle, "ms"));
+            // long cycle = timer.cycle();
+            // if (cycle > Configuration.getInst().getUiCycleWarnTime()) {
+            //     Logger.WARN(StringUtils.build("UI cycle took ", cycle, "ms"));
+            // }
 
             timer.reset();
         }
 
-        this.running = false;
-        this.finisher.run();
-        Logger.DEBUG("uiThread stopped");
+        this.dispose();
+        this.threadStateChanged(ThreadState.STOPPED);
     }
-    // endregion
+    //endregion
+
+    public abstract void init();
+    public abstract void dispose();
 }

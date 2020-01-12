@@ -16,7 +16,6 @@ import sk.pa3kc.World;
 import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
-import sk.pa3kc.singletons.Keyboard;
 
 public class MainCanvas extends DoubleBufferedCanvas {
     private static final long serialVersionUID = 1L;
@@ -153,7 +152,6 @@ public class MainCanvas extends DoubleBufferedCanvas {
     @Override
     protected void processKeyEvent(KeyEvent e) {
         super.processKeyEvent(e);
-        Keyboard.processKeyEvent(e);
     }
 
     @Override

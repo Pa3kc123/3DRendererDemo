@@ -1,8 +1,8 @@
 package sk.pa3kc.util;
 
 public class Timer {
+    private final boolean resetOnCycle;
     private long lastTime;
-    private boolean resetOnCycle;
 
     public Timer(boolean resetOnCycle) {
         this.resetOnCycle = resetOnCycle;
@@ -11,7 +11,7 @@ public class Timer {
 
     public long cycle() {
         if (this.resetOnCycle) {
-            long result = System.currentTimeMillis() - this.lastTime;
+            final long result = System.currentTimeMillis() - this.lastTime;
             this.reset();
             return result;
         } else return System.currentTimeMillis() - this.lastTime;
@@ -22,7 +22,7 @@ public class Timer {
     }
 
     public static long time(Runnable func) {
-        long tmp = System.currentTimeMillis();
+        final long tmp = System.currentTimeMillis();
 
         func.run();
 
