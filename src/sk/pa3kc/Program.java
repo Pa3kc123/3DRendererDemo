@@ -128,7 +128,8 @@ public class Program {
         Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 300f, 1f));
         Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
 
-        Program.glWindow = new GLWindow(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
+        // Program.glWindow = new GLWindow(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
+        Program.glWindow = new GLWindow(500, 500);
 
         Program.glWindow.getUIThread().getUpdatables().add(() -> {
             // MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));

@@ -11,9 +11,10 @@ import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
 
 public class GLWindow {
-    public static final long GL_NULL = 0L;
+    public static final long GL_NULL = MemoryUtil.NULL;
 
     private final int width;
     private final int height;
@@ -43,6 +44,7 @@ public class GLWindow {
                 if (window != GL_NULL) {
                     glfwSetWindowShouldClose(window, true);
                     glfwDestroyWindow(window);
+                    glfwMakeContextCurrent(GL_NULL);
                 }
             }
         };
@@ -106,6 +108,9 @@ public class GLWindow {
         // Showing window
         glfwMakeContextCurrent(this.window);
         glfwShowWindow(this.window);
+
+        // Clearing context of window so other thread can fight for it :D
+        glfwMakeContextCurrent(GL_NULL);
 
         this.initialized = true;
         this.uiThread.setWindow(this.window);

@@ -8,6 +8,8 @@ import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.ui.GLWindow;
 
+import static sk.pa3kc.ui.GLWindow.GL_NULL;
+
 public abstract class UIThread implements Runnable {
     private enum ThreadState {
         RUNNING,
