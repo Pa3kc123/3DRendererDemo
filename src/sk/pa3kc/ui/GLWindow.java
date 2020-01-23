@@ -6,6 +6,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -50,8 +51,6 @@ public class GLWindow {
         };
 
         this.uiThread.getUpdatables().add(() -> {
-            glfwPollEvents();
-
             if (this.window != GL_NULL && glfwWindowShouldClose(this.window)) {
                 this.uiThread.stop();
             }
@@ -115,10 +114,6 @@ public class GLWindow {
         this.initialized = true;
         this.uiThread.setWindow(this.window);
         this.uiThread.start();
-    }
-
-    public void swapBuffers() {
-        glfwSwapBuffers(this.window);
     }
 
     public void dispose() {

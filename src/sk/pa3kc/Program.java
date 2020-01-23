@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import sk.pa3kc.matrix.MatrixMath;
@@ -112,7 +113,7 @@ public class Program {
         GRAPHICS_DEVICE_BOUNDS = GRAPHICS_DEVICE_CONFIG.getBounds();
 
         final float aspectRatio = (float)GRAPHICS_DEVICE_BOUNDS.getWidth() / (float)GRAPHICS_DEVICE_BOUNDS.getHeight();
-        final float fovRad = (float)StrictMath.toRadians(Program.FOV);
+        final float fovRad = Program.FOV / 180f * 3.14159f;
         final float far = 1000f;
         final float near = 0.1f;
 
@@ -131,21 +132,18 @@ public class Program {
         // Program.glWindow = new GLWindow(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
         Program.glWindow = new GLWindow(500, 500);
 
-        Program.glWindow.getUIThread().getUpdatables().add(() -> {
-            // MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
-            // MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
-            // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
-            MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
-            MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
-        });
+        // Program.glWindow.getUIThread().getUpdatables().add(() -> {
+        //     // MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
+        //     // MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
+        //     // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
+        //     MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
+        //     MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
+        // });
 
-        Program.glWindow.getUIThread().getRenderables().add(() -> {
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
-            Program.world.drawGL();
-
-            Program.glWindow.swapBuffers();
-        });
+        // Program.glWindow.getUIThread().getRenderables().add(() -> {
+        //     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        //     Program.world.drawGL();
+        // });
 
         try {
             Program.glWindow.init();

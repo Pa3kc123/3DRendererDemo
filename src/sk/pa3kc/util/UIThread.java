@@ -8,8 +8,6 @@ import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.ui.GLWindow;
 
-import static sk.pa3kc.ui.GLWindow.GL_NULL;
-
 public abstract class UIThread implements Runnable {
     private enum ThreadState {
         RUNNING,
@@ -23,14 +21,33 @@ public abstract class UIThread implements Runnable {
     private ArrayList<Runnable> renderables = new ArrayList<Runnable>();
 
     private final Thread thread;
+    private final Thread logThread;
     private ThreadState state = ThreadState.STOPPED;
     private long window = GLWindow.GL_NULL;
 
-    private int updateCount = 0;
-    private int frameCount = 0;
+    private int lastFrameCount = 0;
+    private int lastUpdateCount = 0;
+    private int currFrameCount = 0;
+    private int currUpdateCount = 0;
 
     public UIThread() {
         this.thread = new Thread(this);
+        this.logThread = new Thread(() -> {
+            while (this.state != ThreadState.STOPPING) {
+                try {
+                    Thread.sleep(1000);
+
+                    this.lastUpdateCount = this.currUpdateCount;
+                    this.lastFrameCount = this.currFrameCount;
+                    this.currUpdateCount = 0;
+                    this.currFrameCount = 0;
+
+                    System.out.println("FPS: " + this.lastFrameCount + " | UPS: " + this.lastUpdateCount);
+                    } catch (Throwable ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     //region Getters
@@ -41,10 +58,10 @@ public abstract class UIThread implements Runnable {
         return this.renderables;
     }
     public int getFPS() {
-        return this.frameCount;
+        return this.lastFrameCount;
     }
     public int getUPS() {
-        return this.updateCount;
+        return this.lastUpdateCount;
     }
     //endregion
 
@@ -76,7 +93,6 @@ public abstract class UIThread implements Runnable {
         final Timer timer = new Timer(false);
         long msecPerUpdate = Configuration.getInst().getMaxUps();
         long msecPerRender = Configuration.getInst().getMaxFps();
-        long msecPerLog = 1000;
 
         if (Configuration.getInst().getMaxUps() != 0) {
             msecPerUpdate = 1000 / Configuration.getInst().getMaxUps();
@@ -88,18 +104,9 @@ public abstract class UIThread implements Runnable {
 
         long lastRender;
         long lastUpdate;
-        long lastLog;
-        {
-            long lastIteration = System.currentTimeMillis();
-            lastRender = lastIteration;
-            lastUpdate = lastIteration;
-            lastLog = lastIteration;
-        }
+        lastRender = lastUpdate = System.currentTimeMillis();
 
-        int frames = 0;
-        int updates = 0;
         long delta;
-
         while (this.state != ThreadState.STOPPING) {
             long now = System.currentTimeMillis();
 
@@ -109,50 +116,18 @@ public abstract class UIThread implements Runnable {
                 if (delta >= msecPerRender) {
                     lastRender = now - (delta - msecPerRender);
 
-                    for (Runnable task : this.renderables)
-                        task.run();
-                    frames++;
+                    render();
                 }
-            } else {
-                for (Runnable task : this.renderables)
-                    task.run();
-                frames++;
-            }
+            } else render();
 
             // is it time for updating next game iteration?
             if (msecPerUpdate != 0) {
                 delta = now - lastUpdate;
                 if (delta >= msecPerUpdate) {
                     lastUpdate = now - (delta - msecPerUpdate);
-
-                    for (Runnable task : this.updatables)
-                        task.run();
-                    updates++;
+                    update();
                 }
-            } else {
-                for (Runnable task : this.updatables)
-                    task.run();
-                updates++;
-            }
-
-            delta = now - lastLog;
-            if (delta >= msecPerLog) {
-                lastLog = now - (delta - msecPerLog);
-
-                this.frameCount = frames;
-                this.updateCount = updates;
-                if (this.window != GLWindow.GL_NULL) {
-                    GLFW.glfwSetWindowTitle(this.window, "FPS: " + this.frameCount + " | UPS: " + this.updateCount);
-                }
-
-                frames = 0;
-                updates = 0;
-            }
-
-            // long cycle = timer.cycle();
-            // if (cycle > Configuration.getInst().getUiCycleWarnTime()) {
-            //     Logger.WARN(StringUtils.build("UI cycle took ", cycle, "ms"));
-            // }
+            } else update();
 
             timer.reset();
         }
@@ -161,6 +136,21 @@ public abstract class UIThread implements Runnable {
         this.threadStateChanged(ThreadState.STOPPED);
     }
     //endregion
+
+    private void update() {
+        GLFW.glfwPollEvents();
+        for (Runnable task : this.updatables) {
+            task.run();
+        }
+        this.currUpdateCount++;
+    }
+    private void render() {
+        for (Runnable task : this.renderables) {
+            task.run();
+        }
+        this.currFrameCount++;
+        GLFW.glfwSwapBuffers(this.window);
+    }
 
     public abstract void init();
     public abstract void dispose();
