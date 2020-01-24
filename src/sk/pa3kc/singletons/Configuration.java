@@ -1,6 +1,7 @@
 package sk.pa3kc.singletons;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class Configuration {
@@ -10,20 +11,14 @@ public class Configuration {
 
     @SuppressWarnings("checked")
     private Configuration() {
-        final Collection<Entry<?>> entries = new ArrayList<Entry<?>>() {
-            private static final long serialVersionUID = 1L;
-
-            {
-                super.add(new Entry<Integer>("max_fps", "fps", Integer.valueOf(0), Indexer.MAX_FPS));
-                super.add(new Entry<Integer>("max_ups", "ups", Integer.valueOf(66), Indexer.MAX_UPS));
-                super.add(new Entry<Integer>("monitor_index", "m", Integer.valueOf(1), Indexer.MONITOR_INDEX));
-                super.add(new Entry<Long>("ui_cycle_warn_time", "ui", Long.valueOf(50L), Indexer.UI_CYCLE_WARN_TIME));
-                super.add(new Entry<Long>("linux_sync_warn_time", null, Long.valueOf(50L), Indexer.LINUX_SYNC_WARN_TIME));
-                super.add(new Entry<Boolean>("enable_debug", "debug", Boolean.valueOf(false), Indexer.DEBUG_ENABLED));
-            }
-        };
-
-        this.entries = entries.toArray(new Entry[0]);
+        this.entries = Arrays.asList(
+            new Entry<Integer>("max_fps", "fps", Integer.valueOf(0), Indexer.MAX_FPS),
+            new Entry<Integer>("max_ups", "ups", Integer.valueOf(66), Indexer.MAX_UPS),
+            new Entry<Integer>("monitor_index", "m", Integer.valueOf(1), Indexer.MONITOR_INDEX),
+            new Entry<Long>("ui_cycle_warn_time", "ui", Long.valueOf(50L), Indexer.UI_CYCLE_WARN_TIME),
+            new Entry<Long>("linux_sync_warn_time", null, Long.valueOf(50L), Indexer.LINUX_SYNC_WARN_TIME),
+            new Entry<Boolean>("enable_debug", "debug", Boolean.valueOf(false), Indexer.DEBUG_ENABLED)
+        ).toArray(new Entry[0]);
     };
     public static Configuration getInst() {
         return _inst;
@@ -130,19 +125,12 @@ public class Configuration {
         public Indexer getIndex() {
             return this.index;
         }
-        public Object getValue() {
+        public T getValue() {
             return this.value;
         }
 
-        @SuppressWarnings("unchecked")
-        public boolean setValue(Object value) {
-            final boolean typeCheck = value.getClass() == this.value.getClass();
-
-            if (typeCheck) {
-                this.value = (T)value;
-            }
-
-            return typeCheck;
+        public void setValue(T value) {
+            this.value = value;
         }
     }
 }
