@@ -1,13 +1,11 @@
 package sk.pa3kc.singletons;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class Configuration {
     private static Configuration _inst = new Configuration();
 
-    private final Entry<?>[] entries;
+    private final Entry[] entries;
 
     @SuppressWarnings("checked")
     private Configuration() {
@@ -46,6 +44,7 @@ public class Configuration {
         return this.entries[index.index];
     }
 
+    @SuppressWarnings("checked")
     public void setMaxFps(int value) {
         this.entries[Indexer.MAX_FPS.index].setValue(Integer.valueOf(value));
     }
@@ -63,9 +62,6 @@ public class Configuration {
     }
     public void setDebugEnabled(boolean value) {
         this.entries[Indexer.DEBUG_ENABLED.index].setValue(Boolean.valueOf(value));
-    }
-    public boolean setProperty(Indexer index, Object value) {
-        return this.entries[index.index].setValue(value);
     }
 
     public static enum Indexer {
