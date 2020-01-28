@@ -43,7 +43,7 @@ public abstract class UIThread implements Runnable {
                     this.currFrameCount = 0;
 
                     System.out.println("FPS: " + this.lastFrameCount + " | UPS: " + this.lastUpdateCount);
-                    } catch (Throwable ex) {
+                } catch (Throwable ex) {
                     ex.printStackTrace();
                 }
             }
