@@ -9,9 +9,9 @@
             "classPaths": [
                 "${workspaceFolder}/bin/classes"
             ],
-            "mainClass": "sk.pa3kc.Program",
+            "mainClass": "sk.pa3kc.Tmp",
             "args": [
-                "${workspaceFolder}/assets/crystal.obj",
+                "${workspaceFolder}/assets/teapot.obj",
                 "--max_fps=120",
                 "--monitor_index=1"
             ]

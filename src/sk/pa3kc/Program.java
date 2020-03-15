@@ -34,7 +34,7 @@ public class Program {
 
     public static float FOV = 90f;
 
-    public static UIThread UI_THREAD = null;
+    public static final UIThread UI_THREAD = null;
     public static GLWindow glWindow = null;
     public static World world;
 
@@ -54,49 +54,7 @@ public class Program {
         }
 
         final Parameters params = new Parameters(args);
-
-        for (String optionName : params.getOptionNames()) {
-            final String optionValue = params.getOption(optionName);
-
-            if (optionValue != null) {
-                final Configuration.Indexer index = Configuration.Indexer.fromString(optionName);
-
-                switch (index) {
-                    case MAX_FPS:
-                        int maxFps = NumberUtils.tryParseInt(optionValue);
-                        if (maxFps != -1) {
-                            Configuration.getInst().setMaxFps(maxFps);
-                        }
-                    break;
-                    case MAX_UPS:
-                        int maxUps = NumberUtils.tryParseInt(optionValue);
-                        if (maxUps != -1) {
-                            Configuration.getInst().setMaxUps(maxUps);
-                        }
-                    break;
-                    case MONITOR_INDEX:
-                        int monitorIndex = NumberUtils.tryParseInt(optionValue);
-                        if (monitorIndex != -1) {
-                            Configuration.getInst().setMonitorIndex(monitorIndex);
-                        }
-                    break;
-                    case LINUX_SYNC_WARN_TIME:
-                        long linuxSyncWarnTime = NumberUtils.tryParseLong(optionValue);
-                        if (linuxSyncWarnTime != -1) {
-                            Configuration.getInst().setLinuxSyncWarnTime(linuxSyncWarnTime);
-                        }
-                    break;
-                    case UI_CYCLE_WARN_TIME:
-                        long uiCycleWarnTime = NumberUtils.tryParseLong(optionValue);
-                        if (uiCycleWarnTime != -1) {
-                            Configuration.getInst().setUiCycleWarnTime(uiCycleWarnTime);
-                        }
-                    break;
-                    case DEBUG_ENABLED:
-                    break;
-                }
-            }
-        }
+        Configuration.setupConfig(params);
 
         final GraphicsDevice[] devices;
 
@@ -108,7 +66,7 @@ public class Program {
             return;
         }
 
-        final int graphicsDeviceIndex = Configuration.getInst().getMonitorIndex();
+        final int graphicsDeviceIndex = Configuration.getMonitorIndex();
         GRAPHICS_DEVICE_CONFIG = devices[NumberUtils.map(graphicsDeviceIndex, 1, devices.length) - 1].getDefaultConfiguration();
         GRAPHICS_DEVICE_BOUNDS = GRAPHICS_DEVICE_CONFIG.getBounds();
 
@@ -132,25 +90,25 @@ public class Program {
         // Program.glWindow = new GLWindow(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
         Program.glWindow = new GLWindow(500, 500);
 
-        // Program.glWindow.getUIThread().getUpdatables().add(() -> {
-        //     // MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
-        //     // MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
-        //     // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
-        //     MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
-        //     MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
-        // });
+        Program.glWindow.getUIThread().getUpdatables().add(() -> {
+            // MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
+            // MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
+            // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
+            MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
+            MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
+        });
 
-        // Program.glWindow.getUIThread().getRenderables().add(() -> {
-        //     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        //     Program.world.drawGL();
-        // });
+        Program.glWindow.getUIThread().getRenderables().add(() -> {
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+            Program.world.drawGL();
+        });
 
         try {
             Program.glWindow.init();
         } catch (Throwable ex) {
             ex.printStackTrace();
-            if (Program.glWindow.isInitialized()) {
-                Program.glWindow.dispose();
+            if (Program.glWindow.getUIThread().getState() == UIThread.ThreadState.RUNNING) {
+                Program.glWindow.getUIThread().stop();
             }
         }
     }

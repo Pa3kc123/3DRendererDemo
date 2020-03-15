@@ -12,7 +12,7 @@ public abstract class Drawable {
     protected final Vertex normal = new Vertex();
 
     public abstract void draw(Graphics2D g);
-    public abstract void drawGL();
+    public abstract boolean drawGL();
 
     protected Vertex[] translate(Vertex[] vertecies) {
         if (vertecies == null) return null;

@@ -74,21 +74,22 @@ public class Triangle3D extends Drawable {
     }
 
     @Override
-    public void drawGL() {
+    public boolean drawGL() {
         final Vertex[] vertecies = this.translate(this.vertecies);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        if (this.dotProduct < 0f) {
+        // if (this.dotProduct < 0f) {
+            GL11.glBegin(GL11.GL_TRIANGLES);
             for (Vertex vertex : vertecies) {
                 VertexMath.multiply(vertex.getAllValues(), Matrix.PROJECTION_MATRIX.getAllValues());
 
-                vertex.setX((vertex.getX() + 1f) * (0.5f * (float)Program.GRAPHICS_DEVICE_BOUNDS.getWidth()));
-                vertex.setY((vertex.getY() + 1f) * (0.5f * (float)Program.GRAPHICS_DEVICE_BOUNDS.getHeight()));
+                vertex.setX((vertex.getX() + 1f) * (0.5f * 640f));// (float)Program.GRAPHICS_DEVICE_BOUNDS.getWidth()));
+                vertex.setY((vertex.getY() + 1f) * (0.5f * 480f));// (float)Program.GRAPHICS_DEVICE_BOUNDS.getHeight()));
 
                 GL11.glVertex2f(vertex.getX(), vertex.getY());
             }
-        }
-        GL11.glEnd();
+            GL11.glEnd();
+            return true;
+        // }
+        // return false;
     }
 }

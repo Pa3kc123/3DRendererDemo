@@ -9,7 +9,7 @@ import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.ui.GLWindow;
 
 public abstract class UIThread implements Runnable {
-    private enum ThreadState {
+    public enum ThreadState {
         RUNNING,
         // PAUSING,
         // PAUSED,
@@ -23,6 +23,7 @@ public abstract class UIThread implements Runnable {
     private final Thread thread;
     private final Thread logThread;
     private ThreadState state = ThreadState.STOPPED;
+    // GLFWwindow
     private long window = GLWindow.GL_NULL;
 
     private int lastFrameCount = 0;
@@ -33,7 +34,7 @@ public abstract class UIThread implements Runnable {
     public UIThread() {
         this.thread = new Thread(this);
         this.logThread = new Thread(() -> {
-            while (this.state != ThreadState.STOPPING) {
+            while (this.state != ThreadState.STOPPING && this.state != ThreadState.STOPPED) {
                 try {
                     Thread.sleep(1000);
 
@@ -43,7 +44,7 @@ public abstract class UIThread implements Runnable {
                     this.currFrameCount = 0;
 
                     System.out.println("FPS: " + this.lastFrameCount + " | UPS: " + this.lastUpdateCount);
-                    } catch (Throwable ex) {
+                } catch (Throwable ex) {
                     ex.printStackTrace();
                 }
             }
@@ -63,6 +64,9 @@ public abstract class UIThread implements Runnable {
     public int getUPS() {
         return this.lastUpdateCount;
     }
+    public ThreadState getState() {
+        return this.state;
+    }
     //endregion
 
     //region Setters
@@ -73,15 +77,16 @@ public abstract class UIThread implements Runnable {
 
     //region Public methods
     public void start() {
-        this.threadStateChanged(ThreadState.RUNNING);
+        this.onThreadStateChanged(ThreadState.RUNNING);
         this.thread.start();
+        this.logThread.start();
     }
     public void stop() {
-        this.threadStateChanged(ThreadState.STOPPING);
+        this.onThreadStateChanged(ThreadState.STOPPING);
     }
-    public void threadStateChanged(ThreadState newState) {
+    public void onThreadStateChanged(ThreadState newState) {
         this.state = newState;
-        Logger.DEBUG(StringUtils.build("UIThread#threadStateChanged -> ", this.state.toString()));
+        Logger.DEBUG(StringUtils.build("UIThread#onThreadStateChanged -> ", this.state.toString()));
     }
     //endregion
 
@@ -91,15 +96,15 @@ public abstract class UIThread implements Runnable {
         this.init();
 
         final Timer timer = new Timer(false);
-        long msecPerUpdate = Configuration.getInst().getMaxUps();
-        long msecPerRender = Configuration.getInst().getMaxFps();
+        long msecPerUpdate = Configuration.getMaxUps();
+        long msecPerRender = Configuration.getMaxFps();
 
-        if (Configuration.getInst().getMaxUps() != 0) {
-            msecPerUpdate = 1000 / Configuration.getInst().getMaxUps();
+        if (Configuration.getMaxUps() != 0) {
+            msecPerUpdate = 1000 / Configuration.getMaxUps();
         }
 
-        if (Configuration.getInst().getMaxFps() != 0) {
-            msecPerRender = 1000 / Configuration.getInst().getMaxFps();
+        if (Configuration.getMaxFps() != 0) {
+            msecPerRender = 1000 / Configuration.getMaxFps();
         }
 
         long lastRender;
@@ -133,7 +138,7 @@ public abstract class UIThread implements Runnable {
         }
 
         this.dispose();
-        this.threadStateChanged(ThreadState.STOPPED);
+        this.onThreadStateChanged(ThreadState.STOPPED);
     }
     //endregion
 
@@ -148,8 +153,8 @@ public abstract class UIThread implements Runnable {
         for (Runnable task : this.renderables) {
             task.run();
         }
-        this.currFrameCount++;
         GLFW.glfwSwapBuffers(this.window);
+        this.currFrameCount++;
     }
 
     public abstract void init();

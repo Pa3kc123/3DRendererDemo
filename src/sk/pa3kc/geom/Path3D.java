@@ -33,8 +33,8 @@ public class Path3D extends Drawable implements Cloneable {
     }
 
     @Override
-    public void drawGL() {
-
+    public boolean drawGL() {
+        return true;
     }
 
     @Override
