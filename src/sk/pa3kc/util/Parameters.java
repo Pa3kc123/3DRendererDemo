@@ -49,7 +49,6 @@ public class Parameters {
     public String[] getParams() {
         return this.parameters;
     }
-
     public String[] getOptionNames() {
         return this.optionNames;
     }
