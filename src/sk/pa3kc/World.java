@@ -34,16 +34,6 @@ public class World extends Drawable {
     }
 
     @Override
-    public boolean drawGL() {
-        int counter = 0;
-        for (Drawable obj : this.mesh) {
-            if (obj.drawGL()) counter++;
-        }
-        System.out.println(counter);
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "Not the best idea... :D";
     }

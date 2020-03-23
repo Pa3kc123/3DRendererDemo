@@ -77,22 +77,16 @@ public class MainCanvas extends DoubleBufferedCanvas {
                 }
             }
         });
-        Program.UI_THREAD.getUpdatables().add(new Runnable() {
-            @Override
-            public void run() {
-                MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
-                MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
-                // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
-                MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
-                MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
-            }
+        Program.UI_THREAD.getUpdatables().add(() -> {
+            MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
+            MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
+            // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
+            MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
+            MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
         });
 
-        Program.UI_THREAD.getRenderables().add(new Runnable() {
-            @Override
-            public void run() {
-                repaint();
-            }
+        Program.UI_THREAD.getRenderables().add(() -> {
+            super.repaint();
         });
 
         super.setForeground(Color.WHITE);

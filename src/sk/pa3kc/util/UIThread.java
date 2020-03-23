@@ -2,13 +2,10 @@ package sk.pa3kc.util;
 
 import java.util.ArrayList;
 
-import org.lwjgl.glfw.GLFW;
-
 import sk.pa3kc.mylibrary.util.StringUtils;
 import sk.pa3kc.singletons.Configuration;
-import sk.pa3kc.ui.GLWindow;
 
-public abstract class UIThread implements Runnable {
+public class UIThread implements Runnable {
     public enum ThreadState {
         RUNNING,
         // PAUSING,
@@ -23,8 +20,6 @@ public abstract class UIThread implements Runnable {
     private final Thread thread;
     private final Thread logThread;
     private ThreadState state = ThreadState.STOPPED;
-    // GLFWwindow
-    private long window = GLWindow.GL_NULL;
 
     private int lastFrameCount = 0;
     private int lastUpdateCount = 0;
@@ -69,12 +64,6 @@ public abstract class UIThread implements Runnable {
     }
     //endregion
 
-    //region Setters
-    public void setWindow(long window) {
-        this.window = window;
-    }
-    //endregion
-
     //region Public methods
     public void start() {
         this.onThreadStateChanged(ThreadState.RUNNING);
@@ -93,8 +82,6 @@ public abstract class UIThread implements Runnable {
     //region Overrides
     @Override
     public void run() {
-        this.init();
-
         final Timer timer = new Timer(false);
         long msecPerUpdate = Configuration.getMaxUps();
         long msecPerRender = Configuration.getMaxFps();
@@ -120,7 +107,6 @@ public abstract class UIThread implements Runnable {
                 delta = now - lastRender;
                 if (delta >= msecPerRender) {
                     lastRender = now - (delta - msecPerRender);
-
                     render();
                 }
             } else render();
@@ -136,14 +122,11 @@ public abstract class UIThread implements Runnable {
 
             timer.reset();
         }
-
-        this.dispose();
         this.onThreadStateChanged(ThreadState.STOPPED);
     }
     //endregion
 
     private void update() {
-        GLFW.glfwPollEvents();
         for (Runnable task : this.updatables) {
             task.run();
         }
@@ -153,10 +136,6 @@ public abstract class UIThread implements Runnable {
         for (Runnable task : this.renderables) {
             task.run();
         }
-        GLFW.glfwSwapBuffers(this.window);
         this.currFrameCount++;
     }
-
-    public abstract void init();
-    public abstract void dispose();
 }

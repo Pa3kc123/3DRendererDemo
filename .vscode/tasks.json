@@ -22,6 +22,14 @@
             "args": [
                 "dependency:unpack-dependencies"
             ]
+        },
+        {
+            "label": "generate jar",
+            "type": "shell",
+            "command": "mvn",
+            "args": [
+                "assembly:single"
+            ]
         }
     ]
 }

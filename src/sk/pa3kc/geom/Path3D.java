@@ -33,11 +33,6 @@ public class Path3D extends Drawable implements Cloneable {
     }
 
     @Override
-    public boolean drawGL() {
-        return true;
-    }
-
-    @Override
     protected Triangle3D clone() {
         return null;
     }

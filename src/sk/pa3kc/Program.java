@@ -4,12 +4,10 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.ImageCapabilities;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.Arrays;
-
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
@@ -17,7 +15,7 @@ import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
 import sk.pa3kc.singletons.Configuration;
-import sk.pa3kc.ui.GLWindow;
+import sk.pa3kc.ui.MainFrame;
 import sk.pa3kc.util.Logger;
 import sk.pa3kc.util.ObjFile;
 import sk.pa3kc.util.Parameters;
@@ -34,9 +32,9 @@ public class Program {
 
     public static float FOV = 90f;
 
-    public static final UIThread UI_THREAD = null;
-    public static GLWindow glWindow = null;
+    public static UIThread UI_THREAD;
     public static World world;
+    public static MainFrame MAIN_FRAME;
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -84,32 +82,11 @@ public class Program {
         matrix[3][3] = 0f;
 
         Program.world = new World(1);
-        Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 300f, 1f));
+        Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 500f, 1f));
         Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
 
-        // Program.glWindow = new GLWindow(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height);
-        Program.glWindow = new GLWindow(500, 500);
-
-        Program.glWindow.getUIThread().getUpdatables().add(() -> {
-            // MatrixMath.applyRotationX(Matrix.X_MATRIX.getAllValues(), (angleX / 180f * 3.14159f));
-            // MatrixMath.applyRotationY(Matrix.Y_MATRIX.getAllValues(), (angleY / 180f * 3.14159f));
-            // MatrixMath.applyRotationZ(Matrix.Z_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues(), (angleZ / 180f * 3.14159f));
-            MatrixMath.identify(Matrix.ROTATION_MATRIX.getAllValues());
-            MatrixMath.multiply(Matrix.X_MATRIX.getAllValues(), Matrix.Y_MATRIX.getAllValues(), Matrix.ROTATION_MATRIX.getAllValues());
-        });
-
-        Program.glWindow.getUIThread().getRenderables().add(() -> {
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-            Program.world.drawGL();
-        });
-
-        try {
-            Program.glWindow.init();
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-            if (Program.glWindow.getUIThread().getState() == UIThread.ThreadState.RUNNING) {
-                Program.glWindow.getUIThread().stop();
-            }
-        }
+        Program.UI_THREAD = new UIThread();
+        Program.UI_THREAD.start();
+        Program.MAIN_FRAME = new MainFrame("Test");
     }
 }

@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.VolatileImage;
 
+import sk.pa3kc.Program;
+
 public abstract class DoubleBufferedCanvas extends Canvas {
     private static final long serialVersionUID = 1L;
     private VolatileImage backendImage;
@@ -20,6 +22,7 @@ public abstract class DoubleBufferedCanvas extends Canvas {
     }
 
     private void resetBuffer() {
+        System.out.println("Buffer reset");
         if (this.backendGraphics != null) {
             this.backendGraphics.dispose();
             this.backendGraphics = null;
@@ -30,14 +33,30 @@ public abstract class DoubleBufferedCanvas extends Canvas {
         }
         System.gc();
 
-        this.backendImage = super.createVolatileImage(super.getWidth(), super.getHeight());
-        this.backendGraphics = (Graphics2D)this.backendImage.getGraphics();
+        this.backendImage = this.createVolatileImage(super.getWidth(), super.getHeight());
+        this.backendGraphics = this.backendImage.createGraphics();
         this.fontSize = this.backendGraphics.getFont().getSize();
     }
 
     @Override
+    public VolatileImage createVolatileImage(int width, int height) {
+        // return super.createVolatileImage(width, height);
+        return Program.GRAPHICS_DEVICE_CONFIG.createCompatibleVolatileImage(super.getWidth(), super.getHeight());
+    }
+    @Override
     public boolean isDoubleBuffered() {
         return true;
+    }
+    @Override
+    public void repaint() {
+        super.repaint();
+        synchronized (this) {
+            try {
+                this.wait();
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        }
     }
     @Override
     public void update(Graphics g) {
@@ -47,7 +66,14 @@ public abstract class DoubleBufferedCanvas extends Canvas {
     @Override
     public void paint(Graphics g) {
         // super.paint(g);
-        if (this.backendImage == null || this.backendImage.validate(super.getGraphicsConfiguration()) != VolatileImage.IMAGE_OK || this.backendImage.contentsLost() || this.backendGraphics == null) {
+        if (this.backendImage == null || this.backendGraphics == null) {
+            this.resetBuffer();
+        }
+        final int validation = this.backendImage.validate(Program.GRAPHICS_DEVICE_CONFIG);
+        if (validation != VolatileImage.IMAGE_OK && validation != VolatileImage.IMAGE_RESTORED) {
+            this.resetBuffer();
+        }
+        if (this.backendImage.contentsLost()) {
             this.resetBuffer();
         }
 
@@ -57,6 +83,10 @@ public abstract class DoubleBufferedCanvas extends Canvas {
 
         if (!this.backendImage.contentsLost()) {
             g.drawImage(this.backendImage, 0, 0, this);
+
+            synchronized (this) {
+                this.notify();
+            }
         } else {
             System.out.println("Backend image content lost");
         }
