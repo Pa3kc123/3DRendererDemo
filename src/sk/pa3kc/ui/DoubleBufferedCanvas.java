@@ -1,6 +1,7 @@
 package sk.pa3kc.ui;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.VolatileImage;
@@ -14,7 +15,7 @@ public abstract class DoubleBufferedCanvas extends Canvas {
     private int fontSize;
 
     public DoubleBufferedCanvas() {
-        super();
+        super(Program.GRAPHICS_DEVICE_CONFIG);
     }
 
     public int getFontSize() {
@@ -33,16 +34,11 @@ public abstract class DoubleBufferedCanvas extends Canvas {
         }
         System.gc();
 
-        this.backendImage = this.createVolatileImage(super.getWidth(), super.getHeight());
+        this.backendImage = super.createVolatileImage(super.getWidth(), super.getHeight());
         this.backendGraphics = this.backendImage.createGraphics();
         this.fontSize = this.backendGraphics.getFont().getSize();
     }
 
-    @Override
-    public VolatileImage createVolatileImage(int width, int height) {
-        // return super.createVolatileImage(width, height);
-        return Program.GRAPHICS_DEVICE_CONFIG.createCompatibleVolatileImage(super.getWidth(), super.getHeight());
-    }
     @Override
     public boolean isDoubleBuffered() {
         return true;
@@ -83,7 +79,6 @@ public abstract class DoubleBufferedCanvas extends Canvas {
 
         if (!this.backendImage.contentsLost()) {
             g.drawImage(this.backendImage, 0, 0, this);
-
             synchronized (this) {
                 this.notify();
             }

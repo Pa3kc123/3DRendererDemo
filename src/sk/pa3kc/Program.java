@@ -69,7 +69,7 @@ public class Program {
         GRAPHICS_DEVICE_BOUNDS = GRAPHICS_DEVICE_CONFIG.getBounds();
 
         final float aspectRatio = (float)GRAPHICS_DEVICE_BOUNDS.getWidth() / (float)GRAPHICS_DEVICE_BOUNDS.getHeight();
-        final float fovRad = Program.FOV / 180f * 3.14159f;
+        final float fovRad = FOV / 180f * 3.14159f;
         final float far = 1000f;
         final float near = 0.1f;
 
@@ -81,12 +81,12 @@ public class Program {
         matrix[2][3] = 1f;
         matrix[3][3] = 0f;
 
-        Program.world = new World(1);
-        Program.world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 500f, 1f));
-        Program.world.getMesh().addAll(Arrays.asList(obj.getFaces()));
+        world = new World(1);
+        world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 1000f, 1f));
+        world.getMesh().addAll(Arrays.asList(obj.getFaces()));
 
-        Program.UI_THREAD = new UIThread();
-        Program.UI_THREAD.start();
-        Program.MAIN_FRAME = new MainFrame("Test");
+        UI_THREAD = new UIThread();
+        UI_THREAD.start();
+        MAIN_FRAME = new MainFrame("Test");
     }
 }

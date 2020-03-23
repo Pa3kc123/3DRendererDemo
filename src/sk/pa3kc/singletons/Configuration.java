@@ -15,25 +15,27 @@ public class Configuration {
             final String value = params.getOption(key);
 
             switch (key) {
-                case "max_fps":
+                case "max-fps":
                 case "fps":
                     try {
                         MAX_FPS = Integer.parseInt(value);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
                     }
+                    MAX_FPS = Math.max(MAX_FPS, 0);
                 break;
 
-                case "max_ups":
+                case "max-ups":
                 case "ups":
                     try {
                         MAX_UPS = Integer.parseInt(value);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
                     }
+                    MAX_UPS = Math.max(MAX_UPS, 0);
                 break;
 
-                case "monitor_index":
+                case "monitor-index":
                 case "m":
                     try {
                         MONITOR_INDEX = Integer.parseInt(value);
@@ -42,7 +44,7 @@ public class Configuration {
                     }
                 break;
 
-                case "ui_cycle_warn_time":
+                case "ui-cycle-warn-time":
                 case "ui":
                     try {
                         UI_CYCLE_WARN_TIME = Long.parseLong(value);
@@ -51,7 +53,7 @@ public class Configuration {
                     }
                 break;
 
-                case "linux_sync_warn_time":
+                case "linux-sync-warn-time":
                     try {
                         LINUX_SYNC_WARN_TIME = Long.parseLong(value);
                     } catch (Throwable ex) {
@@ -59,7 +61,7 @@ public class Configuration {
                     }
                 break;
 
-                case "enable_debug":
+                case "enable-debug":
                 case "debug":
                     try {
                         DEBUG_ENABLED = Boolean.parseBoolean(value);
