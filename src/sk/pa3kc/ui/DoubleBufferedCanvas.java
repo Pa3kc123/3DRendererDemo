@@ -23,7 +23,6 @@ public abstract class DoubleBufferedCanvas extends Canvas {
     }
 
     private void resetBuffer() {
-        System.out.println("Buffer reset");
         if (this.backendGraphics != null) {
             this.backendGraphics.dispose();
             this.backendGraphics = null;
@@ -97,6 +96,10 @@ public abstract class DoubleBufferedCanvas extends Canvas {
             this.backendImage.flush();
         }
         this.backendImage = null;
+
+        synchronized (this) {
+            this.notifyAll();
+        }
     }
 
     public abstract void paintBuffer(Graphics2D g);

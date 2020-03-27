@@ -2,6 +2,7 @@ package sk.pa3kc.util;
 
 import sk.pa3kc.mylibrary.cmd.CmdUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
+import sk.pa3kc.singletons.Configuration;
 
 public class Logger {
     private Logger() {}
@@ -15,7 +16,7 @@ public class Logger {
 
     public static void ERROR(String message) { log(message, LogTag.ERROR); }
     public static void WARN(String message) { log(message, LogTag.WARN); }
-    public static void DEBUG(String message) { log(message, LogTag.DEBUG); }
+    public static void DEBUG(String message) { if (Configuration.getDebugEnabled()) log(message, LogTag.DEBUG); }
     public static void INFO(String message) { log(message, LogTag.INFO); }
 
     private static void log(String message, LogTag tag) {

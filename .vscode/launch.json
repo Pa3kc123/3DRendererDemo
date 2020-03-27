@@ -12,8 +12,9 @@
             "mainClass": "sk.pa3kc.Program",
             "args": [
                 "${workspaceFolder}/assets/crystal.obj",
-                "--max_fps=0",
-                "--monitor_index=1"
+                "--max-fps=0",
+                "--monitor-index=1",
+                "--debug=true"
             ]
         }
     ]

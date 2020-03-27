@@ -61,7 +61,6 @@ public class Configuration {
                     }
                 break;
 
-                case "enable-debug":
                 case "debug":
                     try {
                         DEBUG_ENABLED = Boolean.parseBoolean(value);

@@ -18,7 +18,6 @@ public class UIThread implements Runnable {
     private ArrayList<Runnable> renderables = new ArrayList<Runnable>();
 
     private final Thread thread;
-    private final Thread logThread;
     private ThreadState state = ThreadState.STOPPED;
 
     private int lastFrameCount = 0;
@@ -28,22 +27,6 @@ public class UIThread implements Runnable {
 
     public UIThread() {
         this.thread = new Thread(this);
-        this.logThread = new Thread(() -> {
-            while (this.state != ThreadState.STOPPING && this.state != ThreadState.STOPPED) {
-                try {
-                    Thread.sleep(1000);
-
-                    this.lastUpdateCount = this.currUpdateCount;
-                    this.lastFrameCount = this.currFrameCount;
-                    this.currUpdateCount = 0;
-                    this.currFrameCount = 0;
-
-                    System.out.println("FPS: " + this.lastFrameCount + " | UPS: " + this.lastUpdateCount);
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
     }
 
     //region Getters
@@ -68,7 +51,6 @@ public class UIThread implements Runnable {
     public void start() {
         this.onThreadStateChanged(ThreadState.RUNNING);
         this.thread.start();
-        this.logThread.start();
     }
     public void stop() {
         this.onThreadStateChanged(ThreadState.STOPPING);
@@ -85,6 +67,7 @@ public class UIThread implements Runnable {
         final Timer timer = new Timer(false);
         long msecPerUpdate = Configuration.getMaxUps();
         long msecPerRender = Configuration.getMaxFps();
+        long msecPerLog = 1000L;
 
         if (Configuration.getMaxUps() != 0) {
             msecPerUpdate = 1000 / Configuration.getMaxUps();
@@ -96,7 +79,8 @@ public class UIThread implements Runnable {
 
         long lastRender;
         long lastUpdate;
-        lastRender = lastUpdate = System.currentTimeMillis();
+        long lastLog;
+        lastRender = lastUpdate = lastLog = System.currentTimeMillis();
 
         long delta;
         while (this.state != ThreadState.STOPPING) {
@@ -120,6 +104,14 @@ public class UIThread implements Runnable {
                 }
             } else update();
 
+            if (msecPerLog != 0L) {
+                delta = now - lastLog;
+                if (delta >= msecPerLog) {
+                    lastLog = now - (delta - msecPerLog);
+                    log();
+                }
+            }
+
             timer.reset();
         }
         this.onThreadStateChanged(ThreadState.STOPPED);
@@ -137,5 +129,11 @@ public class UIThread implements Runnable {
             task.run();
         }
         this.currFrameCount++;
+    }
+    private void log() {
+        this.lastUpdateCount = this.currUpdateCount;
+        this.lastFrameCount = this.currFrameCount;
+        this.currUpdateCount = 0;
+        this.currFrameCount = 0;
     }
 }

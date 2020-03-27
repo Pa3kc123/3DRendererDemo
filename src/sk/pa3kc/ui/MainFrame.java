@@ -30,6 +30,7 @@ public class MainFrame extends Frame implements WindowListener {
     @Override
     public void dispose() {
         Program.UI_THREAD.stop();
+        canvas.dispose();
         super.dispose();
     }
 

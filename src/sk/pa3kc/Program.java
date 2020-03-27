@@ -4,12 +4,10 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
-import java.awt.ImageCapabilities;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.Arrays;
 
-import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
