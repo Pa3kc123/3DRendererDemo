@@ -206,11 +206,22 @@ public class MatrixMath {
      * @return value representing similarity
      */
     public static float dotProduct(float[][] mat1, float[][] mat2) {
-        if (mat1.length < 3 || mat1[0].length == 0) {
-            throw new IllegalArgumentException("mat1 must be at least of size 3x1");
+        // if (mat1.length < 3 || mat1[0].length == 0) {
+        //     throw new IllegalArgumentException("mat1 must be at least of size 3x1");
+        // }
+        // if (mat2.length < 3 || mat2[0].length == 0) {
+        //     throw new IllegalArgumentException("mat2 must be at least of size 3x1");
+        // }
+        if (mat1.length != mat2.length || mat1[0].length != mat2[0].length) {
+            throw new IllegalArgumentException("mat1 must be same as mat2");
         }
-        if (mat2.length < 3 || mat2[0].length == 0) {
-            throw new IllegalArgumentException("mat2 must be at least of size 3x1");
+
+        float sum = 0f;
+        for (int col = 0; col < mat1[0].length; col++) {
+            float tmp = 0f;
+            for (int row = 0; row < mat1.length; row++) {
+
+            }
         }
 
         return (mat1[0][0] * mat2[0][0]) + (mat1[1][0] * mat2[1][0]) + (mat1[2][0] * mat2[2][0]);
@@ -245,9 +256,24 @@ public class MatrixMath {
             throw new IllegalArgumentException("mat must be at least of size 3x1");
         }
 
-        final float l = (float)StrictMath.sqrt((mat[0][0] * mat[0][0]) + (mat[1][0] * mat[1][0]) + (mat[2][0] * mat[2][0]));
-        mat[0][0] /= l;
-        mat[1][0] /= l;
-        mat[2][0] /= l;
+        for (int col = 0; col < mat[0].length; col++) {
+            float sum = 0f;
+            for (int row = 0; row < mat.length; row++) {
+                sum += mat[row][col];
+            }
+
+            for (int row = 0; row < mat.length; row++) {
+                mat[row][col] /= sum;
+            }
+        }
+
+        // final float l = (float)StrictMath.sqrt((mat[0][0] * mat[0][0]) + (mat[1][0] * mat[1][0]) + (mat[2][0] * mat[2][0]));
+        // mat[0][0] /= l;
+        // mat[1][0] /= l;
+        // mat[2][0] /= l;
+    }
+
+    public static float magnitude(float[][] mat1, float[][] mat2) {
+        return (float)StrictMath.sqrt(MatrixMath.dotProduct(mat1, mat2));
     }
 }

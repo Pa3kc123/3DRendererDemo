@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 
 import sk.pa3kc.pojo.Vertex;
 
-public class Path3D extends Drawable implements Cloneable {
+public class Path3D extends Drawable {
     public final Vertex[] vertecies = new Vertex[2];
     public final Color color;
     public final String text;
@@ -30,10 +30,5 @@ public class Path3D extends Drawable implements Cloneable {
         g.drawLine(x1, y1, x2, y2);
         g.setColor(Color.WHITE);
         g.drawString(this.text, x2, y2);
-    }
-
-    @Override
-    protected Triangle3D clone() {
-        return null;
     }
 }

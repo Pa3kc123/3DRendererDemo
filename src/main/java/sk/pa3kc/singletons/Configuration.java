@@ -1,6 +1,6 @@
 package sk.pa3kc.singletons;
 
-import sk.pa3kc.util.Parameters;
+import sk.pa3kc.mylibrary.util.ArgsParser;
 
 public class Configuration {
     private static int MAX_FPS = 0;
@@ -10,8 +10,8 @@ public class Configuration {
     private static long LINUX_SYNC_WARN_TIME = 50L;
     private static boolean DEBUG_ENABLED = false;
 
-    public static void setupConfig(Parameters params) {
-        for (final String key : params.getOptionNames()) {
+    public static void setupConfig(ArgsParser params) {
+        for (final String key : params.getAllOptions().keySet()) {
             final String value = params.getOption(key);
 
             switch (key) {

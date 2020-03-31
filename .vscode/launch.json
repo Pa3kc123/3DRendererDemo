@@ -7,14 +7,15 @@
             "request": "launch",
             "projectName": "3DRedererDemo",
             "classPaths": [
-                "${workspaceFolder}/bin/classes"
+                "${workspaceFolder}/target/classes"
             ],
+            "cwd": "${workspaceFolder}/target/classes",
             "mainClass": "sk.pa3kc.Program",
             "args": [
-                "${workspaceFolder}/assets/crystal.obj",
                 "--max-fps=0",
                 "--monitor-index=1",
-                "--debug=true"
+                "--debug=true",
+                "crystal.obj"
             ]
         }
     ]

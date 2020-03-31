@@ -16,19 +16,17 @@
             }
         },
         {
-            "label": "unpack-dependecies",
-            "type": "shell",
-            "command": "mvn",
-            "args": [
-                "dependency:unpack-dependencies"
-            ]
-        },
-        {
             "label": "generate jar",
             "type": "shell",
             "command": "mvn",
             "args": [
-                "assembly:single"
+                "package",
+                "f",
+                "${workspaceFolder}/pom.xml"
+            ],
+            "dependsOrder": "parallel",
+            "dependsOn":[
+                "build"
             ]
         }
     ]

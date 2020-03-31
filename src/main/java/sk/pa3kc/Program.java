@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
+import sk.pa3kc.mylibrary.util.ArgsParser;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
@@ -16,7 +17,6 @@ import sk.pa3kc.singletons.Configuration;
 import sk.pa3kc.ui.MainFrame;
 import sk.pa3kc.util.Logger;
 import sk.pa3kc.util.ObjFile;
-import sk.pa3kc.util.Parameters;
 import sk.pa3kc.util.UIThread;
 
 public class Program {
@@ -35,22 +35,18 @@ public class Program {
     public static MainFrame MAIN_FRAME;
 
     public static void main(String[] args) {
-        if (args.length == 0) {
-            System.exit(1);
-        }
+        final ArgsParser params = new ArgsParser(args);
+        Configuration.setupConfig(params);
 
         ObjFile obj = null;
 
         try {
-            obj = new ObjFile(new File(args[0]));
+            obj = new ObjFile(new File(params.getArgument(0)));
         } catch (Throwable ex) {
             ex.printStackTrace();
             System.exit(2);
             return;
         }
-
-        final Parameters params = new Parameters(args);
-        Configuration.setupConfig(params);
 
         final GraphicsDevice[] devices;
 

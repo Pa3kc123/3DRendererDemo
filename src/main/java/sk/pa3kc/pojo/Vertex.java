@@ -1,10 +1,11 @@
 package sk.pa3kc.pojo;
 
 import sk.pa3kc.Program;
+import sk.pa3kc.matrix.MatrixMath;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
-public class Vertex extends Matrix implements Cloneable {
+public class Vertex extends Matrix {
     public Vertex() {
         super(new float[4][1]);
     }
@@ -37,10 +38,6 @@ public class Vertex extends Matrix implements Cloneable {
     public void setW(float w) { super.values[3][0] = w; }
     //endregion
 
-    //region Public methods
-    public float getLength() { return (float)StrictMath.sqrt(createDotProduct(this, this)); }
-    //endregion
-
     //region Public functions
     public static void printVertexes(Vertex... vertexes) {
         StringBuilder builder = new StringBuilder();
@@ -65,9 +62,6 @@ public class Vertex extends Matrix implements Cloneable {
 
         final Vertex tmp = new Vertex(x, y, z);
         return (float)Math.sqrt(StrictMath.pow(tmp.getX(), 2) + StrictMath.pow(tmp.getY(), 2));
-    }
-    public static float createDotProduct(Vertex ver1, Vertex ver2) {
-        return (ver1.getX() * ver2.getX()) + (ver1.getY() * ver2.getY()) + (ver1.getZ() * ver2.getZ());
     }
     public static Vertex createCrossProduct(Vertex ver1, Vertex ver2) {
         final float x = ver1.getY() * ver2.getZ() - ver1.getZ() * ver2.getY();

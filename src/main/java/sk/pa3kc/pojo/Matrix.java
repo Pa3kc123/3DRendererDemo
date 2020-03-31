@@ -3,7 +3,7 @@ package sk.pa3kc.pojo;
 import sk.pa3kc.Program;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 
-public class Matrix implements Cloneable{
+public class Matrix implements Cloneable {
     public static final Matrix X_MATRIX = Matrix.identified(4, 4);
     public static final Matrix Y_MATRIX = Matrix.identified(4, 4);
     public static final Matrix Z_MATRIX = Matrix.identified(4, 4);
