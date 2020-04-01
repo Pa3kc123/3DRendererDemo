@@ -1,6 +1,7 @@
 package sk.pa3kc.matrix;
 
 import sk.pa3kc.mylibrary.util.ArrayUtils;
+import sk.pa3kc.mylibrary.util.FloatMath;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
 import static java.lang.StrictMath.cos;
@@ -267,13 +268,13 @@ public class MatrixMath {
             }
         }
 
-        // final float l = (float)StrictMath.sqrt((mat[0][0] * mat[0][0]) + (mat[1][0] * mat[1][0]) + (mat[2][0] * mat[2][0]));
+        // final float l = (float)FloatMath.sqrt((mat[0][0] * mat[0][0]) + (mat[1][0] * mat[1][0]) + (mat[2][0] * mat[2][0]));
         // mat[0][0] /= l;
         // mat[1][0] /= l;
         // mat[2][0] /= l;
     }
 
     public static float magnitude(float[][] mat1, float[][] mat2) {
-        return (float)StrictMath.sqrt(MatrixMath.dotProduct(mat1, mat2));
+        return FloatMath.sqrt(MatrixMath.dotProduct(mat1, mat2));
     }
 }

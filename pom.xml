@@ -56,7 +56,7 @@
     <dependency>
       <groupId>sk.pa3kc</groupId>
       <artifactId>mylibrary</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
 	</dependencies>
 </project>
