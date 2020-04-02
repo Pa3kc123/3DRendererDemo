@@ -9,13 +9,12 @@
             "classPaths": [
                 "${workspaceFolder}/target/classes"
             ],
-            "cwd": "${workspaceFolder}/target/classes",
             "mainClass": "sk.pa3kc.Program",
             "args": [
                 "--max-fps=0",
                 "--monitor-index=1",
                 "--debug=true",
-                "crystal.obj"
+                "src/main/assets/crystal.obj"
             ]
         }
     ]

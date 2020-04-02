@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
+import sk.pa3kc.mylibrary.MyLibrary;
 import sk.pa3kc.mylibrary.util.ArgsParser;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
@@ -37,6 +38,11 @@ public class Program {
     public static void main(String[] args) {
         final ArgsParser params = new ArgsParser(args);
         Configuration.setupConfig(params);
+
+        if (!MyLibrary.init()) {
+            System.err.println("Failed to initialize MyLib");
+            return;
+        }
 
         ObjFile obj = null;
 
