@@ -61,7 +61,7 @@ public class Vertex extends Matrix {
         final float z = ver1.getZ() - ver2.getZ();
 
         final Vertex tmp = new Vertex(x, y, z);
-        return FloatMath.sqrt((float)(StrictMath.pow(tmp.getX(), 2) + StrictMath.pow(tmp.getY(), 2)));
+        return (float)StrictMath.sqrt((StrictMath.pow(tmp.getX(), 2) + StrictMath.pow(tmp.getY(), 2)));
     }
     public static Vertex createCrossProduct(Vertex ver1, Vertex ver2) {
         final float x = ver1.getY() * ver2.getZ() - ver1.getZ() * ver2.getY();

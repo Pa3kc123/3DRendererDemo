@@ -275,6 +275,6 @@ public class MatrixMath {
     }
 
     public static float magnitude(float[][] mat1, float[][] mat2) {
-        return FloatMath.sqrt(MatrixMath.dotProduct(mat1, mat2));
+        return (float)StrictMath.sqrt(MatrixMath.dotProduct(mat1, mat2));
     }
 }
