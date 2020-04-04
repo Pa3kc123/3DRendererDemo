@@ -1,7 +1,6 @@
 package sk.pa3kc.pojo;
 
 import sk.pa3kc.Program;
-import sk.pa3kc.mylibrary.util.FloatMath;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
@@ -76,6 +75,25 @@ public class Vertex extends Matrix {
     @Override
     public Vertex clone() {
         return new Vertex(super.cloneAllValues());
+    }
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+
+        builder.append(super.getRowCount());
+        builder.append('x');
+        builder.append(super.getColCount());
+        builder.append(" [ ");
+        builder.append(this.getX());
+        builder.append(", ");
+        builder.append(this.getY());
+        builder.append(", ");
+        builder.append(this.getZ());
+        builder.append(", ");
+        builder.append(this.getW());
+        builder.append(" ]");
+
+        return builder.toString();
     }
     //endregion
 }

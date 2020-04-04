@@ -90,7 +90,7 @@ public class Matrix implements Cloneable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.rowCount);
-        builder.append("x");
+        builder.append('x');
         builder.append(this.colCount);
         builder.append(Program.NEWLINE);
 

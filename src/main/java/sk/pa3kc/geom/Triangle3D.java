@@ -11,10 +11,13 @@ import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
 
 public class Triangle3D extends Drawable {
-    public final Vertex[] vertecies = new Vertex[3];
+    public final static int VERTEX_COUNT = 3;
+
+    public final Vertex[] vertecies = new Vertex[VERTEX_COUNT];
     public final Color color;
 
     public float dotProduct = 0f;
+    public Vertex crossProduct = new Vertex();
 
     public Triangle3D(Vertex ver1, Vertex ver2, Vertex ver3) {
         this(ver1, ver2, ver3, Color.WHITE);
@@ -31,6 +34,7 @@ public class Triangle3D extends Drawable {
         final Vertex[] clones = super.translate(this.vertecies);
 
         this.dotProduct = MatrixMath.dotProduct(super.normal.getAllValues(), vertecies[0].getAllValues());
+        MatrixMath.crossProduct(this.vertecies[0].getAllValues(), this.vertecies[1].getAllValues(), this.crossProduct.getAllValues());
 
         return clones;
     }
@@ -39,11 +43,11 @@ public class Triangle3D extends Drawable {
     public void draw(Graphics2D g) {
         final Vertex[] vertecies = this.translate(this.vertecies);
 
-        final int[] xPoints = new int[vertecies.length];
-        final int[] yPoints = new int[vertecies.length];
+        final int[] xPoints = new int[VERTEX_COUNT];
+        final int[] yPoints = new int[VERTEX_COUNT];
 
         if (this.dotProduct < 0f) {
-            for (int i = 0; i < vertecies.length; i++) {
+            for (int i = 0; i < VERTEX_COUNT; i++) {
                 // final float[][] normalizedLight = Program.world.getLight().cloneAllValues();
                 // MatrixMath.normalize(normalizedLight);
 
@@ -61,11 +65,11 @@ public class Triangle3D extends Drawable {
 
             final int tmp = g.getColor().getRGB();
 
-            g.setColor(Color.BLACK);
+            g.setColor(Color.WHITE);
             g.drawPolygon(xPoints, yPoints, vertecies.length);
 
-            g.setColor(Color.WHITE);
-            g.fillPolygon(xPoints, yPoints, vertecies.length);
+            // g.setColor(Color.WHITE);
+            // g.fillPolygon(xPoints, yPoints, vertecies.length);
 
             g.setColor(new Color(tmp));
         }

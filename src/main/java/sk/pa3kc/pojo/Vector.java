@@ -10,7 +10,7 @@ public class Vector extends Vertex {
      */
     private float[][] direction;
     /**
-     * Represented as ARGB (#AARRGGBB)
+     * Represented as RGBA (#RRGGBBAA)
      */
     private int color;
 

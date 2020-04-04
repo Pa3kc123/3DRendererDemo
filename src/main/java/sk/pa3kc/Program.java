@@ -83,7 +83,7 @@ public class Program {
 
         world = new World(1);
         world.getPlayers()[0] = new Player(new Vertex(0f, 0f, 1000f, 1f));
-        world.getMesh().addAll(Arrays.asList(obj.getFaces()));
+        world.getMesh().addAll(Arrays.asList(obj.getFaces()[1]));
 
         UI_THREAD = new UIThread();
         UI_THREAD.start();

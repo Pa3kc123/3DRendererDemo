@@ -1,7 +1,6 @@
 package sk.pa3kc.matrix;
 
 import sk.pa3kc.mylibrary.util.ArrayUtils;
-import sk.pa3kc.mylibrary.util.FloatMath;
 import sk.pa3kc.mylibrary.util.StringUtils;
 
 import static java.lang.StrictMath.cos;
@@ -207,22 +206,11 @@ public class MatrixMath {
      * @return value representing similarity
      */
     public static float dotProduct(float[][] mat1, float[][] mat2) {
-        // if (mat1.length < 3 || mat1[0].length == 0) {
-        //     throw new IllegalArgumentException("mat1 must be at least of size 3x1");
-        // }
-        // if (mat2.length < 3 || mat2[0].length == 0) {
-        //     throw new IllegalArgumentException("mat2 must be at least of size 3x1");
-        // }
-        if (mat1.length != mat2.length || mat1[0].length != mat2[0].length) {
-            throw new IllegalArgumentException("mat1 must be same as mat2");
+        if (mat1.length < 3 || mat1[0].length == 0) {
+            throw new IllegalArgumentException("mat1 must be at least of size 3x1");
         }
-
-        float sum = 0f;
-        for (int col = 0; col < mat1[0].length; col++) {
-            float tmp = 0f;
-            for (int row = 0; row < mat1.length; row++) {
-
-            }
+        if (mat2.length < 3 || mat2[0].length == 0) {
+            throw new IllegalArgumentException("mat2 must be at least of size 3x1");
         }
 
         return (mat1[0][0] * mat2[0][0]) + (mat1[1][0] * mat2[1][0]) + (mat1[2][0] * mat2[2][0]);

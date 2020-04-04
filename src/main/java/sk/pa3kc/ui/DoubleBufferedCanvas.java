@@ -77,11 +77,12 @@ public abstract class DoubleBufferedCanvas extends Canvas {
 
         if (!this.backendImage.contentsLost()) {
             g.drawImage(this.backendImage, 0, 0, this);
-            synchronized (this) {
-                this.notify();
-            }
         } else {
             System.out.println("Backend image content lost");
+        }
+
+        synchronized (this) {
+            this.notify();
         }
     }
 
