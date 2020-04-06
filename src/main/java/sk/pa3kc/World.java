@@ -28,8 +28,15 @@ public class World extends Drawable {
     }
 
     public void draw(Graphics2D g) {
-        for (Drawable obj : this.mesh) {
+        for (final Drawable obj : this.mesh) {
             obj.draw(g);
+        }
+    }
+
+    @Override
+    public void drawGL() {
+        for (final Drawable obj : this.mesh) {
+            obj.drawGL();
         }
     }
 

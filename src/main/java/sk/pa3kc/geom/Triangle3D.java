@@ -3,6 +3,8 @@ package sk.pa3kc.geom;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.lwjgl.opengl.GL11;
+
 import sk.pa3kc.Program;
 import sk.pa3kc.geom.Drawable;
 import sk.pa3kc.matrix.MatrixMath;
@@ -73,5 +75,31 @@ public class Triangle3D extends Drawable {
 
             g.setColor(new Color(tmp));
         }
+    }
+
+    @Override
+    public void drawGL() {
+        final Vertex[] vertecies = this.translate(this.vertecies);
+
+        //if (this.dotProduct < 0f) {
+            Program.triangleCounter++;
+            GL11.glColor4f(1f, 1f, 1f, 1f);
+            GL11.glBegin(GL11.GL_TRIANGLES);
+//            GL11.glTranslatef(Program.GRAPHICS_DEVICE_BOUNDS.width / 2f, Program.GRAPHICS_DEVICE_BOUNDS.height / 2f, 0f);
+            for (int i = 0; i < VERTEX_COUNT; i++) {
+                // final float[][] normalizedLight = Program.world.getLight().cloneAllValues();
+                // MatrixMath.normalize(normalizedLight);
+
+                // final float dp = MatrixMath.dotProduct(vertecies[0].getAllValues(), normalizedLight);
+
+                // Projection
+                VertexMath.multiply(vertecies[i].getAllValues(), Matrix.PROJECTION_MATRIX.getAllValues());
+
+                final float x = this.vertecies[i].getX();
+                final float y = this.vertecies[i].getY();
+                GL11.glVertex2f(x, y);
+            }
+            GL11.glEnd();
+        //}
     }
 }

@@ -31,4 +31,8 @@ public class Path3D extends Drawable {
         g.setColor(Color.WHITE);
         g.drawString(this.text, x2, y2);
     }
+
+    @Override
+    public void drawGL() {
+    }
 }
