@@ -20,9 +20,11 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import sk.pa3kc.geom.Drawable;
+import sk.pa3kc.geom.Triangle3D;
 import sk.pa3kc.mylibrary.DefaultSystemPropertyStrings;
 import sk.pa3kc.mylibrary.MyLibrary;
 import sk.pa3kc.mylibrary.util.ArgsParser;
+import sk.pa3kc.mylibrary.util.ArrayUtils;
 import sk.pa3kc.mylibrary.util.NumberUtils;
 import sk.pa3kc.pojo.Matrix;
 import sk.pa3kc.pojo.Vertex;
@@ -105,6 +107,7 @@ public class Program {
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, GLFW.GLFW_FALSE);
 
         // Create window
         final long window = GLFW.glfwCreateWindow(GRAPHICS_DEVICE_BOUNDS.width, GRAPHICS_DEVICE_BOUNDS.height, "Test window", MemoryUtil.NULL, MemoryUtil.NULL);
@@ -144,16 +147,23 @@ public class Program {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
         GL11.glOrtho(0d, GRAPHICS_DEVICE_BOUNDS.getWidth(), GRAPHICS_DEVICE_BOUNDS.getHeight(), 0d, 1, -1);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        // GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
+        final float minX = 0f;
+        final float minY = 0f;
+        final float maxX = (float)GRAPHICS_DEVICE_BOUNDS.width;
+        final float maxY = (float)GRAPHICS_DEVICE_BOUNDS.height;
 
         while (!GLFW.glfwWindowShouldClose(window)) {
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-            Program.triangleCounter = 0;
-            for (final Drawable drawable : Program.world.getMesh()) {
-                drawable.drawGL();
-            }
-            System.out.println("Triangle counter = " + Program.triangleCounter);
+            GL11.glBegin(GL11.GL_TRIANGLES);
+
+            GL11.glVertex2f(minX, minY);
+            GL11.glVertex2f(minX, maxY);
+            GL11.glVertex2f(maxX, minY);
+
+            GL11.glEnd();
 
             GLFW.glfwSwapBuffers(window);
 
@@ -167,10 +177,8 @@ public class Program {
         GLFW.glfwSetErrorCallback(null).set();
 
         UI_THREAD = new UIThread();
-        UI_THREAD.start();
+        // UI_THREAD.start();
 
         // MAIN_FRAME = new MainFrame("Test");
     }
-
-    public static int triangleCounter = 0;
 }

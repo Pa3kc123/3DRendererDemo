@@ -82,7 +82,6 @@ public class Triangle3D extends Drawable {
         final Vertex[] vertecies = this.translate(this.vertecies);
 
         //if (this.dotProduct < 0f) {
-            Program.triangleCounter++;
             GL11.glColor4f(1f, 1f, 1f, 1f);
             GL11.glBegin(GL11.GL_TRIANGLES);
 //            GL11.glTranslatef(Program.GRAPHICS_DEVICE_BOUNDS.width / 2f, Program.GRAPHICS_DEVICE_BOUNDS.height / 2f, 0f);
